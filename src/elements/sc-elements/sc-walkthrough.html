@@ -1,0 +1,55 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+<!--
+An element that providing an walkthrough slider with swipe support for first
+access in the app.
+
+Example:
+
+    <sc-walkthrough></sc-walkthrough>
+
+Example:
+
+    <sc-walkthrough>
+
+    </sc-walkthrough>
+-->
+
+<dom-module id="sc-walkthrough">
+  <template>
+    <style>
+        :host {
+            width: 100%;
+            height: 100%;
+        }
+        iron-swipeable-container, #page-1, #page-2, #page-3, #page-4 {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+    </style>
+    <iron-swipeable-container>
+      <div id="page-4">
+        <content select=".content-4"></content>  
+      </div>        
+      <div id="page-3">
+        <content select=".content-3"></content>  
+      </div>        
+      <div id="page-2">
+        <content select=".content-2"></content>  
+      </div>        
+      <div id="page-1">
+        <content select=".content-1"></content>  
+      </div>
+    </iron-swipeable-container>
+  </template>
+  <script>
+      Polymer({
+        is: 'sc-walkthrough'
+      });      
+  </script>
+</dom-module>

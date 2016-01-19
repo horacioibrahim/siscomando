@@ -1,0 +1,416 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <sc-home></sc-home>
+
+Example:
+
+    <sc-home>
+      <h2>Hello sc-home</h2>
+    </sc-home>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-home">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        color: rgba(0,0,0,.75);
+        font-family: Roboto;
+        font-weight: 300;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        height: 100%;
+      }
+      /* News */
+      .list-container {
+        height: 100%;
+        width: 100%;
+        /* overflow-y: scroll; vulcanized problems */
+
+        -webkit-transition-delay: 2s;
+        transition-delay: 2s;
+        -webkit-transition: 2s border linear,3s background-color linear;
+        transition: 2s border linear,3s background-color linear;
+      }
+      .service-item {
+        @apply(--layout-horizontal);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        padding-bottom: 5px;
+        padding-top: 5px;
+        padding-left: 8px;
+        padding-right: 6px;
+        cursor: pointer;
+        min-height: 80px;
+        text-overflow: ellipsis;
+      }
+      .content {
+        @apply(--layout-vertical);
+        @apply(--layout-flex);
+      }
+      .more {
+        width: 56dp;
+        width: 32px;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .more iron-icon {
+        margin-top: 36px;
+        color: rgba(0,0,0, .30);
+      }
+      /* hover for desktop */
+      .service-item.selected {
+        background-color: rgba(19,95,184,.75);
+        color: white !important;
+      }
+      .service-item.selected .service-item-subheader span {
+        color: white;
+      }
+      .service-item.selected .service-item-body {
+        color: rgba(255, 255, 255, 0.34);
+      }
+      .service-item.selected .new-message {
+        background-color: #7ED321;
+      }
+      .service-item-headers {
+        @apply(--layout-horizontal);
+      }
+      .service-item-header {
+
+      }
+      .service-item-header h3 {
+        margin-top: 2px;
+        margin-bottom: 2px;
+        font-size: 1em;
+        font-weight: 500;
+      }
+      .service-item-subheader span, .service-item-subheader div {
+        padding: 5px 10px 5px 0px;
+        color: #000;
+        opacity: 0.54;
+        font-size: 12px;
+        margin-top: -5px;
+      }
+      .service-counter {
+        position: absolute;
+        right: 0;
+        font-size: 13px;
+        width: 22px;
+        height: 18px;
+        text-align: center;
+        margin-top: 1px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        background: #CCC;
+        padding-top: 2px;
+        color: #FFF;
+        margin-right: 12px;
+      }
+      .service-counter.new-message{
+        background: #4A90E2;
+        color: #FFF;
+        border: 1px solid rgba(19, 95, 184 0.8);
+      }
+      .flexchild {
+        @apply(--layout-flex);
+      }
+      .service-item-body {
+        @apply(--layout-horizontal);
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 17px;
+        padding-bottom: 5px;
+        color: rgba(0,0,0,0.38);
+      }
+      .avatarBox {
+        float:left;
+        width: 32px;
+        height: 32px;
+        -webkit-border-radius: 50%; /* Can also be 55px */
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        margin-right: 0px;
+        @apply(--layout-flex);
+        @apply(--layout-flex-1);
+       }
+      .service-item-body-content {
+        @apply(--layout-flex);
+        @apply(--layout-flex-11);
+        padding-left: 15px;
+      }
+      .avatarBox img {
+        width: 32px;
+        height: 32px;
+        -webkit-border-radius: 50%; /* Can also be 50px */
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        opacity: 0.8;
+        float: left;
+        right: 0;
+       }
+       #dialog {
+         width: 80%;
+         @apply(--layout-vertical);
+       }
+        #dialog paper-icon-item {
+            cursor: pointer;
+        }
+       /* hacking dialog */
+       paper-dialog.paper-dialog-0 {
+         background:#ffffff;
+         color:#212121;font-family:'Roboto', 'Noto', sans-serif;
+             -webkit-font-smoothing:antialiased;
+             font-size:14px;
+             font-weight:400;
+             line-height:20px;box-shadow:0 16px 24px 2px rgba(0, 0, 0, 0.14),
+                         0  6px 30px 5px rgba(0, 0, 0, 0.12),
+                         0  8px 10px -5px rgba(0, 0, 0, 0.4);
+       }
+       paper-dialog.paper-dialog-0  h2 {
+         font-family:'Roboto', 'Noto', sans-serif;
+             -webkit-font-smoothing:antialiased;
+             white-space:nowrap;
+             overflow:hidden;
+             text-overflow:ellipsis;
+             font-size:20px;
+             font-weight:500;
+             line-height:28px;
+       }
+       paper-dialog.paper-dialog-0  .buttons {
+         color:#3f51b5;display:-ms-flexbox;
+             display:-webkit-flex;
+             display:flex;
+
+             -ms-flex-direction:row;
+             -webkit-flex-direction:row;
+             flex-direction:row;-ms-flex-pack:end;
+             -webkit-justify-content:flex-end;
+             justify-content:flex-end;
+       }
+       /* end Hacking dialog */
+       #overlay {
+       position: fixed;
+       left: 0;
+       top: 0;
+       background: rgba(0,0,0,0.5);
+       height: 100%;
+       width: 100%;
+       display: none;
+      }
+      #overlay.enabled {
+        display: block;
+      }
+      @media (min-width: 768px) and (orientation: portrait) {
+
+      }
+    </style>
+
+    <sc-remote id="remote"></sc-remote>
+    <!-- Start: html common -->
+    <div class="list-container">
+      <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
+        <template>
+            <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
+              <!-- div header -->
+              <div class="content" on-tap="selectItem">
+                  <div class="service-item-headers service-item-header">
+                    <div class="flexchild"><h3>[[item.service]]</h3></div>
+                    <!-- TODO: create method to add new-message class -->
+                    <div><div class="service-counter">[[item.opened_ticket]]</div></div>
+                  </div>
+                  <!-- div subheader -->
+                  <div class="service-item-headers service-item-subheader">
+                    <span>[[item.hashtag]]</span>
+                    <!-- colocar um filter momentjs aqui quando integrado com meteor -->
+                    <span>
+                      <sc-timeago datetime="[[_convertTimestamp(item.lastMessage.timestamp)]]"></sc-timeago>
+                    </span>
+                  </div>
+                  <!-- div message -->
+                  <div class="service-item-body">
+                    <template is="dom-if" if="{{item.lastMessage.user.avatar}}">
+                      <div class="avatarBox">
+                        <img src="[[item.lastMessage.user.avatar]]">
+                      </div>
+                    </template>
+                    <div class="service-item-body-content">
+                      [[item.lastMessage.body]]
+                    </div>
+                  </div>
+              </div>
+              <!-- menu more options -->
+              <div class="more" on-tap="dialogToggle">
+                <iron-icon icon="more-vert"></iron-icon>
+              </div>
+            </div>
+        </template>
+      </iron-list>
+    </div>
+    <div id="overlay" class=""></div>
+    <paper-dialog id="dialog"
+      role="listbox" entry-animation="scale-up-animation" exit-animation="fade-out-animation"
+      backdrop>
+      <h2>{{dialogItemSelected.service}}</h2>
+        <paper-icon-item>
+          <iron-icon icon="icons:highlight-off" item-icon></iron-icon> Deixar de receber atualizações
+        </paper-icon-item>
+        <paper-icon-item>
+          <iron-icon icon="social:notifications-off" item-icon></iron-icon> Silenciar notificações
+        </paper-icon-item>
+    </paper-dialog>
+    <!-- End: html common -->
+</template>
+
+  <script>
+    Polymer({
+      is: 'sc-home',
+      behaviors: [Polymer.NeonAnimatableBehavior],
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': {
+                name: 'slide-from-left-animation',
+                node: this
+              },
+              'exit': {
+                name: 'slide-left-animation',
+                node: this
+              }
+            }
+          }
+        },
+        selectedItem: {
+          type: Object
+        },
+        /**
+         * `document` array content the items for iron-list.
+         */
+        documents: {
+          type: Object,
+        },
+
+        /**
+         * `fancy` indicates that the element should don a monocle and tophat,
+         * while checking its pocket watch.
+         */
+        fancy: Boolean,
+        /** `dialogItemSelected` is a container receives data from item (iron-list)
+        clicked before open dialog that will be change in next action.
+        */
+        dialogItemSelected: {
+          type: Object
+        }
+      },
+
+      // Element Lifecycle
+      ready: function () {
+          var self = this;
+          var scRemote = this.$.remote;
+          scRemote.get('home');
+          scRemote.addEventListener('remote', function(e){
+             self.documents = e.detail.data;
+          });
+      },
+      // Ajax response
+      ajaxResponse: function(event) {
+          // DEPRECATED
+          this.documents = event.detail.response;
+      },
+      // Selection Behavior
+      selectItem: function(e) {
+         this._selectItem(e);
+       },
+       /* `_selectItem` select or unselect item
+       *
+       */
+      _selectItem: function(e){
+        var hashtag = e.model.item.hashtag;
+        // if new selected item was already prevously selected
+        // we must unselect it. ELSE ..
+        // to select new item and fire 'home-selected' event.
+        if (this.$.itemsList.selectedItem == e.model.item) {
+            // unselect
+            this._unselect(e);
+            this._computedClass(false);
+        } else {
+            this.$.itemsList.selectItem(e.model.item);
+            //this.fire('home-selected');
+            // normalize
+            if (hashtag.slice(0, 1) === '#') {
+              hashtag = hashtag.substr(1);
+            }
+            window.location.href = '#/feeds/' + hashtag;
+        }
+      },
+      unselect: function() {
+        this._unselect();
+      },
+      _unselect: function(e) {
+        if (e) {
+            this.$.itemsList.deselectItem(e.model.item);
+        } else {
+            var item = this.$.itemsList.selectedItem;
+            this.$.itemsList.deselectItem(item);
+        }
+        // warning
+        this.fire('home-unselected');
+       },
+      _computedClass: function(isSelected) {
+        var classes = 'service-item';
+        if (isSelected) {
+          classes += ' selected';
+        }
+        return classes;
+      },
+      _getAriaLabel: function(item, selected) {
+        return selected ? 'Deselect ' + item.hashtag : 'Select ' + item.hashtag;
+      },
+      _convertTimestamp: function(unix_timestamp) {
+        // this code sample was copied from
+        // http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+        //
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        var date = new Date(unix_timestamp*1000);
+        var hours = "0" + date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+        // Full year
+        var year = date.getFullYear();
+        var month = "0" + date.getMonth();
+        var day = "0" + date.getDay();
+        // YYYY-MM-DDT00:00:00
+
+        var formattedTime = year + '-' +  month.substr(-2) + '-' +  day.substr(-2) + 'T' + hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + '.000Z';
+        return formattedTime;
+      },
+      dialogToggle: function(e) {
+        var self = this;
+        this.dialogItemSelected = e.model.item;
+        // activing ...
+        // change and add class enabled for #
+        this.$.dialog.open();
+        this.toggleClass('enabled', true, this.$.overlay);
+
+        // deactiving ...
+        this.$.dialog.addEventListener('iron-overlay-closed', function(){
+              this.toggleClass('enabled', false, self.$.overlay);
+        });
+      }
+    });
+  </script>
+</dom-module>

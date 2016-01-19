@@ -1,0 +1,28 @@
+<!-- Attention: This is first element called so we need import directly here -->
+<!-- <link rel="import" href="../bower_components/polymer/polymer.html"> -->
+
+<dom-module id="sc-shell">
+  <template>
+        <!-- bindRouter onUrlChange="updateModel" -->
+        <app-router id="router" class="flex">
+          <app-route path="/" element="page-home"></app-route>
+          <app-route path="/**/www/index.html" element="page-home"></app-route>
+          <app-route path="/feeds/:hashtag" element="page-feeds"></app-route>
+          <app-route path="/walk" element="page-walkthrough"></app-route>
+          <app-route path="/search" element="page-search"></app-route>
+          <app-route path="*" element="page-not-found"></app-route>
+        </app-router>
+  </template>
+  <script>
+    Polymer({
+      is: 'sc-shell',
+      listeners: {
+        'nav': 'handleNav'
+      },
+      handleNav: function(_, nav) {
+        this.$.router.go(nav.url);
+      }
+
+    });
+  </script>
+</dom-module>

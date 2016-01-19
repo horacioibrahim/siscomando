@@ -1,0 +1,237 @@
+
+<dom-module id="sc-main-page">
+<template>
+<style>
+  :host {
+    display: block;
+    box-sizing: border-box;
+    color: rgba(0,0,0,.75);
+    font-family: Roboto;
+    font-weight: 300;
+    height: 100%;
+    width: 100%;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    background-color: #F9F9F9;
+  }
+  #container {
+    height: 100%;
+    width: 100%;
+    /* overflow: scroll; */
+    background-color: #F9F9F9;
+    position: absolute;
+  }
+  paper-toolbar {
+    --paper-toolbar-background: #135FB8;
+  }
+  paper-toolbar span.title {
+    @apply(--layout-flex)
+  }
+  paper-input.short {
+    width: 100%;
+  }
+  #container div#mainContent { /* the default is mobile */
+    @apply(--layout-vertical);
+    width: 100%;
+    height: 100%;
+  }
+  #container div#mainContent .rowOne {
+    @apply(--layout-flex);
+    overflow-y: scroll;
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 133px;
+  }
+  #container div#mainContent .rowTwo {
+
+  }
+  #inputWithButton {
+    display: none;
+  }
+  paper-input#inputWithButton {
+    --paper-input-container-color: rgba(255,255,255,0.54);
+    --paper-input-container-focus-color: rgba(255,255,255,0.54);
+    --paper-input-container-input-color: rgba(255,255,255,0.86);
+    margin-bottom: 30px;
+  }
+  paper-textarea#inputLikeZap {
+      --paper-input-container: {
+        background-color: rgba(255,255,255,0.8);
+        padding-left: 10px;
+        padding-right: 6px;
+        border-top: 1px solid rgba(0,0,0,.10);
+      }
+  }
+  .bottomInput {
+    position: absolute;
+    float: left;
+    background: #F5F8F8;
+    width: 100%;
+    bottom: 0;
+  }
+  #backAllMessagesBtn {
+    display: block;
+  }
+  @media (min-width: 768px) and (orientation: landscape) {
+    #container div#mainContent {
+        @apply(--layout-vertical);
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
+    }
+    #container div#mainContent .rowOne {
+      @apply(--layout-flex);
+      padding-left: 5px;
+      padding-right: 40px;
+      padding-bottom: 120px;
+    }
+  }
+</style>
+  <div id="container">
+  <!-- begin: main content div -->
+    <paper-toolbar>
+      <!-- backHome eh paliativo, o ideal eh colocar quando fechar o drawer sempre voltar para home. -->
+      <!--
+      <paper-icon-button id="inboxBtn" icon="inbox" on-tap="backHome" paper-drawer-toggle></paper-icon-button> -->
+
+      <paper-icon-button id="backAllMessagesBtn" on-tap="backAllMessages" icon="chevron-left"></paper-icon-button>
+      <span id="mainTitle" class="title">{{titleSection}}</span>
+      <!-- hide/show -->
+      <paper-icon-button id="btnSearch" on-tap="toggleClick" icon="search"></paper-icon-button>
+      <!-- hide/show -->
+      <paper-input flex class="short" label="pesquise qualquer coisa..." id="inputWithButton">
+        <paper-icon-button suffix on-tap="clearInput"
+            icon="clear" alt="clear" title="clear" tabindex="0">
+        </paper-icon-button>
+      </paper-input>
+    </paper-toolbar>
+
+    <div id="mainContent">
+      <!-- rowOne contains the feeds updates -->
+      <div class="rowOne">
+            <sc-feeds id="mainFeeds"></sc-feeds>
+      </div>
+      <!-- rowTwo contains the input to send messages -->
+      <div class="rowTwo">
+        <div class="bottomInput">
+          <paper-textarea flex class="short" label="O que você pode resolver..." id="inputLikeZap">
+          </paper-textarea>
+        </div>
+      </div>
+    </div>
+  <!-- end: main content div -->
+  </div>
+</template>
+<script>
+  Polymer({
+    is: 'sc-main-page',
+    properties: {
+      selectedPageFromMain: {
+          type: Number,
+          value: 0
+      },
+      titleSection: {
+        type: String,
+        value: 'All messages'
+      },
+      previousSelectedItem: {
+        type: String,
+        value: null
+      }
+    },
+    ready: function() {
+      var feeds = this.$.mainFeeds;
+      var self = this;
+
+      // behaviors select message scope.
+      feeds.addEventListener('feeds-updated', function(){
+        self.updateScroll();
+      });
+      // listen if feeds item was selected ...
+      feeds.addEventListener('feed-selected', function(e){
+        var item = e.detail.message;
+
+        if ('target_hashtag' in item) {
+          self.titleSection = item.target;
+          // before change
+          self.previousSelectedItem = feeds.hashtag;
+          // now's change
+          feeds.hashtag = item.target_hashtag;
+          // self.toggleMainBtn(true); // changes btn inbox to back (chevron)
+        }
+      });
+
+    },
+    backHome: function() {
+      this.fire('back-home');
+    },
+    /**
+    * `updateScroll` move scroll from bottom to up (inverse behavior)
+    */
+    updateScroll: function () {
+      var mainContent = this.$.mainContent;
+      var rowOne = mainContent.querySelector('.rowOne');
+      rowOne.scrollTop = rowOne.scrollHeight;
+    },
+    toggleClick: function() {
+      // show or hide input and show or hide icon
+      var btnSearch = this.$.btnSearch;
+      var inputWithButton = this.$.inputWithButton;
+      var mainTitle = this.$.mainTitle;
+
+      if (btnSearch.style.display == 'none') {
+        btnSearch.style.display = 'block';
+        inputWithButton.style.display = 'none';
+        mainTitle.style.display = 'block';
+      } else {
+        btnSearch.style.display = 'none';
+        inputWithButton.style.display = 'block';
+        mainTitle.style.display = 'none';
+      }
+    },
+    /** `toggleMainBtn` toggle inboxBtn or backAllMessagesBtn
+    * @param `forward`: if `true` toggle disabled and only back
+    * btn is showed.
+
+    toggleMainBtn: function (forward) {
+      var inboxBtn = this.$.inboxBtn;
+      var backAllMessagesBtn = this.$.backAllMessagesBtn;
+      if (forward === true) {
+          // inboxBtn.style.display = 'none';
+          backAllMessagesBtn.style.display = 'block';
+      } else {
+          backAllMessagesBtn.style.display = 'none';
+      }
+    },*/
+    clearInput: function() {
+      this.$.inputWithButton.value = '';
+      this.toggleClick();
+    },
+    clearInputLikeZap: function () {
+      this.$.inputLikeZap.value = '';
+    },
+    /** `backAllMessages` go back to hashtag `all`. Make unselect if item already
+    * selected (in sc-home) and make query
+    * to backend for all messages (last messages, for example).
+    **/
+    backAllMessages: function() {
+     // We basically to change hashtag from sc-feeds
+     var feeds = this.$.mainFeeds;
+
+     if (this.previousSelectedItem) {
+        // subitem was previously opened. because back to system.
+        feeds.hashtag = this.previousSelectedItem;
+        this.titleSection = this.previousSelectedItem;
+        this.previousSelectedItem = null; // reset hierarchy
+     } else {
+        // or back to init page with all updates. BUT, now (7JAN16) we to change
+        // for to open drawer. It'll be home.
+        this.titleSection = 'All';
+        feeds.hashtag = 'all';
+        //this.toggleMainBtn();
+        this.fire('home-unselect');
+     }
+   },
+ });
+</script>
+</dom-module>

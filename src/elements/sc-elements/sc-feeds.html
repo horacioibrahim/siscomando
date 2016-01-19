@@ -1,0 +1,382 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <sc-feeds></sc-feeds>
+
+Example:
+
+    <sc-feeds>
+      <h2>Hello sc-feeds</h2>
+    </sc-feeds>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-feeds">
+<template>
+<style>
+  :host {
+    display: block;
+    box-sizing: border-box;
+    color: rgba(0,0,0,.75);
+    font-family: Roboto;
+    font-weight: 300;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+  /* News */
+  .list-container {
+    height: 100%;
+    width: 100%;
+  }
+
+  .message-item {
+    cursor: pointer;
+  }
+  .message-item:hover {
+    background-color: rgba(19,95,184,0.015);
+  }
+  .message-item-container {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    border-right: 2px solid transparent;
+    margin: .8em 12px 0;
+    padding-left: 16dp;
+    padding-left: 0px;
+    -webkit-transition-delay: 2s;
+    transition-delay: 2s;
+    -webkit-transition: 2s border linear,3s background-color linear;
+    transition: 2s border linear,3s background-color linear;
+    clear: both;
+  }
+  .message-item-container.continued {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  .message-item-container.continued .item-details {
+    display: none;
+  }
+  .message-item-container.continued .item-aside {
+    margin-top: 6px;
+  }
+  .message-item-container.continued .item-aside .avatar{
+    display: none;
+  }
+  .item-aside {
+    float: left;
+    margin-top: 2px;
+  }
+  .item-aside .avatar {
+    position: relative;
+    height: 30px;
+    width: 30px;
+    border-radius: 4px;
+    background-size: cover;
+  }
+  .item-aside .dispImage {
+    display: inline-block;
+    text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
+    border-bottom: 2px solid transparent;
+  }
+  .item-aside .dispImage img {
+    width: 30px;
+    max-width: 30px;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 30px;
+    border: none;
+    background-color: #eee;
+  }
+  .item-actions {
+    float: right;
+    text-align: right;
+    /* opacity: 0; */
+    width: 40px;
+    display: none;
+  }
+  .item-content {
+    margin-left: 40px;
+    margin-right: 2px;
+    vertical-align: top;
+    min-height: 1.5em;
+  }
+  .item-details {}
+
+  .item-details-from {
+    vertical-align: middle;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: .5;
+  }
+  .item-target {
+    margin-left: 10px;
+    vertical-align: middle;
+    display: inline-block;
+    margin-top: 2px;
+    opacity: .3;
+    font-size: .8em;
+    text-transform: uppercase;
+    color: #000;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    padding: 1px 5px 1px 5px;
+    background: rgba(0,0,0,.20);
+    cursor: pointer;
+    text-shadow: 2px 2px 2px rgba(255, 255, 255, 1)
+  }
+  .item-details-timestamp {
+    vertical-align: middle;
+    display: inline-block;
+    color: #aaa;
+    float: right;
+    margin-top: 2px;
+    opacity: .7;
+  }
+  .item-text {
+    margin: 0;
+    padding: 0;
+    word-wrap: break-word;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  .markdown-html p {
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+  }
+  .markdown-html blockquote {
+    padding: 0 15px;
+    color: #777;
+    border-left: 4px solid #ddd;
+  }
+  @media (min-width: 768px) and (orientation: landscape) {
+    .message-item-container {
+      padding-left: 10px;
+    }
+    .item-actions {
+      display: block;
+    }
+    .item-content {
+      margin-right: 44px;
+      margin-left: 52px;
+    }
+  }
+</style>
+
+    <iron-ajax id="ajax"
+      url=""
+      on-response="ajaxResponse"
+      handle-as="json"
+      auto></iron-ajax>
+    <!-- Start: html common -->
+    <div class="list-container">
+      <iron-list id="itemsList" items="{{documents.items}}" as="message" selected-item="{{selectedItem}}">
+        <template>
+           <div on-tap="selectItem" class="message-item">
+             <!-- class$="[[_computedClass(selected)]]" -->
+             <div class$="[[_computedClass(message.continued)]]">
+               <div class="item-aside">
+                 <div>
+                   <span>
+                     <div class="avatar dispImage">
+                       <img src$=[[message.image]]>
+                     </div>
+                   </span>
+                 </div>
+               </div>
+               <div class="item-actions"></div>
+               <div class="item-content">
+                 <div class="item-details">
+                   <div class="item-details-from">[[message.announcer]]</div>
+                   <div class="item-target">[[message.target]]</div>
+                   <div class="item-details-timestamp">
+                     <span><sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago></span></div>
+                 </div>
+                 <div class="item-text">
+                   <marked-element markdown="[[message.body]]">
+                     <div class="markdown-html"></div>
+                   </marked-element>
+                 </div>
+               </div>
+             </div>
+           </div>
+        </template>
+      </iron-list>
+    </div>
+    <!-- End: html common -->
+</template>
+
+  <script>
+    Polymer({
+      is: 'sc-feeds',
+      behaviors: [Polymer.NeonAnimationRunnerBehavior, Polymer.NeonAnimatableBehavior],
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              // provided by neon-animation/animations/scale-down-animation.html
+              name: 'fade-in-animation',
+              node: this,
+              timing: 700
+            };
+          }
+        },
+        selectedItem: {
+          type: Object
+        },
+        titleSection: {
+          type: String,
+          value: 'All messages'
+        },
+        previousSelectedItem: {
+          type: Object
+        },
+        /**
+         * `document` array content the items for iron-list.
+         */
+        documents: {
+          type: Object
+        },
+        hashtag: {
+            type: String,
+            notify: true,
+            observer: '_hashtagChanged',
+            value: "all",
+        },
+        /**
+         * `fancy` indicates that the element should don a monocle and tophat,
+         * while checking its pocket watch.
+         */
+        fancy: Boolean,
+
+        /**
+         * Describes the author of the element, but is really just an excuse to
+         * show off JSDoc annotations.
+         *
+         * @type {{name: string, image: string}}
+         */
+        author: {
+          type: Object,
+          // Use `value` to provide a default value for a property, by setting it
+          // on your element's prototype.
+          //
+          // If you provide a function, as we do here, Polymer will call that
+          // _per element instance_.
+          //
+          // We do that to ensure that each element gets its own copy of the
+          // value, rather than having it shared across all instances (via the
+          // prototype).
+          value: function() {
+            return {
+              name:  'Horacio Ibrahim',
+              image: 'http://github.com/horacioibrahim',
+            };
+          }
+        },
+      },
+
+      // Element Lifecycle
+      ready: function() {
+          // this._setUrl('all');
+          this.addEventListener('feeds-updated', function(){
+            this.playAnimation();
+          });
+      },
+      // Ajax response
+      ajaxResponse: function(event) {
+          this.documents = event.detail.response;
+          this.fire('feeds-updated', {type: this.documents.type});
+      },
+      /** mock function for development
+      */
+      _setUrl: function(hashtag) {
+          var base_url = siscomando.url.feeds + "data_feeds_"; // #CHANGED: relative path
+          var hashtag = hashtag ? hashtag : 'all';
+          var format = ".json";
+          var url = base_url + this._normalizeHashtag(hashtag) + format;
+          this.$.ajax.url = url;
+      },
+      _hashtagChanged: function() {
+          this._setUrl(this.hashtag);
+      },
+      _normalizeHashtag: function(hashtag) {
+          // lower case
+          var hashtag = hashtag.toLowerCase();
+          // remove #
+          if (hashtag.slice(0, 1) === '#') {
+              hashtag = hashtag.substr(1);
+          }
+          return hashtag;
+      },
+      /** Get all data group by ticket.
+      */
+      _getGroupBy: function(e) {
+        console.log(e.target.dataArgs);
+      },
+      _computedClass: function(isContinued) {
+        var classes = 'message-item-container';
+        if (isContinued) {
+          classes += ' continued';
+        }
+        return classes;
+      },
+      _convertTimestamp: function(unix_timestamp) {
+        // this code sample was copied from
+        // http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+        //
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        var date = new Date(unix_timestamp*1000);
+        var hours = "0" + date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+        // Full year
+        var year = date.getFullYear();
+        var month = "0" + date.getMonth();
+        var day = "0" + date.getDay();
+        // YYYY-MM-DDT00:00:00
+
+        var formattedTime = year + '-' +  month.substr(-2) + '-' +  day.substr(-2) + 'T' + hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + '.000Z';
+        return formattedTime;
+      },
+      // Selection Behavior
+      selectItem: function(e) {
+         this._selectItem(e);
+       },
+       /* `_selectItem` select or unselect item
+       *
+       */
+      _selectItem: function(e){
+        this.$.itemsList.selectItem(e.model.message);
+          // this.fire('feed-selected', {message: e.model.message});
+        if ('target_hashtag' in e.model.message) {
+          // Nows we sure that back history
+          window.location.href = '#/feeds/' + e.model.message.target_hashtag;
+          // ativar botao voltar
+        }
+
+      }
+    });
+  </script>
+</dom-module>

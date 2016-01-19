@@ -1,0 +1,184 @@
+{
+    "hashtag": "bicorporativo",
+    "type": "system",
+    "items": [
+            {
+              "announcer": "mauro.naves",
+              "timestamp": 1447183050,
+              "body": "Os resultados traduzem um problema no escopo das definições do processo.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/70.jpg",
+              "target": "2015RI/00000145",
+              "target_hashtag": "2015RI00000145"
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "Os erros quadrados estão altos o que poderá dificultar a previsão.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "essa mensagem é uma continuação da msg anterior, mas é o backend",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015",
+              "continued": true
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "que decide o que é ou não é mensagem de continuação. Moro?",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015",
+              "continued": true
+            },
+            {
+              "announcer": "ana.nias",
+              "timestamp": 1447183056,
+              "body": "Para os dados dessa hipótese não é possível um regressão linear. É preciso uma função sigmoid.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/81.jpg",
+              "target": "2015RI/00000245"
+            },
+            {
+              "announcer": "mato.grosso",
+              "timestamp": 1447183063,
+              "body": "Estamos verificando o problema do e-social. Acompanhe aqui.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/2.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "ana.thereza",
+              "timestamp": 1447183163,
+              "body": "O chamado foi encaminhado para a SUPOP. Já tá na mão do responsável.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/82.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "anna.leticia.suply",
+              "timestamp": 1447183153,
+              "body": "A @japaness já deu uma olhada e encaminhou o chamado.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/83.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "horacio.moreira",
+              "timestamp": 1447183240,
+              "body": "Os entregáveis já foram produzidos. Agora vamos implementar em ambiente controlado para em seguida subir para a produção nos servidores da SUPCD.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/71.jpg",
+              "target": "2015RI/00000145"
+            },
+            {
+              "announcer": "bety.boop",
+              "timestamp": 1447183256,
+              "body": "Realmente somente uma função sigmoid com variáveis polinomiais podemos ter uma boundary decision efetivo.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/84.jpg",
+              "target": "2015RI/00000245"
+            },
+            {
+              "announcer": "mauro.naves",
+              "timestamp": 1447183050,
+              "body": "Os resultados traduzem um problema no escopo das definições do processo.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/70.jpg",
+              "target": "2015RI/00000145",
+              "target_hashtag": "2015RI00000145"
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "Os erros quadrados estão altos o que poderá dificultar a previsão.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "essa mensagem é uma continuação da msg anterior, mas é o backend",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015",
+              "continued": true
+            },
+            {
+              "announcer": "delcidio.malta",
+              "timestamp": 1447183053,
+              "body": "que decide o que é ou não é mensagem de continuação. Moro?",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/80.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015",
+              "continued": true
+            },
+            {
+              "announcer": "ana.nias",
+              "timestamp": 1447183056,
+              "body": "Para os dados dessa hipótese não é possível um regressão linear. É preciso uma função sigmoid.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/81.jpg",
+              "target": "2015RI/00000245"
+            },
+            {
+              "announcer": "mato.grosso",
+              "timestamp": 1447183063,
+              "body": "Estamos verificando o problema do e-social. Acompanhe aqui.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/2.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "ana.thereza",
+              "timestamp": 1447183163,
+              "body": "O chamado foi encaminhado para a SUPOP. Já tá na mão do responsável.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/82.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "anna.leticia.suply",
+              "timestamp": 1447183153,
+              "body": "A @japaness já deu uma olhada e encaminhou o chamado.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/83.jpg",
+              "target": "2015RDP/00000015",
+              "target_hashtag": "2015RDP00000015"
+            },
+            {
+              "announcer": "horacio.moreira",
+              "timestamp": 1447183240,
+              "body": "Os entregáveis já foram produzidos. Agora vamos implementar em ambiente controlado para em seguida subir para a produção nos servidores da SUPCD.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/71.jpg",
+              "target": "2015RI/00000145"
+            },
+            {
+              "announcer": "bety.boop",
+              "timestamp": 1447183256,
+              "body": "Realmente somente uma função sigmoid com variáveis polinomiais podemos ter uma boundary decision efetivo.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/84.jpg",
+              "target": "2015RI/00000245"
+            }
+          ]
+}

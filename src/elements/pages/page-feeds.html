@@ -1,0 +1,138 @@
+<!-- polymer project components -->
+<!-- <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html"> -->
+<!-- <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html"> -->
+<!-- for this components 
+<link rel="import" href="../app-bar/app-bar.html"> -->
+<!-- layout 
+<link rel="import" href="../layouts/drawer-panel-layout.html">
+-->
+<dom-module id="page-feeds">
+  <template>
+    <style>
+      :host {
+        
+        
+      }
+      paper-toolbar {
+        --paper-toolbar-background: #135FB8;
+      }
+
+      .container-feeds { /* the default is mobile */
+        /* @apply(--layout-vertical);  commnet due Safari not applying height 100% */
+        width: 100%;
+        height: 100%;
+      }
+      .container-feeds .rowOne, div.rowOne {
+        positon: absolute;
+        height: 100%;
+        overflow-y: scroll;
+        padding-left: 5px;
+        padding-right: 30px;
+        padding-top: 10px;
+        padding-bottom: 90px;
+        
+      }  
+      .container-feeds .rowTwo {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+      paper-textarea#inputLikeZap {
+          --paper-input-container: {
+            background-color: rgba(255,255,255,0.8);
+            padding-left: 10px;
+            padding-right: 6px;
+            border-top: 1px solid rgba(0,0,0,.10);
+          }
+      }  
+      paper-input.short {
+        width: 100%;
+       }        
+      .bottomInput {
+        position: absolute;
+        float: left;
+        background: #F5F8F8;
+        width: 100%;
+        bottom: 0;
+      }        
+      /** Media Queries **/
+      @media (min-width: 768px) and (orientation: landscape) {
+        .container-feeds {
+            @apply(--layout-vertical);
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+        }
+        .container-feeds .rowOne, div.rowOne {
+          positon: absolute;
+          height: 100%;
+          width: 100%;
+          overflow-y: scroll; 
+          padding-top: 10px;
+          padding-left: 5px;
+          padding-right: 40px;
+          padding-bottom: 100px;
+        }
+      }        
+    </style>
+    <drawer-panel-layout>
+          <!------------------------------
+           ----- who is drawer class -----
+           ------------------------------->
+          <paper-header-panel drawer class="drawer">
+            <!-- header -->
+            <paper-toolbar>
+              <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
+              <div class="title">{{title}}</div>
+              <app-bar class="horizontal layout center end-justified" no-search></app-bar>
+            </paper-toolbar>
+            <!-- content -->
+            <div class="container-feeds">
+                <div class="rowOne">
+                    <sc-feeds id="feeds"></sc-feeds>
+                </div>
+                <div class="rowTwo">
+                    <!-- Esse input eh autonomo e não faz parte especificamente dos feeds.
+                    Ele pode ter uma propriedade de ficar oculto quando o usuário não tiver
+                    permissão para editar determinado feeds. (Não implementado).
+                    -->
+                    <div class="bottomInput">
+                        <paper-textarea flex class="short shadow-2dp main" label="O que você pode resolver..." id="inputLikeZap"></paper-textarea>
+                    </div>
+                </div> 
+            </div>
+          </paper-header-panel>
+
+          <!------------------------------
+           ----- who is main class -----
+           ------------------------------->
+    </drawer-panel-layout>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'page-feeds',
+      properties: {
+          title: {
+              type: String,
+              value: 'Feeds'
+          },
+          hashtag: {
+              type: String,
+              observer: 'hashtagChanged'
+          }
+      },
+      hashtagChanged: function() {
+          var hashtag = this.hashtag;
+          this.$.feeds.hashtag = hashtag;
+          this.title = this._title(hashtag);
+      },
+      _title: function (string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+      },
+      _historyBack: function() {
+        history.back();
+    }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,231 @@
+
+<!--
+
+  TODO: We can create predefined URL as /termo/[:id:] to search data for
+  sc-termobar.
+  
+  Usage:
+
+  <sc-termobar id="termobar"></sc-termobar>
+
+  Styling:
+  #termobar {
+    position: absolute;
+    right: 0;
+    float: right;
+    z-index: 999; /* optional turn on top */
+  }
+
+  Declaring:
+  values is array with objects:
+    [
+      {
+        label: 'The label/legend',
+        value: 10
+      },
+      {
+        label: 'The label/legend',
+        value: 110
+      }
+    ]
+-->
+
+<dom-module id="sc-termobar">
+<template>
+<style>
+  :host {
+    display: block;
+    box-sizing: border-box;
+    color: rgba(0,0,0,.75);
+    font-family: Roboto;
+    font-weight: 300;
+    height: 100%;
+    width: 10px;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    background-color: #13283b;
+    display: block;
+  }
+  #container {
+    height: 100%;
+    width: 100%;
+    /* overflow: scroll; */
+    position: absolute;
+  }
+  .content {
+    width: auto;
+    @apply(--layout-flex);
+  }
+  .timebar {
+    height: 100%;
+    background-color: #34324F;
+  }
+  .timebar.disabled, .timebar.disabled .bars {
+    -webkit-box-shadow: inset 5px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    -moz-box-shadow:    inset 5px 0px 5px 0px rgba(50, 50, 50, 0.4);
+    box-shadow:         inset 5px 0px 5px 0px rgba(50, 50, 50, 0.4);
+  }
+  .timebar.disabled .label {
+    display: none;
+  }
+  .bars {
+    height: 100%;
+    position: relative;
+  }
+  .bars .label {
+    position: absolute;
+    display: block;
+    float: left;
+    color: rgba(255, 255, 255, 0.3);
+    text-transform: uppercase;
+    margin-left: -150px;
+    top: 21%;
+  }
+  .bars .label .values {
+    margin-top: 6px;
+  }
+  .bgcolor0, .bg-success {background: #2ecc71;}
+  .bgcolor1, .bg-info {background: #3498db; /* rgba(255, 170, 0, 1); */}
+  .bgcolor2, .bg-purple {background: #9b59b6;}
+  .bgcolor3, .bg-warning {background: #f1c40f;}
+  .bgcolor4, .bg-alert, .bg-error {background: #e74c3c;}
+  .color-success {color: #2ecc71;}
+  .color-info {color: #3498db;}
+  .color-purple {color: #9b59b6;}
+  .color-warning {color: #f1c40f;}
+  .color-error {color: #e74c3c;}
+</style>
+  <div id="container" class="">
+      <div class="timebar disabled">
+          <template is="dom-repeat" items="{{_data}}">
+            <div class$="[[_computedClass(item.color)]]" style$="[[_computedHeight(item.percent)]]">
+              <span class="label">{{item.label}}
+                <div class$="[[_computedClassValues(item.color)]]">
+                    {{item.value}} {{item.unit}}
+                </div>
+              </span>
+            </div>
+          </template>
+      </div>
+  </div>
+</template>
+<script>
+  Polymer({
+    is: 'sc-termobar',
+    properties: {
+      activate: {
+        type: Boolean,
+        value: false,
+        observer: 'activateChanged'
+      },
+      enabled: {
+        type: Boolean,
+        value: true,
+        observer: 'enabledChanged'
+      },
+      _myToggleClassValue: {
+        type: Boolean,
+        value: true
+      },
+      /* The backend end could to send the TOP5 class from workflow */
+      data: {
+        type: Array,
+        value: [],
+        observer: "_computeData"
+      },
+      limit: {
+        type: Number,
+        value: 5 /* remember that the array index begin in the 0 */
+      },
+      _data : {
+        type: Array,
+        value: []
+      }
+    },
+    ready: function() {
+       // if data is empty hidden this
+       if (this.data.length === 0) {
+         this.enabled = false;
+       }
+    },
+    /* internal use */
+    _myToggleClass: function() {
+      var node = this.querySelector('.timebar');
+      if (this._myToggleClassValue) {
+        this._myToggleClassValue = false;
+        this.toggleClass('disabled', false, node)
+      } else {
+        this._myToggleClassValue = true;
+        this.toggleClass('disabled', true, node)
+      }
+    },
+    /* `_computeData` calculate the sum.
+    */
+    _computeData: function() {
+      var total = 0; /* this is 100% */
+      var data = this.data;
+      for ( var i = 0, _len = data.length; i < _len; i++ ) {
+        total += parseInt(data[i].value);
+      }
+      for ( var i = 0, _len = data.length; i < _len; i++ ) {
+        data[i]['percent'] = ((data[i].value / total) * 100) + '%';
+        data[i]['color'] = "bgcolor" + i;
+      }
+      // TODO: capturar os maiores da lista. Porem o backend poderia nos fornecer
+      // somente os 5.
+
+      this._data = data;
+      this.enabled = true;
+    },
+    /* `_compare` used to sort data array
+    */
+    _compare: function(a, b) {
+      if (b.value < a.value)
+        return -1;
+      if (b.value > a.value)
+        return 1;
+      return 0;
+    },
+    _orderData: function() {
+      var data = this.data;
+      var ordered = null;
+      data.sort(this._compare);
+      ordered = data.slice(0, this.limit) /* top five */;
+      return ordered;
+    },
+    /* `_theTops` are limited by this.limit */
+    _theTops: function() {
+      var originalArray = this.data;
+      var topLimited = this._orderData();
+    },
+    _computedClass: function(color) {
+      return "bars " + color;
+    },
+    _computedHeight: function(percent) {
+      return "height: " + percent;
+    },
+    _computedClassValues: function(color) {
+      var mappedColor = {
+        'bgcolor0': 'color-success',
+        'bgcolor1': 'color-info',
+        'bgcolor2': 'color-purple',
+        'bgcolor3': 'color-warning',
+        'bgcolor4': 'color-error',
+      }
+      return "values " + mappedColor[color];
+    },
+    /* user web component interface */
+    activateChanged: function() {
+        this._myToggleClass();
+    },
+    enabledChanged: function() {
+      var node = this.$.container;
+
+      if (this.enabled) {
+        this.style.display = "block";
+      } else {
+        this.style.display = "none";
+      }
+    }
+  });
+</script>
+</dom-module>

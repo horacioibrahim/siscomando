@@ -1,0 +1,84 @@
+
+<!-- app -->
+
+
+<dom-module id="sc-view">
+<template>
+    <style>
+      :host {
+        width: 100%;
+        height: 100%;
+        background: white;
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .body {
+        width: inherit;
+        height: inherit;
+        @apply(--layout-vertical);
+      }
+      /* main parts */
+      .header {
+        @apply(--layout-horizontal);
+        height: 56px;
+      }
+      .content {
+        @apply(--layout-flex);
+        @apply(--layout-flex-grow);
+        @apply(--layout-flex-11);
+      }
+      .footer {
+        @apply(--layout-flex);
+        @apply(--layout-flex-1);
+      }
+      /* options for buttons as back or close */
+      .close-or-back {
+        padding: 5px;
+      }
+      .close-or-back .btnClose {
+        display: block;
+      }
+      .close-or-back .btnBack {
+        display: none;
+      }
+      .close-or-back.left {
+        float: left;
+        left: 0;
+      }
+      .close-or-back.right {
+        float: right;
+        right: 0;
+      }
+    </style>
+    <div class="body">
+      <div class="header">
+        <div class="close-or-back">
+        </div>
+      </div>
+      <div class="content">
+      </div>
+      <div class="footer">
+      </div>
+    </div>
+</template>
+<script>
+Polymer({
+  is: 'sc-view',
+  properties: {
+      enabled: {
+        type: Boolean,
+        value: false,
+        observer: '_enabledChanged'
+      }
+  },
+  ready: function() {
+    this.style.display = this.enabled ? 'block' : 'none';
+  },
+  /* observers */
+  _enabledChanged: function() {
+    this.style.display = this.enabled ? 'block' : 'none';
+  }
+});
+</script>
+</dom-module>

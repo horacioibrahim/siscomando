@@ -1,0 +1,49 @@
+<dom-module id="page-walkthrough">
+    <template>
+        <style>
+            :host {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: red;
+            }
+            .content-1, .content-2,
+            .content-3, .content-4{
+                position: absolute;
+                width: 100%;
+                height: 100%;
+            }
+            .content-1 {
+                background: blue;
+            }
+            .content-2 {
+                background: green;
+            }
+            .content-3 {
+                background: yellow;
+            }
+            .content-4 {
+                background: pink;
+            }
+        </style>
+        <sc-walkthrough>
+            <div class="content-1">
+                One
+            </div>
+            <div class="content-2">
+                Two
+            </div>
+            <div class="content-3">
+                Three
+            </div>
+            <div class="content-4">
+                Four
+            </div>            
+        </sc-walkthrough>
+    </template>
+    <script>
+        Polymer({
+           is: 'page-walkthrough' 
+        });
+    </script>
+</dom-module>

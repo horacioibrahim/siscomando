@@ -1,0 +1,43 @@
+<paper-drawer-panel id="panel" default-selected="drawer" force-narrow>
+    <paper-header-panel drawer>
+
+      <!--
+      <paper-toolbar>
+          <paper-icon-button id="menuMenu" on-tap="showProfile" icon="menu"></paper-icon-button>
+          <paper-icon-button id="menuBack" on-tap="backHome" icon="chevron-left"></paper-icon-button>
+          <span class="title">Siscomando</span>
+          <paper-icon-button class="add" icon="add"></paper-icon-button>
+      </paper-toolbar>
+      -->
+
+      <paper-toolbar>
+        <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
+        <div class="title">Siscomando Example</div>
+        <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
+      </paper-toolbar>
+
+      <neon-animated-pages id="pagesDrawer" selected="[[selectedPage]]">
+          <sc-home id="home" class="shadow-2dp"></sc-home>
+          <sc-profile id="profile"></sc-profile>
+      </neon-animated-pages>
+
+    </paper-header-panel>
+    <!-- right and home view -->
+    <paper-header-panel main>
+
+      <!-- sera um pagina:feeds -->
+      <sc-termobar id="termobar"></sc-termobar>
+      <div id="main-container">
+          <iron-selector selected="[[selected]]" attr-for-selected="id"
+          class$="[[_computeIronSelectorClass(narrow, _transition, dragging, rightDrawer, peeking)]]">
+              <div id="submain">
+                <sc-main-page id="mainPage"></sc-main-page>
+                <div id="scrim" on-tap="closeDrawer"></div>
+              </div>
+              <sc-page-termobar id="drawerSiscomando"></sc-page-termobar>
+          </iron-selector>
+      </div>
+      <!-- sera um pagina:feeds -->
+
+    </paper-header-panel>
+</paper-drawer-panel>

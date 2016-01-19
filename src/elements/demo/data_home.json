@@ -1,0 +1,119 @@
+[
+    {
+      "service":"Expresso Serpro",
+      "hashtag": "#ExpressoSerpro",
+      "opened_ticket": 6,
+      "lastMessage": {
+        "timestamp": 1447183053,
+        "body": "This is lastly updates this channel . A system can have several issues bellow it but this item...",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/women/88.jpg"
+        }
+      }
+    },
+    {
+      "service":"Siscomex",
+      "hashtag": "#Siscomex",
+      "opened_ticket": 3,
+      "lastMessage": {
+        "timestamp": 1447183053,
+        "body": "Objectively customize orthogonal web-readiness without low-risk high-yield potentialities...",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/women/1.jpg"
+        }
+      }
+    },
+    {
+      "service":"BI Corporativo",
+      "hashtag": "#BICorporativo",
+      "opened_ticket": 2,
+      "lastMessage": {
+        "timestamp": 1447150210,
+        "body": "This is lastly updates this channel . A system can have several issues bellow it but this item...",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/men/78.jpg"
+        }
+      }
+    },
+    {
+      "service":"SCCD Workflow",
+      "hashtag": "#SCCD",
+      "opened_ticket": 9,
+      "lastMessage": {
+        "timestamp": 1447150332,
+        "body": "Globally unleash quality paradigms rather than equity invested technologies. Energistically...",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/women/88.jpg"
+        }
+      }
+    },
+    {
+      "service":"IRPF",
+      "hashtag": "#IRPF",
+      "opened_ticket": 41,
+      "lastMessage": {
+        "timestamp": 1447183053,
+        "body": "Fora do ar novamente? Cadê a cafeteira?",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/women/35.jpg"
+        }
+      }
+    },
+    {
+      "service":"e-Social",
+      "hashtag": "#eSocial",
+      "opened_ticket": 11,
+      "lastMessage": {
+        "timestamp": 1447183153,
+        "body": "Nova versão não está imprimindo café expresso. E tb está sem pão de queijo",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/women/1.jpg"
+        }
+      }
+    },
+    {
+      "service":"Dataware House Receita",
+      "hashtag": "#DWReceita",
+      "opened_ticket": 1,
+      "lastMessage": {
+        "timestamp": 1447183163,
+        "body": "A receita não consegue gerar relatórios sobre descontos dados aos contribuintes.",
+        "user": {
+          "username": "",
+          "avatar": "https://randomuser.me/api/portraits/thumb/men/78.jpg"
+        }
+      }
+    },
+    {
+      "service":"Expresso ICMBIO",
+      "hashtag": "#XIcmbio",
+      "opened_ticket": 21,
+      "lastMessage": {
+        "timestamp": 1447183083,
+        "body": "Problemas de autenticação com token, sem token, com digital, sem digital",
+        "user": {
+          "username": "",
+          "avatar": ""
+        }
+      }
+    },
+    {
+      "service":"Spekx",
+      "hashtag": "#Spekx",
+      "opened_ticket": 111,
+      "lastMessage": {
+        "timestamp": 1447183183,
+        "body": "Spekx indisponível. Eu já olhei e não é o banco de dados pode ser cafeteira.",
+        "user": {
+          "username": "",
+          "avatar": ""
+        }
+      }
+    }
+  ]

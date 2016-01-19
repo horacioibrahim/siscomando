@@ -1,0 +1,183 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+<!--
+An element providing a list of items of the Siscomando.
+
+Example:
+
+    <sc-search></sc-search>
+
+Example:
+
+    <sc-search data=[[results]]>
+
+    </sc-search>
+-->
+<dom-module id="sc-search">
+    <template>
+        <style>
+            :host {
+             font-family: Roboto;
+              @apply(--layout-vertical);
+              @apply(--center-justified);
+              margin-left: auto;
+              margin-right: auto;
+              color: rgba(0,0,0, 0.86);
+            }
+            .container {
+                margin-top: 2px;
+            }
+            paper-card {
+              width: 100%;
+              cursor: pointer;
+            }
+            .card-content {
+                padding-bottom: 30px;
+            }
+            .fancy {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                min-height: 64px;
+            }
+            .fancy .title {
+              position: absolute;
+              top: 5px;
+              left: 56px;
+            }
+            .fancy img {
+              width: 100%;
+            }
+            .fancy .big {
+              font-size: 22px;
+              padding: 8px 0 16px;
+              color: var(--google-grey-500);
+            }
+            .fancy .medium {
+              font-size: 16px;
+              padding-bottom: 1px;
+            }
+            small {
+                font-size: 12px;
+                color: rgba(0,0,0, 0.12);
+            }
+            .fancy .small {
+                font-weight: 300;
+                font-size: 14px;
+                color: rgba(0,0,0,0.54);
+            }
+            .pink {
+                --paper-card-header-color: var(--paper-pink-500);
+            }
+
+        </style>
+        <div class="container">
+            <iron-list id="list-results" items="{{documents}}" as="item" multi-selection="true"
+            selection-enabled>
+                <template>
+                    <paper-card
+                      aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]"
+                      on-tap="mSelect">
+                      <div class="card-content">
+                        <div class="checkbox">
+                          <template is="dom-if" if="{{item.following}}">
+                            <paper-checkbox noink checked></paper-checkbox>
+                          </template>
+                          <template is="dom-if" if="{{!item.following}}">
+                            <paper-checkbox noink></paper-checkbox>
+                          </template>
+                        </div>
+                        <div class="title">
+                          <div class="medium">[[item.title]]</div>
+                          <div class="small">[[item.message]]</div>
+                          <div><small>[[_computedStatus(selected)]]</small></div>
+                        </div>
+                      </div>
+                      <paper-ripple></paper-ripple>
+                    </paper-card>
+                </template>
+            </iron-list>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'sc-search',
+            properties: {
+                items: {
+                    type: Array,
+                },
+                documents: {
+                    type: Array,
+                    value: function() {
+                        return [{title:'Polymer System', message: 'Conteudo que pode ser previa descricao'},
+                            {title:'Expresso System', message: 'Conteudo que pode ser previa descricao'},
+                            {title:'BI Corporativo', message: 'Conteudo que pode ser previa descricao'},
+                            {title:'AIM', message: 'Conteudo que pode ser previa descricao'},
+                            {title:'IRPF INFRA', message: 'Conteudo que pode ser previa descricao'},
+                            {title:'Sinesp', message: 'Conteudo que pode ser previa descricao',
+                            following:true}]
+                        }
+                },
+                selectedItems: {
+                  type: Object
+                }
+            }, //properties closed
+            mSelect: function(e) {
+                var listResults = this.querySelector('#list-results');
+                console.log(e.model.item);
+                console.log(e.model.selectedItems);
+                console.log(e.model);
+                console.log(listResults.selectedItems);
+                // Se o target for checkbox deixa ele trabalhar...normalmente.
+                if (e.target.classList.contains('paper-checkbox')) {
+                    return ;
+                }
+                var parent = this._getParent(e.target, 'fancy');
+                if (parent !== undefined) {
+                    // selecionar o checkbox
+                    checkbox = parent.querySelector('paper-checkbox');
+                    checkbox.active = !checkbox.active;
+                    e.model.item.following = checkbox.active;
+                }
+            },
+            _computedClass: function(isSelected) {
+              var classes = 'pink fancy';
+              if (isSelected) {
+                classes += ' selected';
+              }
+              return classes;
+            },
+            _getAriaLabel: function(item, selected) {
+              return selected ? 'Deselect ' + item.title : 'Select ' + item.title;
+            },
+            _getParent: function(el, byClass) {
+                var p = el.parentNode;
+                var classList = el.classList;
+                is_owner = classList.contains('fancy');
+                // Asssegura que o proprio elemento pai nao vai em busca
+                // de si mesmo.
+                if (is_owner) {
+                    return ;
+                }
+                while (p !== null) {
+                    var o = p;
+                    if (o.classList.contains(byClass)) {
+                        return o
+                    }
+                    p = o.parentNode;
+                }
+                return undefined; // returns an Array []
+            },
+            _computedStatus: function(selected){
+                if (selected) {
+                    return ';) você está seguindo este assunto.';
+                } else {
+                    return ':/ você não está seguindo este assunto.';
+                }
+            }
+        });
+    </script>
+</dom-module>

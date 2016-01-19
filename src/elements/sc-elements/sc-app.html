@@ -1,0 +1,594 @@
+
+<!-- polymer imports 
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animated-pages.html">
+<link rel="import" href="../bower_components/neon-animation/neon-animatable-behavior.html">
+<link rel="import" href="../bower_components/iron-resizable-behavior/iron-resizable-behavior.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+
+
+<link rel="import" href="sc-home.html">
+<link rel="import" href="sc-dialog-post.html">
+<link rel="import" href="sc-profile.html">
+<link rel="import" href="sc-main-page.html">
+<link rel="import" href="sc-page-termobar.html">
+<link rel="import" href="sc-termobar.html">
+<link rel="import" href="sc-view.html">
+
+
+<link rel="import" href="pages/page-browse.html">
+-->
+
+<!-- ** Poderiamos seguir regras para crair url como:
+     *  /user/meetings/ - Returns all meetings create or follows by user/
+     *  /messages/ - Returns all messages from all meetings/
+     *  /messages?system=expresso&issue=2015RI0001010 - Returns messages by system or issue/
+     *  /statistics/ - Returns statistics from all follows system/
+     *  /statistics?system=expresso&issue=2015RI0001010 - Returns statistics by system or issue/
+-->
+
+<dom-module id="sc-app">
+<template>
+  <style>
+    :host {
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    paper-drawer-panel {
+      --paper-drawer-panel-main-container: {
+        background-color: rgba(19,95,184,0.065);
+        border-left: 1px solid rgba(0,0,0, 0.12);
+      };
+      --paper-drawer-panel-scrim-opacity: {
+        opacity: 1;
+      }
+    }
+
+    neon-animated-pages {
+      @apply(--layout-flex);
+      height: 100%;
+    }
+    paper-toolbar {
+      --paper-toolbar-background: #135FB8;
+    }
+    /* paper-toolbar.drawerToolbar {
+      @apply(--layout-horizontal);
+    }*/
+    /*
+    paper-toolbar div.drawerMenu {
+      width: 40px;
+    }*/
+    paper-toolbar span.title {
+      margin-left: 5px;
+      @apply(--layout-flex);
+    }
+    paper-toolbar paper-icon-button.add {
+      float:right;
+      right: 0;
+    }
+    paper-icon-button.clearBtn {
+      position: absolute;
+      float: right;
+      right: 0;
+    }
+    #menuBack {
+      display: none;
+    }
+    #main-container {
+      height: 100%;
+      @apply(--layout-horizontal);
+    }
+    #termobar {
+      position: absolute;
+      right: 0;
+      float: right;
+      z-index: 999;
+    }
+    sc-home {
+      padding-bottom: 62px;
+    }
+    /**
+    ****  Adaptacao para o siscomando ****
+    */
+    iron-selector > #submain {
+      width: 100%;
+      position: absolute;
+      height: 100%;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+    iron-selector > #drawerSiscomando {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      @apply(--paper-drawer-panel-drawer-container);
+    }
+    .transition > #drawerSiscomando {
+      transition: -webkit-transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+      transition: transform ease-in-out 0.3s, width ease-in-out 0.3s, visibility 0.3s;
+    }
+    .right-drawer > #drawerSiscomando {
+      left: auto;
+      right: 0;
+      @apply(--paper-drawer-panel-right-drawer-container);
+    }
+    #scrim {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity ease-in-out 0.38s, visibility ease-in-out 0.38s;
+      background-color: rgba(0, 0, 0, 0.3);
+      @apply(--paper-drawer-panel-scrim);
+    }
+    .narrow-layout > #drawerSiscomando {
+       will-change: transform;
+    }
+    .right-drawer.narrow-layout > #drawerSiscomando.iron-selected {
+      box-shadow: -2px 2px 4px rgba(0, 0, 0, 0.15);
+    }
+    .right-drawer.narrow-layout > #drawerSiscomando:not(.iron-selected) {
+      left: auto;
+      visibility: hidden;
+      -webkit-transform: translateX(100%);
+      transform: translateX(100%);
+    }
+    .right-drawer.narrow-layout.dragging > #drawerSiscomando:not(.iron-selected),
+    .right-drawer.narrow-layout.peeking > #drawerSiscomando:not(.iron-selected) {
+      visibility: visible;
+    }
+    .right-drawer.narrow-layout > #submain {
+      left: 0;
+      right: 0;
+    }
+    .narrow-layout > #submain:not(.iron-selected) > #scrim,
+    .dragging > #submain > #scrim {
+      visibility: visible;
+      opacity: var(--paper-drawer-panel-scrim-opacity, 1); /* who is? */
+    }
+    .narrow-layout > #drawerSiscomando > ::content {
+      border: 0;
+    }
+    .shadow-2dp {
+      @apply(--shadow-elevation-2dp);
+    }
+    #home {
+      @apply(--shadow-elevation-2dp);
+    }
+  </style>
+
+
+<!-- app -->
+<paper-drawer-panel id="panel" default-selected="drawer" force-narrow>
+    <paper-header-panel drawer>
+
+      <paper-toolbar>
+        <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
+        <div class="title">Siscomando Example</div>
+        <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
+      </paper-toolbar>
+
+      <neon-animated-pages id="pagesDrawer" selected="[[selectedPage]]">
+          <sc-home id="home" class="shadow-2dp"></sc-home>
+          <sc-profile id="profile"></sc-profile>
+      </neon-animated-pages>
+
+    </paper-header-panel>
+    <!-- right and home view -->
+    <paper-header-panel main>
+
+      <!-- sera um pagina:feeds -->
+      <sc-termobar id="termobar"></sc-termobar>
+      <div id="main-container">
+          <iron-selector selected="[[selected]]" attr-for-selected="id"
+          class$="[[_computeIronSelectorClass(narrow, _transition, dragging, rightDrawer, peeking)]]">
+              <div id="submain">
+                <sc-main-page id="mainPage"></sc-main-page>
+                <div id="scrim" on-tap="closeDrawer"></div>
+              </div>
+              <sc-page-termobar id="drawerSiscomando"></sc-page-termobar>
+          </iron-selector>
+      </div>
+      <!-- sera um pagina:feeds -->
+
+    </paper-header-panel>
+</paper-drawer-panel>
+
+
+</template>
+
+  <script>
+  (function() {
+      // this is copy by paper-drawer-panel
+      // see https://github.com/PolymerElements/paper-drawer-panel/blob/master/paper-drawer-panel.html
+      var sharedPanel = null;
+
+      function classNames(obj) {
+        var classes = [];
+        for (var key in obj) {
+          if (obj.hasOwnProperty(key) && obj[key]) {
+            classes.push(key);
+          }
+        }
+        return classes.join(' ');
+      }
+
+      // Begin: Polymer
+      Polymer({
+          is: "sc-app",
+          behavior: [
+              Polymer.NeonAnimationRunnerBehavior,
+          ],
+          properties: {
+              /*animationConfig: {
+                  name: 'slide-right-animation',
+                  node: 'resumePage',
+                  timing: 700
+              },*/
+              q: { type: String, notify: true },
+              selectedPage: {
+                  type: Number,
+                  value: 0
+              },
+              selected: {
+                  type: String,
+                  value: "submain"
+              },
+              /**
+               * Whether the user is dragging the drawer interactively.
+               */
+              dragging: {
+                type: Boolean,
+                value: false,
+                readOnly: true,
+                notify: true
+              },
+              /**
+               * Returns true if the panel is in narrow layout.  This is useful if you
+               * need to show/hide elements based on the layout.
+               */
+              narrow: {
+                reflectToAttribute: true,
+                type: Boolean,
+                value: true,
+                readOnly: true,
+                notify: true
+              },
+              /**
+               * Whether the drawer is peeking out from the edge.
+               */
+              peeking: {
+                type: Boolean,
+                value: false,
+                readOnly: true,
+                notify: true
+              },
+              /**
+               * If true, position the drawer to the right.
+               */
+              rightDrawer: {
+                type: Boolean,
+                value: true
+              },
+              /**
+               * Whether the transition is enabled.
+               */
+              _transition: {
+                type: Boolean,
+                value: false
+              },
+              /**
+               * How many pixels on the side of the screen are sensitive to edge
+               * swipes and peek.
+               */
+              edgeSwipeSensitivity: {
+                type: Number,
+                value: 30
+              },
+              /**
+               * Whether the browser has support for the will-change CSS property.
+               */
+              hasWillChange: {
+                type: Boolean,
+                value: function() {
+                  return 'willChange' in this.style;
+                }
+              },
+              onProfile: {
+                type: Boolean,
+                value: false
+              }
+              ,
+              /**
+               * Indicates if the user's navigation is "by system"
+               * or "by issues" or "all" or "meeting", etc. It'll used
+               * to build querystring of the url to get statiscts data.
+               * /statiscts?system=XYZ  or;
+               * /statiscts?issue=ABC
+               */
+              whereis: {
+                type: Boolean,
+                value: 'all' // system, issue, meeting, all
+              },
+          },
+          observers: [
+            'search(q)'
+          ],
+          listeners: {
+              track: '_onTrack',
+              down: '_downHandler',
+              up: '_upHandler'
+          },
+          search: function(q) {
+            if (q || this.q) {
+              this.$.router.go('/browse?q=' + (q || this.q));
+            }
+          },
+          ready: function() {
+              var self = this;
+              var mainPage = this.$.mainPage;
+              var feeds = this.$.mainPage.$.mainFeeds;
+              var home = this.$.home;
+              // var feedsTicket = this.$.feedsTicket;
+
+              this.$.panel.addEventListener('iron-select', function() {
+                // termobar e page que resumo a termobar deve ficar ocultas
+                // quando o drawer estiver ativo.
+                if (this.selected == 'drawer'){
+                    //self.$.termobar.style.display = 'none';
+                    self.$.drawerSiscomando.style.display = 'none';
+                } else {
+                   //self.$.termobar.style.display = 'block';
+                  self.$.drawerSiscomando.style.display = 'block';
+                }
+              });
+              // listens actions to view drawer
+              this.addEventListener('show-profile', function() {
+                  self.selectedPage = 1;
+              });
+              // back home
+              /* disabled to check mean
+              feeds.addEventListener('back-home', function() {
+                  console.log("aquele ou ");
+                  self.selectedPage = 0;
+                  self.$.menuMenu.style.display = 'block';
+                  self.$.menuBack.style.display = 'none';
+              });*/
+              // back home list of issues from sc-home
+              this.addEventListener('back-home', function() {
+                  console.log("back home selected");
+                  self.selectedPage = 0;
+              });
+              // listen home item was selected
+              home.addEventListener('home-selected', function() {
+                  feeds.hashtag = home.$.itemsList.selectedItem.hashtag;
+                  mainPage.titleSection = feeds.hashtag;
+                  // mainPage.toggleMainBtn(true); // changes btn inbox to back (chevron)
+                  // optional
+                  self.$.panel.closeDrawer();
+              });
+              // to "request" or re-render for all messages
+              home.addEventListener('home-unselected', function() {
+                  feeds.hashtag = null;
+                  mainPage.titleSection = "All"; // TODO: Seria melhor pegar do proprio feeds.
+              });
+              mainPage.addEventListener('home-unselect', function() {
+                  self.$.panel.selected = 'drawer'; // workaround to back drawer.
+                  try {
+                     home.unselect();
+                  }
+                  catch (e) {
+                     // statements to handle any exceptions
+                    // pass exception object to error handler
+                  }
+
+              });
+              feeds.addEventListener('feeds-updated', function(e){
+                self.whereis = e.detail.type;
+              });
+          },
+          attached: function() {
+              /* styling anything */
+              var paperDrawerPanel = this.querySelector('paper-drawer-panel');
+              paperDrawerPanel.drawerWidth = "100%";
+              this.$.mainPage.updateScroll();
+          },
+          showProfile: function(e) {
+
+              /* if not activated (or onProfile = false) */
+              if (this.onProfile === false) {
+                this.onProfile = true;
+                this.fire('show-profile');
+                e.target.icon = 'chevron-left';
+              } else {
+                  if (this.onProfile === true) {
+                    this.onProfile = false;
+                    e.target.icon = 'menu';
+                    this.fire('back-home');
+                  }
+              }
+
+
+          },
+          backHome: function() {
+              this.fire('back-home');
+          },
+          /**
+          * Content for behaviors of the main with pages
+          */
+          _computeIronSelectorClass: function(narrow, transition, dragging, rightDrawer, peeking) {
+            return classNames({
+              dragging: dragging,
+              'narrow-layout': narrow,
+              'right-drawer': rightDrawer,
+              'left-drawer': !rightDrawer,
+              transition: transition,
+              peeking: peeking
+            });
+          },
+          /**
+           * Closes the drawer.
+           *
+           * @method closeDrawer
+           */
+          closeDrawer: function() {
+            this.selected = 'submain';
+          },
+          openDrawer: function() {
+            this.selected = 'drawerSiscomando';
+          },
+          /** Our sc-app not have width but #mainPage have with.
+          */
+          _skipOfCat: function() {
+            var submain = this.$.submain.offsetWidth;
+            this.width = submain;
+          },
+          // Handling gestures
+          _isMainSelected: function() {
+              var containerPages = this.$['main-container'];
+              var ironSelector = containerPages.querySelector('iron-selector');
+              return ironSelector.selected === "submain";
+          },
+          _startEdgePeek: function() {
+            this._skipOfCat();
+            this._moveDrawer(this._translateXForDeltaX(-this.edgeSwipeSensitivity));
+            this._setPeeking(true);
+          },
+          _stopEdgePeek: function() {
+            if (this.peeking) {
+              this._setPeeking(false);
+              this._moveDrawer(null);
+            }
+          },
+          _transformForTranslateX: function(translateX) {
+            var moment = parseInt(Math.random() * (30 - 1) + 1);
+            if (translateX === null) {
+              return '';
+            }
+            return this.hasWillChange ? 'translateX(' + translateX + 'px)' :
+                'translate3d(' + translateX + 'px, 0, 0)';
+          },
+          _moveDrawer: function(translateX) {
+            var ds = this.$.drawerSiscomando;
+            var transformedData = this._transformForTranslateX(translateX);
+            this.transform(transformedData, ds);
+          },
+          _isEdgeTouch: function(event) {
+            this._skipOfCat();
+            var x = event.detail.x;
+            var threshould = this.width - this.edgeSwipeSensitivity;
+            return (x >= threshould);
+          },
+          _translateXForDeltaX: function(deltaX) {
+            var isMain = this._isMainSelected();
+            this._skipOfCat();
+            var operation = Math.max(0, isMain ? this.width + deltaX : deltaX);
+            return operation;
+          },
+          _downHandler: function(event) {
+              if (this._isMainSelected() && this._isEdgeTouch(event) && !sharedPanel) {
+                  this._startEdgePeek();
+                  // cancel selection
+                  event.preventDefault();
+                  // grab this panel
+                  sharedPanel = this;
+              }
+          },
+          _upHandler: function() {
+              this._stopEdgePeek();
+              // release the panel
+              sharedPanel = null;
+          },
+          _onTrack: function(event) {
+              if (sharedPanel && this !== sharedPanel) {
+                  // Exist sharedPanel but it not is sc-app. No actions.
+                  return;
+              }
+              switch (event.detail.state) {
+                  case 'start':
+                      this._trackStart(event);
+                      break;
+                  case 'track':
+                      this._trackX(event);
+                      break;
+                  case 'end':
+                      this._trackEnd(event);
+                      break;
+              }
+          },
+          _swipeAllowed: function() {
+            //return this.narrow && !this.disableSwipe;
+            return true;
+          },
+          // tracking events
+          _trackStart: function(event) {
+              if (this._swipeAllowed()) {
+                  sharedPanel = this;
+                  this._setDragging(true);
+
+                  if (this._isMainSelected()) {
+                      this._setDragging(this.peeking || this._isEdgeTouch(event));
+                  }
+
+                  if (this.dragging) {
+                      this._skipOfCat();
+                      this._transition = false;
+                  }
+              } else {
+              }
+          },
+          _trackX: function(event) {
+              if (this.dragging) {
+                  var dx = event.detail.dx;
+                  if (this.peeking) {
+                      if (Math.abs(dx) <= this.edgeSwipeSensitivity) {
+                          // Ignore trackx until we move past the edge peek.
+                          return;
+                      }
+                      this._setPeeking(false);
+                  }
+                  this._moveDrawer(this._translateXForDeltaX(dx));
+
+              }
+          },
+          _trackEnd: function(event) {
+              var containerPages = this.$['main-container'];
+              var ironSelector = containerPages.querySelector('iron-selector');
+              if (this.dragging) {
+                  var xDirection = event.detail.dx > 0;
+                  this._setDragging(false);
+                  this._transition = true;
+                  sharedPanel = null;
+                  this._moveDrawer(null);
+                  // changed to support Siscomando.
+                  this[xDirection ? 'closeDrawer' : 'openDrawer']();
+              }
+          },
+          trackPageview: function(e, detail) {
+            /*
+            this.debounce('pageview', function() {
+              var loc = window.location.pathname + window.location.search;
+              ga('send', 'pageview', {
+                location: loc,
+                title: document.title
+              });
+              ga('set', 'page', loc);
+            }, 2000);
+            */
+          }
+      }); // End: Polymer
+  }());
+  </script>
+</dom-module>

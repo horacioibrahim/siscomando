@@ -1,0 +1,70 @@
+{
+    "hashtag": "irpf",
+    "type": "system",
+    "items": [
+            {
+              "announcer": "horacio.moreira",
+              "timestamp": 1447183050,
+              "body": "Precisamos atualizar urgentemente o Siscomando",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/78.jpg",
+              "target": "2015RI/00000045"
+            },
+            {
+              "announcer": "marta.suply",
+              "timestamp": 1447183053,
+              "body": "Problemas de lentidão no e-social. ",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/88.jpg",
+              "target": "2015RDP/00000005"
+            },
+            {
+              "announcer": "presaclicked",
+              "timestamp": 1447183056,
+              "body": "Expresso Serpro com lentidão no acesso Web.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/35.jpg",
+              "target": "2015RI/00000145"
+            },
+            {
+              "announcer": "japaness",
+              "timestamp": 1447183063,
+              "body": "Estamos verificando o problema do e-social. Acompanhe aqui.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/1.jpg",
+              "target": "2015RDP/00000005"
+            },
+            {
+              "announcer": "japaness",
+              "timestamp": 1447183163,
+              "body": "O chamado foi encaminhado para a SUPOP. Já tá na mão do responsável.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/1.jpg",
+              "target": "2015RDP/00000005"
+            },
+            {
+              "announcer": "marta.suply",
+              "timestamp": 1447183153,
+              "body": "A @japaness já deu uma olhada e encaminhou o chamado.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/88.jpg",
+              "target": "2015RDP/00000005"
+            },
+            {
+              "announcer": "horacio.moreira",
+              "timestamp": 1447183240,
+              "body": "Os entregáveis já foram produzidos. Agora vamos implementar em ambiente controlado para em seguida subir para a produção nos servidores da SUPCD.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/men/78.jpg",
+              "target": "2015RI/00000045"
+            },
+            {
+              "announcer": "presaclicked",
+              "timestamp": 1447183256,
+              "body": "Encaminhado para @fabio.link em Porto Alegre. O mesmo disse que vai implementar uma rotina para evitar o problema se repetir.",
+              "has_avatar": true,
+              "image": "https://randomuser.me/api/portraits/thumb/women/35.jpg",
+              "target": "2015RI/00000145"
+            }
+          ]
+}

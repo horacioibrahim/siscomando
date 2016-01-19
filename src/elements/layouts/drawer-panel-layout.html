@@ -1,0 +1,31 @@
+<!-- app loading... -->
+<link rel="import" href="../elements.html">
+
+<dom-module id="drawer-panel-layout">
+    <template>
+        <style>
+          :host {
+              -webkit-tap-highlight-color: rgba(0,0,0,0);
+          }
+          paper-drawer-panel {
+            --paper-drawer-panel-main-container: {
+              background-color: rgba(19,95,184,0.065);
+              border-left: 1px solid rgba(0,0,0, 0.12);
+            };
+            --paper-drawer-panel-scrim-opacity: {
+              opacity: 1;
+            }
+          }          
+        </style>
+        <paper-drawer-panel>
+            <div drawer>
+                <content select=".drawer"></content>
+            </div>
+            <div main>
+                <content select=".main"></content>
+            </div>
+        </paper-drawer-panel>
+    </template>
+    <script>
+    </script>
+</dom-module>

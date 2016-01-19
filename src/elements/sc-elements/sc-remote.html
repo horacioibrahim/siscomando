@@ -1,0 +1,56 @@
+<!--
+@license
+Copyright (c) 2016 Horacio Ibrahim. All rights reserved.
+
+
+An element providing a solution to connect remote server and catch data.
+
+Example:
+
+    <sc-remote></sc-remote>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-remote">
+    <template>
+        <iron-ajax
+           auto
+           url={{url}}
+           handle-as="json"
+           on-response="_handleResponse"
+           debounce-duration="300"></iron-ajax>
+    </template>
+    <script>
+        Polymer({
+            is: 'sc-remote',
+            properties: {
+                output: {
+                    type: String,
+                    readOnly: true,
+                    reflectToAttribute: true
+                },
+                dataRouter: {
+                    type: Array,
+                    value: {
+                        home: siscomando.url['home'],
+                        feeds: siscomando.url['feeds']
+                    }
+                }
+            },
+            /** `get` catch data from remote address in the routes
+            * previously knows by application. This route names are
+            * defined in dataRouter. We use the siscomando object to
+            store the collections of the urls for this app.
+            **/
+            get: function(route, args) {
+                console.log(this.dataRouter[route]);
+                this.url = this.dataRouter[route];
+            },
+            _handleResponse: function(res) {
+                this.fire('remote', {data: res.detail.response});
+            }
+        });
+    </script>
+</dom-module>

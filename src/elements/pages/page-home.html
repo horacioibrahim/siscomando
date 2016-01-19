@@ -1,0 +1,50 @@
+<!-- polymer project components
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+ -->
+<!-- for this components
+<link rel="import" href="../app-bar/app-bar.html">-->
+<!-- layout
+<link rel="import" href="../layouts/drawer-panel-layout.html"> -->
+
+<dom-module id="page-home">
+  <template>
+    <style>
+        :host {
+            font-family: Roboto;
+        }
+        paper-toolbar {
+            --paper-toolbar-background: #135FB8;
+        }
+        sc-home {
+            padding-bottom: 62px;
+        }
+    </style>
+    <drawer-panel-layout>
+          <!-- who is drawer class -->
+          <paper-header-panel drawer class="drawer">
+            <paper-toolbar>
+              <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
+              <div class="title">Siscomando</div>
+              <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
+            </paper-toolbar>
+            <sc-home id="home" class="shadow-2dp main"></sc-home>
+          </paper-header-panel>
+
+          <!-- who is main class -->
+          
+    </drawer-panel-layout>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'page-home',
+      listeners: {
+          'nav': 'handleNav'
+      },
+      handleNav: function() {
+          // todo
+      }
+    });
+  </script>
+</dom-module>

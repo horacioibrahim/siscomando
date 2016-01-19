@@ -1,0 +1,51 @@
+<!--
+`<sc-animations>` animates the transform of elements
+
+Configuration:
+```
+{
+  name: 'siscomando-slide-right-animation',
+  node: <node>,
+  initialFrame: <Number>,
+  transformOrigin: <transform-origin>,
+  timing: <animation-timing>
+}
+```
+-->
+
+<script>
+
+  Polymer({
+
+    is: 'sc-animations',
+
+    behaviors: [
+      Polymer.NeonAnimationBehavior
+    ],
+
+    properties: {
+      initialFrame: {
+        type: Number,
+        value: "50%"
+      }
+    },
+    configure: function(config) {
+      var node = config.node;
+
+      if (config.transformOrigin) {
+        this.setPrefixedProperty(node, 'transformOrigin', config.transformOrigin);
+      } else {
+        this.setPrefixedProperty(node, 'transformOrigin', '0 50%');
+      }
+
+      this._effect = new KeyframeEffect(node, [
+        {'transform': 'translateX(' + this.initialFrame + ')'}, // unit is required % ou px.
+        {'transform': 'translateX(100%)'}
+      ], this.timingFromConfig(config));
+
+      return this._effect;
+    }
+
+  });
+
+</script>
