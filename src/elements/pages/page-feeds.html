@@ -86,26 +86,26 @@
               <div class="title">{{title}}</div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
+          </paper-header-panel>
+
+          <!------------------------------
+           ----- who is main class -----
+           ------------------------------->
             <!-- content -->
-            <div class="container-feeds">
+            <div class="container-feeds main">
                 <div class="rowOne">
                     <sc-feeds id="feeds"></sc-feeds>
                 </div>
                 <div class="rowTwo">
                     <!-- Esse input eh autonomo e não faz parte especificamente dos feeds.
-                    Ele pode ter uma propriedade de ficar oculto quando o usuário não tiver
+                    Ele poderia ter uma propriedade p/ ficar oculto quando o usuário não tiver
                     permissão para editar determinado feeds. (Não implementado).
                     -->
                     <div class="bottomInput">
                         <paper-textarea flex class="short shadow-2dp main" label="O que você pode resolver..." id="inputLikeZap"></paper-textarea>
                     </div>
                 </div> 
-            </div>
-          </paper-header-panel>
-
-          <!------------------------------
-           ----- who is main class -----
-           ------------------------------->
+            </div>        
     </drawer-panel-layout>
 
   </template>

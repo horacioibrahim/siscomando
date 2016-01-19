@@ -28,11 +28,9 @@
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
             </paper-toolbar>
-            <sc-home id="home" class="shadow-2dp main"></sc-home>
           </paper-header-panel>
-
-          <!-- who is main class -->
-          
+           <!-- who is main class -->
+          <sc-home id="home" class="shadow-2dp main"></sc-home>
     </drawer-panel-layout>
 
   </template>
@@ -44,7 +42,10 @@
       },
       handleNav: function() {
           // todo
-      }
+      },
+      showProfile: function() {
+        this.fire('nav', {url: '/profile'});
+    }
     });
   </script>
 </dom-module>

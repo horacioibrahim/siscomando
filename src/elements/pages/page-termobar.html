@@ -1,0 +1,109 @@
+<dom-module id="page-termobar">
+  <template>
+    <style>
+      :host {
+        position: absolute;
+        display: block;
+        box-sizing: border-box;
+        color: rgba(0,0,0,.75);
+        font-family: Roboto;
+        font-weight: 300;
+        height: 100%;
+        width: 100%;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        background-color: #13283b;            
+        z-index: 999;
+      }
+      #container {
+        height: 100%;
+        width: 100%;
+        /* overflow: scroll; */
+        position: absolute;
+      }
+      .menuTab-container {
+        height: 100%;
+        width: 100%;
+        @apply(--layout-horizontal);
+      }
+      .placeholder-menu {
+        width: 100px;
+        background: #1e3345;
+      }
+      .content {
+        width: auto;
+        background-color: #13283b;
+        @apply(--layout-flex);
+      }
+      .tab-menus {
+        position: relative;
+        height: 100px;
+        text-align: center;
+        vertical-align: middle;
+      }
+      .tab-menus.selected {
+        background: #13283b;
+      }
+      .tab-menus iron-icon {
+        margin-top: 25px;
+        width: 40px;
+        height: 40px;
+        color: rgba(255, 255, 255, 0.3);
+      }        
+    </style>
+      <div id="container">
+          <div class="menuTab-container">
+            <div class="placeholder-menu icons">
+              <div id="minutes" class="tab-menus ano ans selected" on-tap="selectMinutes">
+                <paper-ripple></paper-ripple>
+                <div>
+                  <iron-icon icon="image:flip"></iron-icon>
+                </div>
+              </div>
+              <div id="workflow" class="tab-menus classes" on-tap="selectWorkflow">
+                <paper-ripple></paper-ripple>
+                <div>
+                  <iron-icon icon="image:timer"></iron-icon>
+                </div>
+              </div>
+            </div>
+            <div class="content">
+              <!-- content for here is provided by sc-termobar. Feed him. -->
+            </div>
+          </div>
+      </div>
+  </template>
+    
+  <script>
+    Polymer({
+      is: 'page-termobar',
+      behaviors: [Polymer.NeonAnimatableBehavior],
+      properties: {
+      animationConfig : {
+          value: function() {
+              return {
+                  'entry': {
+                      name: 'slide-from-right-animation',
+                      node: this
+                  },
+                  'exit': {
+                      name: 'slide-right-animation',
+                      node: this
+                  }
+              };
+          }
+      }
+      },
+      ready: function() {
+          
+      },
+      selectMinutes: function() {
+          this.toggleClass('selected', true, this.$.minutes);
+          this.toggleClass('selected', false, this.$.workflow);
+      },
+      selectWorkflow: function() {
+          this.toggleClass('selected', true, this.$.workflow);
+          this.toggleClass('selected', false, this.$.minutes);
+      }        
+    });
+  </script>
+</dom-module>

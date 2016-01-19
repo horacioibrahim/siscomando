@@ -1,0 +1,41 @@
+<dom-module id="page-profile">
+  <template>
+    <style>
+        :host {
+
+        }
+        paper-toolbar {
+            --paper-toolbar-background: #135FB8;
+        }
+        sc-profile {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+        }
+
+    </style>
+    <drawer-panel-layout>
+          <!-- who is drawer class -->
+          <paper-header-panel drawer class="drawer">
+            <paper-toolbar>
+              <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
+              <div class="title">Siscomando</div>
+              <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
+            </paper-toolbar>
+          </paper-header-panel>
+
+          <!-- who is main class -->
+          <sc-profile class="main"></sc-profile>
+    </drawer-panel-layout>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'page-profile',
+      
+      _historyBack: function() {
+        history.back();
+    }         
+    });
+  </script>
+</dom-module>

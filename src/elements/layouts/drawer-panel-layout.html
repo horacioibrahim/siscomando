@@ -15,8 +15,14 @@
             --paper-drawer-panel-scrim-opacity: {
               opacity: 1;
             }
-          }          
+          }
+          sc-termobar {
+            position: absolute;
+            right: 0;
+            z-index: 1000;                
+          }    
         </style>
+        <sc-termobar id="termobar"></sc-termobar>
         <paper-drawer-panel>
             <div drawer>
                 <content select=".drawer"></content>
@@ -27,5 +33,15 @@
         </paper-drawer-panel>
     </template>
     <script>
+        Polymer({
+            is: 'drawer-panel-layout',
+            ready: function(){
+                // Demonstration values:
+                a =[          {"label": "Decorrido do prazo" , "value": 120, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 310, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 150, "unit": "minutos"}, {"label": "GSTIDFCOC" , "value": 50, "unit": "minutos"},
+                      {"label": "Tempo restante", "value": 230, "unit": "minutos"}];
+                this.$.termobar.data = a;                 
+                // this.$.termobar.activate = true;  
+            }
+        });
     </script>
 </dom-module>
