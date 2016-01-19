@@ -1,0 +1,6 @@
+# sources
+src/elements/bower_components
+
+# app mobile cordova
+scapp/platforms
+scapp/plugins
