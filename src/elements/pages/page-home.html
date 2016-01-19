@@ -21,16 +21,17 @@
         }
     </style>
     <drawer-panel-layout>
-          <!-- who is drawer class -->
-          <paper-header-panel drawer class="drawer">
+          <!-- who is header class -->
+          <paper-header-panel drawer class="main">
             <paper-toolbar>
               <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
             </paper-toolbar>
+           <!-- who is content class -->
+          <sc-home id="home" class="shadow-2dp fit"></sc-home>              
           </paper-header-panel>
-           <!-- who is main class -->
-          <sc-home id="home" class="shadow-2dp main"></sc-home>
+
     </drawer-panel-layout>
 
   </template>

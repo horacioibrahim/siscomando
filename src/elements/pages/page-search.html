@@ -55,7 +55,7 @@
     </style>
     <drawer-panel-layout>
           <!-- who is drawer class -->
-          <paper-header-panel drawer class="drawer">
+          <paper-header-panel class="main">
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">Siscomando</div>
@@ -65,11 +65,11 @@
                 <iron-icon icon="search"></iron-icon>
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
             </div>
-
+          <!-- who is main class -->
+          <sc-search class="fit"></sc-search>
           </paper-header-panel>
 
-          <!-- who is main class -->
-          <sc-search class="main"></sc-search>
+
 
       </drawer-panel-layout>
 

@@ -19,8 +19,8 @@
 
       .container-feeds { /* the default is mobile */
         /* @apply(--layout-vertical);  commnet due Safari not applying height 100% */
-        width: 100%;
-        height: 100%;
+        /*width: 100%;
+        height: 100%;*/
       }
       .container-feeds .rowOne, div.rowOne {
         positon: absolute;
@@ -76,23 +76,18 @@
       }        
     </style>
     <drawer-panel-layout>
-          <!------------------------------
-           ----- who is drawer class -----
-           ------------------------------->
-          <paper-header-panel drawer class="drawer">
+          <!-- drawer is hide -->
+        
+          <!-- main is content -->
+          <paper-header-panel class="main">
             <!-- header -->
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">{{title}}</div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
-          </paper-header-panel>
-
-          <!------------------------------
-           ----- who is main class -----
-           ------------------------------->
             <!-- content -->
-            <div class="container-feeds main">
+            <div class="container-feeds fit">
                 <div class="rowOne">
                     <sc-feeds id="feeds"></sc-feeds>
                 </div>
@@ -105,7 +100,10 @@
                         <paper-textarea flex class="short shadow-2dp main" label="O que você pode resolver..." id="inputLikeZap"></paper-textarea>
                     </div>
                 </div> 
-            </div>        
+            </div>                 
+          </paper-header-panel>
+
+     
     </drawer-panel-layout>
 
   </template>
@@ -123,9 +121,13 @@
           }
       },
       hashtagChanged: function() {
+            // Demonstration values:
+            a =[          {"label": "Decorrido do prazo" , "value": 120, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 310, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 150, "unit": "minutos"}, {"label": "GSTIDFCOC" , "value": 50, "unit": "minutos"},
+                  {"label": "Tempo restante", "value": 230, "unit": "minutos"}];           
           var hashtag = this.hashtag;
           this.$.feeds.hashtag = hashtag;
           this.title = this._title(hashtag);
+          this.fire('termoInsert', {data: a});
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);

@@ -16,16 +16,15 @@
     </style>
     <drawer-panel-layout>
           <!-- who is drawer class -->
-          <paper-header-panel drawer class="drawer">
+          <paper-header-panel drawer class="main">
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
             </paper-toolbar>
+            <!-- who is main class -->
+            <sc-profile class="fit"></sc-profile>              
           </paper-header-panel>
-
-          <!-- who is main class -->
-          <sc-profile class="main"></sc-profile>
     </drawer-panel-layout>
 
   </template>

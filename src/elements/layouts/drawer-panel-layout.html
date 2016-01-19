@@ -20,7 +20,11 @@
             position: absolute;
             right: 0;
             z-index: 1000;                
-          }    
+          }
+          [main] {
+            height: 100%;      
+          }
+            
         </style>
         <sc-termobar id="termobar"></sc-termobar>
         <paper-drawer-panel>
@@ -34,13 +38,11 @@
     </template>
     <script>
         Polymer({
-            is: 'drawer-panel-layout',
-            ready: function(){
-                // Demonstration values:
-                a =[          {"label": "Decorrido do prazo" , "value": 120, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 310, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 150, "unit": "minutos"}, {"label": "GSTIDFCOC" , "value": 50, "unit": "minutos"},
-                      {"label": "Tempo restante", "value": 230, "unit": "minutos"}];
-                this.$.termobar.data = a;                 
-                // this.$.termobar.activate = true;  
+            is: 'drawer-panel-layout',           
+            handleInsert: function (evt) {
+                console.log(evt);
+                console.log(evt.detail.data);
+                this.$.termobar.data = evt.detail.data;                 
             }
         });
     </script>

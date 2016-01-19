@@ -198,6 +198,9 @@ Example:
              -webkit-justify-content:flex-end;
              justify-content:flex-end;
        }
+        .vert-bar {
+            background: #ccc;
+        }
        /* end Hacking dialog */
        #overlay {
        position: fixed;
@@ -240,11 +243,11 @@ Example:
                   <!-- div message -->
                   <div class="service-item-body">
                     <template is="dom-if" if="{{item.lastMessage.user.avatar}}">
-                      <div class="avatarBox">
-                        <img src="[[item.lastMessage.user.avatar]]">
-                      </div>
-                    </template>
-                    <div class="service-item-body-content">
+                        <div class="avatarBox">
+                            <img src="[[item.lastMessage.user.avatar]]">
+                        </div>
+                    </template>                          
+                    <div class="service-item-body-content">                       
                       [[item.lastMessage.body]]
                     </div>
                   </div>
@@ -257,7 +260,6 @@ Example:
         </template>
       </iron-list>
     </div>
-    <div id="overlay" class=""></div>
     <paper-dialog id="dialog"
       role="listbox" entry-animation="scale-up-animation" exit-animation="fade-out-animation"
       backdrop>
@@ -269,6 +271,7 @@ Example:
           <iron-icon icon="social:notifications-off" item-icon></iron-icon> Silenciar notificações
         </paper-icon-item>
     </paper-dialog>
+    <div id="overlay" class=""></div>
     <!-- End: html common -->
 </template>
 
