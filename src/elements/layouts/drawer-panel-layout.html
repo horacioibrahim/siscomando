@@ -9,12 +9,12 @@
           }
           paper-drawer-panel {
             --paper-drawer-panel-main-container: {
-              background-color: rgba(19,95,184,0.065);
+              /* background-color: rgba(19,95,184,0.005);*/
               border-left: 1px solid rgba(0,0,0, 0.12);
             };
-            --paper-drawer-panel-scrim-opacity: {
+            /*--paper-drawer-panel-scrim-opacity: {
               opacity: 1;
-            }
+            }*/
           }
           sc-termobar {
             position: absolute;
@@ -27,7 +27,9 @@
             
         </style>
         <sc-termobar id="termobar"></sc-termobar>
-        <paper-drawer-panel>
+        <!-- Tablet yet not supported so force-narrow and default-selected main -->
+        <paper-drawer-panel 
+            default-selected="main" force-narrow disable-swipe disable-edge-swipe drawer-width="350px">
             <div drawer>
                 <content select=".drawer"></content>
             </div>
