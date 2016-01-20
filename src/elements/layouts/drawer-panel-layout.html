@@ -12,6 +12,9 @@
               /* background-color: rgba(19,95,184,0.005);*/
               border-left: 1px solid rgba(0,0,0, 0.12);
             };
+            --paper-drawer-panel-drawer-container: {
+              background-color: #13283b;
+            };              
             /*--paper-drawer-panel-scrim-opacity: {
               opacity: 1;
             }*/
@@ -28,8 +31,10 @@
         </style>
         <sc-termobar id="termobar"></sc-termobar>
         <!-- Tablet yet not supported so force-narrow and default-selected main -->
-        <paper-drawer-panel 
-            default-selected="main" force-narrow disable-swipe disable-edge-swipe drawer-width="350px">
+        <paper-drawer-panel id="drawer" 
+            default-selected="main" 
+            force-narrow right-drawer
+            drawer-width="350px">
             <div drawer>
                 <content select=".drawer"></content>
             </div>
@@ -42,14 +47,23 @@
         Polymer({
             is: 'drawer-panel-layout', 
             ready: function() {
-                // exists page-feeds ?
-                var pageFeeds = this.querySelector('sc-feeds');
-                if (pageFeeds) {
-                    // we can add anything when page-feeds is active
+                var self = this;
+                var scFeeds = this.querySelector('sc-feeds');
+                var scHome = this.querySelector('sc-home');
+                if (scFeeds) {
+                    // we can add anything when sc-feeds is active
                     // Demonstration values:
-                    a =[          {"label": "Decorrido do prazo" , "value": 120, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 310, "unit": "minutos"}, {"label": "Decorrido do prazo" , "value": 150, "unit": "minutos"}, {"label": "GSTIDFCOC" , "value": 50, "unit": "minutos"},
-                          {"label": "Tempo restante", "value": 230, "unit": "minutos"}]; 
+                    a =[          {"label": "2015RI/00000145" , "value": 120, "unit": "minutos"}, {"label": "2015RDP00000015" , "value": 310, "unit": "minutos"}, {"label": "2015RI/00000245" , "value": 150, "unit": "minutos"}]; 
                     this.$.termobar.data = a;
+                    /** Active the termobar if drawer is opened */
+                    this.$.drawer.addEventListener('iron-select', function(evt){
+                        if (evt.detail.item.id === 'drawer') self.$.termobar.activate = true;
+                        if (evt.detail.item.id === 'main') self.$.termobar.activate = false;
+                    });
+                    
+                } else {
+                    this.$.drawer.disableSwipe = true;
+                    this.$.drawer.disableEdgeSwipe = true;
                 }
             }
         });
