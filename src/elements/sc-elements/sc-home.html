@@ -201,26 +201,12 @@ Example:
         .vert-bar {
             background: #ccc;
         }
-       /* end Hacking dialog */
-       #overlay {
-       position: fixed;
-       left: 0;
-       top: 0;
-       background: rgba(0,0,0,0.5);
-       height: 100%;
-       width: 100%;
-       display: none;
-       z-index: 1;
-      }
-      #overlay.enabled {
-        display: block;
-      }
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
     </style>
 
-    <sc-remote id="remote"></sc-remote>
+    <sc-request id="remote"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
       <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
@@ -254,16 +240,15 @@ Example:
                   </div>
               </div>
               <!-- menu more options -->
+                <!--
               <div class="more" on-tap="dialogToggle">
                 <iron-icon icon="more-vert"></iron-icon>
-              </div>
+              </div>-->
             </div>
         </template>
       </iron-list>
     </div>
-    <paper-dialog id="dialog"
-      role="listbox" entry-animation="scale-up-animation" exit-animation="fade-out-animation"
-      backdrop>
+    <paper-dialog id="dialog" with-backdrop entry-animation="scale-up-animation" exit-animation="fade-out-animation">
       <h2>{{dialogItemSelected.service}}</h2>
         <paper-icon-item>
           <iron-icon icon="icons:highlight-off" item-icon></iron-icon> Deixar de receber atualizações
@@ -272,7 +257,6 @@ Example:
           <iron-icon icon="social:notifications-off" item-icon></iron-icon> Silenciar notificações
         </paper-icon-item>
     </paper-dialog>
-    <div id="overlay" class=""></div>
     <!-- End: html common -->
 </template>
 
@@ -408,12 +392,6 @@ Example:
         // activing ...
         // change and add class enabled for #
         this.$.dialog.open();
-        this.toggleClass('enabled', true, this.$.overlay);
-
-        // deactiving ...
-        this.$.dialog.addEventListener('iron-overlay-closed', function(){
-              this.toggleClass('enabled', false, self.$.overlay);
-        });
       }
     });
   </script>

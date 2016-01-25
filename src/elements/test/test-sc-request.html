@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../../assets/js/app.js"></script>
+    <link href="../elements.html" rel="import">
+    <style>
+        body {
+            color: black;
+        }
+    </style>
+</head>
+<body id="app" class="fullbleed" unresolved>
+
+<dom-module id="test-sc-request">
+    <template>
+        <sc-request id="request"></sc-request>
+    </template>
+    <script>
+        Polymer({
+            is: "test-sc-request",
+            // lifecycle...
+            ready: function() {
+              console.log("Starting tests...");     
+            }
+        });
+    </script>
+</dom-module>
+
+
+<test-sc-request></test-sc-request>
+    
+    
+</body>
+</html>

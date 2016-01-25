@@ -19,3 +19,12 @@ cp -r src/assets/img/* scapp/www/img/
 
 # Return original HTML
 mv src/index.html.bak src/index.html
+
+# Deploy cordova
+cd /Users/horacioibrahim/Developer/projetos/siscomando_mobile/scapp
+cordova build android
+# if android device connected will work fine!
+cordova run android
+
+# End 
+date

@@ -1,0 +1,153 @@
+<!--
+@license
+Copyright (c) 2016 Horacio Ibrahim. All rights reserved.
+
+This element providing a solution to cache between iron-ajax responses and 
+indexedBD.
+
+Example:
+
+    <sc-indexeddb></sc-indexeddb>
+
+-->
+
+<dom-module id="sc-cache">
+    <template>
+        <sc-remote id="remote"></sc-remote>
+    </template>
+    <script>
+      (function(){
+        const dbName = "scdb";
+        var transaction = transaction || {};
+    
+        /** fallbacks for find object default. the actions below are useful
+        * to find the indexedDB object in the many browsers or raise alert. 
+        *
+        **/ 
+        window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+        window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+        window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+        // warning...
+        if (!window.indexedDB) {
+            window.alert("Seu navegador não suporta uma versão estável do IndexedDB. Alguns recursos não estarão disponíveis.");
+        } 
+          
+        /** Initializing database. This opens existent database or create a new. 
+        * 
+        **/
+        var request = window.indexedDB.open(dbName, 6);
+        request.onblocked = function(event) {
+          // Se existe outra aba com a versão antiga
+          var msg = "Existe uma versão antiga da web app aberta em outra aba, feche-a por favor!"
+          alert(msg);
+          console.warn(msg);
+        };          
+        // create or upgrade the database...
+        request.onupgradeneeded = function(evt) {
+          // The database did not previously exist, so create object stores and indexes.
+          var db = request.result;  
+          useDatabase(db);
+          var store = db.createObjectStore("requests", {keyPath: "hashable_url"});
+          var hashable_url_index = store.createIndex("hashable_url", "hashable_url", {unique: true});
+          db = request.result;  
+        };
+
+        request.onsuccess = function() {
+          db = request.result;
+          useDatabase(db);
+          return;
+        };
+        
+        // generic function to handle error this db (database)
+        request.onerror = function(evt) {
+          console.log("Database error: " + evt.target.error.message);  
+        };
+          
+        function useDatabase(db) {
+          // Esteja certo de que adicionou um evento para notificar se a página muda a versão
+          // Nós devemos fechar o banco. Isso permite à outra página ser atualizada
+          // Se você não fizer isso a atualização não acontecerá até fechar as abas.
+          db.onversionchange = function(event) {
+            db.close();
+            alert("Uma nova versão desta web app está pronta. Atualize esta aba, por favor!");
+          };   
+            
+        }
+        /** `txInsert` creates a transaction to insert data on object store
+        * and return it to handle the "oncomplete". You must to implement it as:
+        *
+        * tx.oncomplete = function(){
+        *      // all requests have succeeded and the transaction has commited
+        *  }
+        *
+        * @objItems: array with items. Remember: must be exist hashable_url in 
+        * each item.
+        **/
+        txInsert = function(objItems) {
+          var tx = db.transaction("requests", "readwrite");
+          var store = tx.objectStore("requests");
+          for (var i in objItems) {
+              store.put(objItems[i]);
+          } 
+          return tx
+        };
+        /** `txReadOne` gets item on object store
+        * and return it (request) to handle the "onsuccess". You must to implement the
+        * onsuccess as:
+        *
+        *  request.onsuccess = function(evt) {
+        *      console.log(evt.target.result);
+        *
+        **/        
+        txReadOne = function(query) {
+          var tx = db.transaction("requests", "readonly");
+          var store = tx.objectStore("requests");
+          var index = store.index("hashable_url");
+          var request = index.get(query);
+          return request;
+        };  
+        
+        // "public" methods
+        transaction.insert = txInsert;
+        transaction.getItem = txReadOne;
+          
+        Polymer({
+            is: 'sc-cache',
+            properties: {
+              status: String,
+              status_msg: {
+                  200: 'Success task in the transaction (cursor, request)',
+                  500: 'Error in task on transaction (cursor, request)'
+              },
+              lastResponse: Object
+            },
+            // lifecycle...
+            ready: function() {
+
+            },
+            // Database operations...
+
+            /** `insert` put the data on object store. In this case
+            * the database is prefixed as "scdb".
+            *
+            * @hashable_url: unique value to url of the request
+            * @response: response returned by iron-ajax as json.
+            */
+            putCache: function(hashable_url, response) {
+                var self = this;
+                var items = []
+                items.push({'hashable_url': hashable_url, 'response': response});
+                idbtransaction = transaction.insert(items);              
+            },
+            getCache: function(query_hashable_url) {
+                var self = this;
+                var r = transaction.getItem(query_hashable_url);
+                r.onsuccess = function(evt) {
+                    self.lastResponse = evt.target.result;
+                    self.fire("sc-cache", {response: evt.target.result});
+                }
+            }
+        });          
+      }());
+    </script>
+</dom-module>

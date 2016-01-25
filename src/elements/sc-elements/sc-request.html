@@ -1,0 +1,123 @@
+<!--
+@license
+Copyright (c) 2016 Horacio Ibrahim. All rights reserved.
+
+
+An element providing a solution to connect remote server and catch data.
+
+Example:
+
+    <sc-remote></sc-remote>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-request">
+    <template>
+        <iron-ajax id="ajax"
+           url={{url}}
+           handle-as="json"
+           on-response="_handleResponse"
+           debounce-duration="300"></iron-ajax>  
+         <sc-cache id="cache"></sc-cache>
+    </template>
+    <script>
+        Polymer({
+            is: 'sc-request',
+            properties: {
+                output: {
+                    type: String,
+                    readOnly: true,
+                    reflectToAttribute: true
+                },
+                hashable_url: String,
+                url: {
+                  type: String,
+                  observer: "_changedConfig"
+                },
+                body: {
+                    type: Object,
+                    observer: "_changedConfig"
+                },
+                contentType: {
+                    type: String,
+                    observer: "_changedConfig"
+                },
+                headers: {
+                    type: String,
+                    observer: "_changedConfig"
+                },
+                method: {
+                    type: String,
+                    observer: "_changedConfig"
+                },
+                response: {
+                    type: Object
+                },
+                handleAsync: Object
+            },
+            /** `_changedConfig` to change sc-cache properties
+            */
+            _changedConfig: function() {
+                console.log("config init...");
+                var ajax = this.$.ajax;
+                this.hashable_url = this._nameFromUrl(this.url);
+                ajax.url = this.url ? this.url : undefined;
+                ajax.body = this.body ? this.body : undefined;
+                ajax.method = this.method ? this.method : undefined;
+                ajax.contentType = this.contentType ? this.contentType : undefined;
+                ajax.headers = this.headers ? this.headers : undefined;
+                ajax.method = this.method ? this.method : undefined;
+                
+                this.checkCache();
+            },
+            /** `_nameFromUrl` creates a hashable token from url
+            */
+            _nameFromUrl: function(url) {
+                return url.replace(/[\:\/\%\?\&\.\=\-\,]/g, '_') + '_api';
+            },
+            checkCache: function(){
+                var self = this;
+                var cache = this.$.cache;
+                cache.getCache(self.hashable_url);
+                cache.addEventListener('sc-cache', function(evt){
+                    if (evt.detail.response) {
+                        self._responseAfterFlow(evt.detail.response.response);  
+                        self.cancelAsync(self.handleAsync);    
+                    } 
+                    /* else {
+                        // waiting for sc-cache or fire make request to remote server
+                        self._callBackRequest();
+                    }*/
+                    // or runs async tasks for update cache
+                    this.async(self._callBackRequest(), 100);
+                });
+            },
+            _callBackRequest: function() {
+                this.$.ajax.generateRequest();
+            },
+            /** `_handleResponse`
+            */
+            _handleResponse: function(evt) {
+                var cache = this.$.cache;
+                var hashable_url = this.hashable_url;
+                var response = evt.detail.response;
+                // compara com a ultima resposta do cache
+                // cache.lastResponse
+                // cache.lastResponse.stringify() === response.stringify()
+                // se igual nao faz nada
+                // se diferente chamar o putCache
+                
+                // as linhas abaixo dependem se igual ou nao. Na verdade so fazem se diferente.
+                this._responseAfterFlow(response); // levanta o evento
+                cache.putCache(hashable_url, response); // atualizao cache com novos informacoes.
+            },
+            _responseAfterFlow: function(response) {
+                console.log(response);
+                this.fire("sc-request-response", {"response": response});
+                this.response = null;
+            }
+        });
+    </script>
+</dom-module>

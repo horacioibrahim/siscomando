@@ -61,7 +61,8 @@ Example:
     margin-top: 0;
     margin-bottom: 0;
   }
-  .message-item-container.continued .item-details {
+  .message-item-container.continued .item-details, 
+  .message-item-container.continued .item-target {
     display: none;
   }
   .message-item-container.continued .item-aside {
@@ -115,7 +116,8 @@ Example:
     vertical-align: top;
     min-height: 1.5em;
   }
-  .item-details {}
+  .item-details {
+    }
 
   .item-details-from {
     vertical-align: middle;
@@ -126,9 +128,9 @@ Example:
     opacity: .5;
   }
   .item-target {
-    margin-left: 10px;
+    /* margin-left: 10px; */
     vertical-align: middle;
-    display: inline-block;
+    display: inline;
     margin-top: 2px;
     opacity: .3;
     font-size: .8em;
@@ -207,10 +209,11 @@ Example:
                <div class="item-content">
                  <div class="item-details">
                    <div class="item-details-from">[[message.announcer]]</div>
-                   <div class="item-target">[[message.target]]</div>
                    <div class="item-details-timestamp">
-                     <span><sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago></span></div>
+                     <sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago>
+                   </div>                     
                  </div>
+                 <div class="item-target">[[message.target]]</div>
                  <div class="item-text">
                    <marked-element markdown="[[message.body]]">
                      <div class="markdown-html"></div>
