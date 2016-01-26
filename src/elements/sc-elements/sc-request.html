@@ -9,6 +9,15 @@ Example:
 
     <sc-remote></sc-remote>
 
+TODO: 
+    - We can to appreciate check an "updated" field for conditional requests with
+      "If-Modified-Since"
+    - We can to appreciate... "etag" for conditional requests as "If-None-Match"
+    - Expires date customised (or not) can help us as a strategy to cache behavior. See
+    below image for more intuition.
+    (http://betterexplained.com/wp-content/uploads/compression/HTTP_caching_expires.png)
+    - Or rather Expires date to use "max-age".
+
 @demo demo/index.html
 @hero hero.svg
 -->
@@ -20,7 +29,7 @@ Example:
            handle-as="json"
            on-response="_handleResponse"
            debounce-duration="300"></iron-ajax>  
-         <sc-cache id="cache"></sc-cache>
+         <sc-cache expires-time="{{expiresTime}}" id="cache"></sc-cache>
     </template>
     <script>
         Polymer({
@@ -55,7 +64,15 @@ Example:
                 response: {
                     type: Object
                 },
-                handleAsync: Object
+                handleAsync: Object,
+                /** `responseFromRequest` response from iron-ajax */
+                responseFromRequest: Object,
+                /** `responseFromCache` response from sc-cache */
+                responseFromCache: Object,
+                expiresTime: {
+                    type: Number,
+                    value: 10
+                }                
             },
             /** `_changedConfig` to change sc-cache properties
             */
@@ -82,15 +99,23 @@ Example:
                 cache.getCache(self.hashable_url);
                 cache.addEventListener('sc-cache', function(evt){
                     if (evt.detail.response) {
-                        console.log("Cached")
+                        // Main action
+                        var expires = evt.detail.response.expires;
+                        self.responseFromCache = evt.detail.response.response;
                         self._responseAfterFlow(evt.detail.response.response);  
-                        self.cancelAsync(self.handleAsync);    
-                    } else {
-                        // waiting for sc-cache or fire make request to remote server
+                        // to canel any previous async.
+                        self.cancelAsync(self.handleAsync); 
+                        
+                        // check if response is expired so make update.
+                        if (self.checkExpired(expires)) {
+                            self._callBackRequest();    
+                        }
+                    } else  {
                         self._callBackRequest();
                     }
-                    // or runs async tasks for update cache
-                    // this.async(self._callBackRequest(), 100);
+                    // or runs async tasks for update cache. To verify if response
+                    // from iron-ajax is not equal response from cache.
+                    // self.handleAsync = this.async(self._callBackRequest(), 300);
                 });
             },
             _callBackRequest: function() {
@@ -102,21 +127,38 @@ Example:
                 var cache = this.$.cache;
                 var hashable_url = this.hashable_url;
                 var response = evt.detail.response;
-                // compara com a ultima resposta do cache
-                // cache.lastResponse
-                // cache.lastResponse.stringify() === response.stringify()
-                // se igual nao faz nada
-                // se diferente chamar o putCache
-                
-                // as linhas abaixo dependem se igual ou nao. Na verdade so fazem se diferente.
+                self.responseFromRequest = response;
+                // Main action
                 this._responseAfterFlow(response); // levanta o evento
-                console.log("No-cached");
-                cache.putCache(hashable_url, response); // atualizao cache com novos informacoes.
+                if (!this.responsesIsEquals()) {
+                    cache.putCache(hashable_url, response); // atualizao cache com novos informacoes.    
+                }
             },
             _responseAfterFlow: function(response) {
                 this.fire("sc-request-response", {"response": response});
-                this.response = null;
+            },
+            /** `checkExpired` returns true if cache data is expired or false
+            * if not expired. 
+            * 
+            * @response This is the responsefromCache.
+            */
+            checkExpired: function(expires) {
+                var now = new Date();
+                if (now > expires) {
+                    return true;
+                }
+                return false;
+            },
+            responsesIsEquals: function() {
+                // Now is time to compare:
+                if (this.responseFromCache && this.responseFromRequest) {
+                    if (JSON.stringify(this.responseFromCache) === JSON.stringify(this.responseFromRequest)) {
+                        return true;       
+                    }        
+                }
+                return false;
             }
+            
         });
     </script>
 </dom-module>

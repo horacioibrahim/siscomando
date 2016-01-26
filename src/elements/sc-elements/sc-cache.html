@@ -17,7 +17,7 @@ Example:
     </template>
     <script>
       (function(){
-        const dbName = "scdb";
+        const dbName = "scdb_v1";
         var transaction = transaction || {};
     
         /** fallbacks for find object default. the actions below are useful
@@ -40,7 +40,7 @@ Example:
           // Se existe outra aba com a versão antiga
           var msg = "Existe uma versão antiga da web app aberta em outra aba, feche-a por favor!"
           alert(msg);
-          console.warn(msg);
+          console.log(msg);
         };          
         // create or upgrade the database...
         request.onupgradeneeded = function(evt) {
@@ -54,13 +54,15 @@ Example:
 
         request.onsuccess = function() {
           db = request.result;
+          // console.log(db);
           useDatabase(db);
           return;
         };
         
         // generic function to handle error this db (database)
         request.onerror = function(evt) {
-          console.log("Database error: " + evt.target.error.message);  
+          console.log("Database error: " + evt.target.error.message);
+          console.log(evt.target.error);
         };
           
         function useDatabase(db) {
@@ -68,8 +70,10 @@ Example:
           // Nós devemos fechar o banco. Isso permite à outra página ser atualizada
           // Se você não fizer isso a atualização não acontecerá até fechar as abas.
           db.onversionchange = function(event) {
-            db.close();
-            alert("Uma nova versão desta web app está pronta. Atualize esta aba, por favor!");
+              msg = "Uma nova versão desta web app está pronta. Atualize esta aba, por favor!";
+              db.close();
+              console.log(msg)
+              alert(msg);
           };   
             
         }
@@ -119,14 +123,13 @@ Example:
                   200: 'Success task in the transaction (cursor, request)',
                   500: 'Error in task on transaction (cursor, request)'
               },
-              lastResponse: Object
-            },
-            // lifecycle...
-            ready: function() {
-
+              lastResponse: Object,
+              expiresTime: {
+                type: Number,
+                value: 10
+              }
             },
             // Database operations...
-
             /** `insert` put the data on object store. In this case
             * the database is prefixed as "scdb".
             *
@@ -135,8 +138,11 @@ Example:
             */
             putCache: function(hashable_url, response) {
                 var self = this;
+                var expires = new Date();
+                // Add deadline
+                expires.setSeconds(expires.getSeconds() + self.expiresTime);
                 var items = []
-                items.push({'hashable_url': hashable_url, 'response': response});
+                items.push({'hashable_url': hashable_url, 'expires': expires, 'response': response});
                 idbtransaction = transaction.insert(items);              
             },
             getCache: function(query_hashable_url) {
