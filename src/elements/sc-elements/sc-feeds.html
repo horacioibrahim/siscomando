@@ -184,11 +184,7 @@ Example:
   }
 </style>
 
-    <iron-ajax id="ajax"
-      url=""
-      on-response="ajaxResponse"
-      handle-as="json"
-      auto></iron-ajax>
+    <sc-request id="request"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
       <iron-list id="itemsList" items="{{documents.items}}" as="message" selected-item="{{selectedItem}}">
@@ -263,7 +259,7 @@ Example:
             type: String,
             notify: true,
             observer: '_hashtagChanged',
-            value: "all",
+            value: null,
         },
         /**
          * `fancy` indicates that the element should don a monocle and tophat,
@@ -296,27 +292,29 @@ Example:
           }
         },
       },
-
       // Element Lifecycle
       ready: function() {
+          var self = this;
+          var request = this.$.request;
           // this._setUrl('all');
-          this.addEventListener('feeds-updated', function(){
-            this.playAnimation();
+          request.addEventListener('sc-request-response', function(evt){
+              self.documents = evt.detail.response;
+              //self.fire('feeds-updated', {type: self.documents.type});
+              self.playAnimation();
           });
-      },
-      // Ajax response
-      ajaxResponse: function(event) {
-          this.documents = event.detail.response;
-          this.fire('feeds-updated', {type: this.documents.type});
       },
       /** mock function for development
       */
       _setUrl: function(hashtag) {
+          
+          if (!hashtag) {
+              return;
+          }
+          
           var base_url = siscomando.url.feeds + "data_feeds_"; // #CHANGED: relative path
-          var hashtag = hashtag ? hashtag : 'all';
           var format = ".json";
           var url = base_url + this._normalizeHashtag(hashtag) + format;
-          this.$.ajax.url = url;
+          this.$.request.url = url;
       },
       _hashtagChanged: function() {
           this._setUrl(this.hashtag);

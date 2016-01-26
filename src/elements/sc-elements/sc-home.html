@@ -206,7 +206,7 @@ Example:
       }
     </style>
 
-    <sc-request id="remote"></sc-request>
+    <sc-request id="request"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
       <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
@@ -305,10 +305,10 @@ Example:
       // Element Lifecycle
       ready: function () {
           var self = this;
-          var scRemote = this.$.remote;
-          scRemote.get('home');
-          scRemote.addEventListener('remote', function(e){
-             self.documents = e.detail.data;
+          var request = this.$.request;
+          request.url = siscomando.url.home;
+          request.addEventListener('sc-request-response', function(e){
+             self.documents = e.detail.response;
           });
       },
       // Ajax response
