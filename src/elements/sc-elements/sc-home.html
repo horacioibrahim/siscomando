@@ -131,7 +131,7 @@ Example:
         font-size: 14px;
         line-height: 17px;
         padding-bottom: 5px;
-        color: rgba(0,0,0,0.38);
+        color: rgba(0,0,0,0.54);
       }
       .avatarBox {
         float:left;
@@ -141,21 +141,57 @@ Example:
         -moz-border-radius: 50%;
         border-radius: 50%;
         margin-right: 0px;
-        @apply(--layout-flex);
-        @apply(--layout-flex-1);
+        /* @apply(--layout-flex);
+        @apply(--layout-flex-1);*/
        }
+        
+       .avatarBox.a, .avatarBox.t  {background-color: #F44336;}
+       .avatarBox.b, .avatarBox.u {background-color: #E91E63;}
+       .avatarBox.c, .avatarBox.w {background-color: #9C27B0;}
+       .avatarBox.d, .avatarBox.v {background-color: #673AB7;}
+       .avatarBox.f, .avatarBox.y {background-color: #3F51B5;}
+       .avatarBox.g, .avatarBox.k {background-color: #2196F3;}
+       .avatarBox.h, .avatarBox.x {background-color: #00BCD4;}
+       .avatarBox.i, .avatarBox.z {background-color: #009688;}
+       .avatarBox.j {background-color: #8BC34A;}
+       .avatarBox.l {background-color: #FFC107;}
+       .avatarBox.m {background-color: #FF9800;}    
+       .avatarBox.n {background-color: #795548;}
+       .avatarBox.e, .avatarBox.o {background-color: #9E9E9E;}
+       .avatarBox.p {background-color: #607D8B;}
+       .avatarBox.q {background-color: #5C4B77;}
+       .avatarBox.r {background-color: #FF5722;}
+       .avatarBox.s {background-color: #53A8B6;}         
+    
+      .avatarBox .avatar-letter {
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.86);
+        text-shadow: 2px 2px 3px rgba(0,0,0,0.12);
+        font-size: 1.25em;
+       }
+       .avatarBox .avatar-letter::before {
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            content:"";
+        }        
+        .avatarBox .avatar-letter span {
+            vertical-align: middle;
+            text-transform: uppercase;
+        }
       .service-item-body-content {
         @apply(--layout-flex);
         @apply(--layout-flex-11);
         padding-left: 15px;
       }
       .avatarBox img {
-        width: 32px;
-        height: 32px;
+        width: 33px;
+        height: 33px;
         -webkit-border-radius: 50%; /* Can also be 50px */
         -moz-border-radius: 50%;
         border-radius: 50%;
-        opacity: 0.8;
         float: left;
         right: 0;
        }
@@ -229,11 +265,20 @@ Example:
                   </div>
                   <!-- div message -->
                   <div class="service-item-body">
-                    <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
-                        <div class="avatarBox">
+                    <div class$="[[_computedClassAvatar(item.value.lastMessage.user.username)]]">
+                        <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
+                            <div class="avatar-letter">
+                                <span>[[_demoLetter(item.value.lastMessage.user.username)]]</span>
+                            </div>
+                        </template>
+                        <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
                             <img src="[[item.value.lastMessage.user.avatar]]">
-                        </div>
-                    </template>                          
+                        </template>     
+                    </div>
+                    <!--
+                        <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
+                        </template>     
+                    -->
                     <div class="service-item-body-content">                       
                       [[item.value.lastMessage.body]]
                     </div>
@@ -396,6 +441,18 @@ Example:
           // console.log(response);
           // TODO: um personalizavel map-reduce.
           return response;
+      },
+      _computedClassAvatar: function(username) {
+        var classes = "avatarBox";  
+        var firstLetter;
+        firstLetter = (typeof(username) == "string" && username.length > 0) ? username[0] : 'h'; // TODO: h
+        console.log("primeira letra");
+        console.log(firstLetter);
+        classes += " " + firstLetter;
+        return classes;
+      },
+      _demoLetter: function(username) {
+        return (typeof(username) == "string" && username.length > 0) ? username[0] : 'h';
       }
     });
   </script>
