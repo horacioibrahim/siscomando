@@ -12,11 +12,16 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'http://localhost:9090/'
+siscomando.REMOTE_ADDR = 'http://localhost:9000'
+siscomando.SESSION_KEY = 'scdata' // hint: In the sc-login this is sessionKey property.
 
 /* Siscomando URL's */
 siscomando.url = {
-  //home: siscomando.REMOTE_ADDR + '/data_home.json',
-  home: 'https://gist.githubusercontent.com/horacioibrahim/55ce6b7b8a338ab2ad59/raw/09aa4c7af173f00b93010357ec2c808ab7d90647/data_home.json',
-  feeds: 'https://raw.githubusercontent.com/siscomando/first-mobile-home/master/demo/'
+  home: '/#/home',
+  channels: siscomando.REMOTE_ADDR + '/channels',
+  feeds: siscomando.REMOTE_ADDR + '/feeds',
+  login: siscomando.REMOTE_ADDR + '/loginexp'
 };
+
+
+//'https://gist.githubusercontent.com/horacioibrahim/55ce6b7b8a338ab2ad59/raw/09aa4c7af173f00b93010357ec2c808ab7d90647/data_home.json'

@@ -184,19 +184,19 @@ Example:
   }
 </style>
 
-    <sc-request expires-time="30" id="request"></sc-request>
+    <sc-request expires-time="60" id="request"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
-      <iron-list id="itemsList" items="{{documents.items}}" as="message" selected-item="{{selectedItem}}">
+      <iron-list id="itemsList" items="{{documents}}" as="message" selected-item="{{selectedItem}}">
         <template>
            <div on-tap="selectItem" class="message-item">
-             <!-- class$="[[_computedClass(selected)]]" -->
-             <div class$="[[_computedClass(message.continued)]]">
+             <!-- class$="[[_computedClass(selected)]]" message.value.continued-->
+             <div class$="[[_computedClass(false)]]">
                <div class="item-aside">
                  <div>
                    <span>
                      <div class="avatar dispImage">
-                       <img src$=[[message.image]]>
+                       <img src$=[[message.value.image]]>
                      </div>
                    </span>
                  </div>
@@ -204,14 +204,14 @@ Example:
                <div class="item-actions"></div>
                <div class="item-content">
                  <div class="item-details">
-                   <div class="item-details-from">[[message.announcer]]</div>
+                   <div class="item-details-from">[[message.value.announcer]]</div>
                    <div class="item-details-timestamp">
                      <sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago>
                    </div>                     
                  </div>
-                 <div class="item-target">[[message.target]]</div>
+                 <div class="item-target">[[message.value.target]]</div>
                  <div class="item-text">
-                   <marked-element markdown="[[message.body]]">
+                   <marked-element markdown="[[message.value.body]]">
                      <div class="markdown-html"></div>
                    </marked-element>
                  </div>
@@ -298,7 +298,7 @@ Example:
           var request = this.$.request;
           // this._setUrl('all');
           request.addEventListener('sc-request-response', function(evt){
-              self.documents = evt.detail.response;
+              self.documents = evt.detail.response.results;
               //self.fire('feeds-updated', {type: self.documents.type});
               self.playAnimation();
           });
@@ -311,9 +311,8 @@ Example:
               return;
           }
           
-          var base_url = siscomando.url.feeds + "data_feeds_"; // #CHANGED: relative path
-          var format = ".json";
-          var url = base_url + this._normalizeHashtag(hashtag) + format;
+          var base_url = siscomando.url.feeds + "/"; // #CHANGED: relative path
+          var url = base_url + this._normalizeHashtag(hashtag);
           this.$.request.url = url;
       },
       _hashtagChanged: function() {
@@ -371,9 +370,9 @@ Example:
       _selectItem: function(e){
         this.$.itemsList.selectItem(e.model.message);
           // this.fire('feed-selected', {message: e.model.message});
-        if ('target_hashtag' in e.model.message) {
+        if ('target_hashtag' in e.model.message.value) { // #CWB: closed with backend
           // Nows we sure that back history
-          window.location.href = '#/feeds/' + e.model.message.target_hashtag;
+          window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
           // ativar botao voltar
         }
 

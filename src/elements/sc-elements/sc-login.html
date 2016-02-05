@@ -1,0 +1,284 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+
+<!--
+The element checks if login is required or go to route of the home.
+
+Example:
+
+    <sc-login goto-location="/home"></sc-login>
+
+Example:
+
+    <sc-feeds>
+      <h2>Hello sc-feeds</h2>
+    </sc-feeds>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-login">
+    <template>
+        <sc-request id="request"></sc-request>
+    </template>
+    <script>
+    Polymer({
+        is: "sc-login",
+        properties: {
+            url: String,
+            username: String,
+            password: String,
+            /** `sessionKey` property that stores the name of the key for
+            * sessionStorage.
+            */             
+            sessionKey: {
+                type: String,
+                value: 'scdata'
+            },
+            /** `accessTokenField` a little sequence containing the more deep key.
+            * e.g: The accessToken will be checked against the returned JSON (after 
+            * POST in the url) based in the array sequence defined here. In this sample 
+            * below the array is ['results', 'access_token'], so:
+            *
+            * JSON RETURNED AFTER POST IN URL WITH USERNAME AND PASSWORD:
+            * {"results": {
+            *    "access_token": "alphanumber", 
+            *    "expires_at": "1421314131"
+            *    "account": {
+            *        "user_id": 100,
+            *        "email": "xyz@example.com"
+            *        }
+            *    }
+            * }
+            * 
+            * OBS: This is limited at 3 (length).
+            */
+            accessTokenField: {
+                type: Array,
+                value: function() {
+                    return ['results', 'access_token'];
+                }            
+            },
+            /** `accessTokenExpiresAtField` a short sequence containing the more deep key.
+            * e.g: The accessTokenExpiresAt will be checked against the returned JSON (after 
+            * POST in the url) based in the array sequence, in this below case, the
+            * array is ['results', 'expires_at']
+            *
+            * JSON RETURNED AFTER POST IN URL WITH USERNAME AND PASSWORD:            
+            * {"results": {
+            *    "access_token": "alphanumber",
+            *    "expires_at": "Dec 29...",
+            *    "account": {
+            *        "user_id": 100,
+            *        "email": "xyz@example.com"
+            *        }
+            *    }
+            * }
+            * 
+            * OBS: This is limited at 3 (length).
+            */
+            accessTokenExpiresAtField: {
+                type: Array,
+                value: function() {
+                    return ['results', 'expires_at'];
+                }            
+            },
+            /** `setExpires` sets an integer in seconds for expiration's
+            * session. If defined and greater than 0 will be used it.
+            * Or if not defined the default will be one month in seconds.
+            * This is ~2569000.
+            */
+            setExpires: {
+                type: Number,
+                value: 0
+            }
+        },
+        ready: function() {
+            if (this._checkSession()) {
+                this.goto();   
+            }
+        },
+        /** `login` the method used to make request with credentials info. It also
+        * check if exists token and valid (not expired) in session storage.
+        *
+        */
+        authenticate: function(username, password) {
+            var self = this;
+            // make request
+            var request = this.$.request;
+            
+            if (this._checkSession()) {
+                this.goto();
+            } else {
+                request.auto = false;
+                request.url = this.url;
+                request.method = "POST";
+                request.contentType = "application/x-www-form-urlencoded";
+                request.body = "username=" + username + "&" + "password=" + password; // foo=bar+baz&x=1
+                request.withAuth = false; // not sents any json-session-key
+                request.go();
+                request.addEventListener("sc-request-response", function(evt) {
+                    // TODO.
+                    var response = evt.detail.response;
+                    console.log(response);
+                    // check if json returned has fields access_token, expires_at (default)
+                    var tokenValidated = self._checkResponse(response);
+                    if (tokenValidated) {
+                        // persist the json object into sessionStorage with sessionKey 
+                        self._setStorage(tokenValidated);
+                        this.goto();
+                    }
+                });  
+            }
+        },
+        logoff: function() {
+            window.localStorage.setItem(this.sessionKey, null);
+        },          
+        /************************** implicit methods ****************************/
+        /** `_checkSettedProperty` checks if the custom array to locate fields in 
+        * returned JSON is valid protecting against very deep validation. 
+        */
+        _checkSettedProperty: function(arr) {
+           if (arr.length > 0) {
+              if (arr.length > 3) {
+                  console.error('The length of the *accessTokenFields* must be three or less');
+              } else {
+                // success
+                return true;
+              }
+          } else {
+              console.warn('The *accessTokenFields* must be setted as type array.');
+          }
+          return false;
+        },
+        /** `_checkResponse` returns an object with access_token and expires_at.
+        * The flow for is based in the properties accessTokenField and 
+        * accessTokenExpiresAtField.
+        *
+        */        
+        _checkResponse: function(response) {
+            var response = response;
+            var token;
+            var expires;
+            var customFieldAccessToken;
+            var customFieldExpires;
+            
+            // access token checking...
+            if (!this._checkSettedProperty(this.accessTokenField)) {
+                // default is valid
+                return;
+            }
+            // expires checking...
+            if (!this._checkSettedProperty(this.accessTokenExpiresAtField)) {
+                // default is valid
+                return;
+            }
+            
+            // getting access token
+            switch(this.accessTokenField.length) {
+                case 1:
+                    token = response[this.accessTokenField[0]];
+                    customFieldAccessToken = this.accessTokenField[0];
+                    break;
+                case 2:
+                    var one = this.accessTokenField[0];
+                    var two = this.accessTokenField[1];
+                    token = response[one][two];
+                    customFieldAccessToken = this.accessTokenField[0][1];
+                    break;
+                case 3:
+                    var one = this.accessTokenField[0];
+                    var two = this.accessTokenField[1];
+                    var three = this.accessTokenField[2];
+                    token = response[one][two][three];
+                    customFieldAccessToken = this.accessTokenField[0][1][2];
+                    break;
+            }
+            // getting expires date
+            switch(this.accessTokenExpiresAtField.length) {
+                case 1:
+                    expires = response[this.accessTokenExpiresAtField[0]];
+                    customFieldExpires = this.accessTokenExpiresAtField[0];
+                    break;
+                case 2:
+                    var one = this.accessTokenExpiresAtField[0];
+                    var two = this.accessTokenExpiresAtField[1];
+                    // default is results, expires_at. We'll
+                    // put the catch statement because by default the
+                    // script pass by
+                    try {
+                        expires = response[one][two];    
+                        customFieldExpires = this.accessTokenExpiresAtField[0][1];
+                    } catch(err) {
+                       console.warn("Probably the default value for accessTokenExpiresAtField is invalid for this response.");
+                    }
+                    break;
+                case 3:
+                    var one = this.accessTokenExpiresAtField[0];
+                    var two = this.accessTokenExpiresAtField[1];
+                    var three = this.accessTokenExpiresAtField[2];
+                    customFieldExpires = this.accessTokenExpiresAtField[0][1][2];
+                    expires = response[one][two][three];
+                    break;
+            }            
+            // check if expires is number.
+            if (typeof(expires) !== "number") {
+                console.warn("The expires must be of type number (as seconds) but " + typeof(expires) + " was given.");
+                console.warn("The default (one month) value will be setted.");
+                if (this.setExpires > 0) {
+                    expires = this.setExpires;
+                } else {
+                    expires = 2569000; // one month. default expiration.
+                }
+            }
+            console.log(expires);
+            if ((token !== undefined) && (expires !== undefined)) {
+                // successful achieved 
+                this.accessToken = token;
+                this.accessTokenExpiresAt = expires;
+                return {"access_token": token, "expires_at": expires};
+            } else {
+                console.warn("The fields " + customFieldAccessToken + " and/or " +  customFieldExpires + " are empty.");
+                return undefined
+            }
+
+        },
+        _setStorage: function(tokenValidated) {
+            // TODO: webkit validations
+            var expirationDate = new Date();
+            expirationDate.setSeconds(expirationDate.getSeconds() + tokenValidated['expires_at']);
+            tokenValidated['expires_at'] = expirationDate;
+            sessionStorage.setItem(this.sessionKey, JSON.stringify(tokenValidated));
+        },
+        _getStorage: function(key) {
+            return JSON.parse(sessionStorage.getItem(key));
+        },
+        _checkSession: function() {
+            var now = new Date();
+            var expires_at = this._getStorage(this.sessionKey);
+            if (expires_at) {
+                expires_at = expires_at['expires_at'];
+            } else {
+                return false;
+            }
+            if (now > expires_at) {
+                return false; // expired
+            } else {
+                return true;
+            }
+        },
+        /** `goto` if successful go to page */
+        goto: function(home){
+            var page = home || siscomando.url.home;
+            window.location.href = page;
+        }
+        /* {problema:}
+        //{"message":"Valid credentials are required.","code":"security_unauthorized"}
+        // ou HTTP 401 Not Authorized status*/
+    });
+    </script>
+</dom-module>

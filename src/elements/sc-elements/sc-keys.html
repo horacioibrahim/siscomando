@@ -1,0 +1,82 @@
+<!--
+@license
+Copyright (c) 2016 Horacio Ibrahim. All rights reserved.
+
+This element providing a solution for listen pressed keys.
+
+Example:
+
+    <sc-keys></sc-keys>
+
+`callback` pass a handler to listen key pressed.
+`listenKey` listen the key passed as String here.
+
+
+-->
+<dom-module id="sc-keys">
+<script>
+    Polymer({
+       is: "sc-keys",
+       behaviors: [
+           Polymer.IronA11yKeysBehavior
+       ],
+       properties: {
+           pressed: {
+               type: String,
+               readOnly: true,
+               value: ''
+           },
+           preventDefault: {
+               type: Boolean,
+               value: true,
+               notify: true
+           },
+           keyEventTarget: {
+               type: Object,
+               value: document.body      
+           },
+           listenKey: {
+             type: String,
+             value: 'enter'
+           },
+           callback: {
+               type: Object,
+               value: null
+           }
+       },
+       keyBindings: {
+        '* pageup pagedown left right down up home end space enter @ ~ " $ ? ! \\ + : # backspace': '_updatePressed',
+        'a': '_updatePressed',
+        'shift+a alt+a': '_updatePressed',
+        'shift+tab shift+space': '_updatePressed'   
+       },
+       // "private" Methods
+       ready: function(){
+           //this.keyBindings = {};
+           //this.keyBindings[this.listenKey] = '_updatePressed';
+       },
+       _updatePressed: function(event){
+           
+           if (event.detail.combo === this.listenKey) {
+               // prevent default behavior and give opportunitie to handle with callback function.
+               this.preventDefault = true;
+           } else {
+               // to continue common behaviors.
+               this.preventDefault = false;
+           }
+           // reduntant to keep propertie preventDefault...
+           if (this.preventDefault) {
+               event.preventDefault();
+           }
+           // set this.pressed using internal function _setPropertie and
+           // calls the callback.
+           this._setPressed(event.detail.combo);
+           if (this.callback === null) {
+               console.warn('[warn] callback function can\'t be null.');
+               return ;
+           }
+           this.callback(this.pressed);
+       }
+    });  
+</script>
+</dom-module>

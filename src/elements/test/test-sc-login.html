@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../../assets/js/app.js"></script>
+    <link href="../elements.html" rel="import">
+    <style>
+        body {
+            color: black;
+        }
+    </style>
+</head>
+<body id="app" class="fullbleed" unresolved>
+
+<dom-module id="test-sc-login">
+    <template>
+        <sc-login id="login"></sc-login>
+    </template>
+    <script>
+        Polymer({
+            is: "test-sc-login",
+            // lifecycle...
+            ready: function() {
+              console.log("Starting tests..."); 
+              var login = this.$.login;
+              var simulateExpires = new Date();
+              simulateExpires.setSeconds(simulateExpires.getSeconds() + 10);
+              // test get access token valid
+              login.accessToken = "Astringanystringcontenttheminimalrequirementsfor32length";
+              // test:simulate returned JSON
+              login.accessTokenField = ['results', 'access_token'];
+              var returnedJSON = {"results": {
+                    "access_token": "alphanumber", 
+                    "expires_at": simulateExpires,
+                    "account": {
+                        "user_id": 100,
+                        "email": "xyz@example.com"
+                        }
+                      }
+                    }
+              var json_response = login._checkResponse(returnedJSON);
+              if (login._checkResponse(returnedJSON)){
+                  console.log("[Fail:simulate] test with returned JSON failed.");
+              } else {
+                  console.log("[Success:simulate] test with returned JSON wanted fail (number type).");
+              }
+              // test:seconds returned JSON
+              login.accessTokenField = ['results', 'access_token'];
+              var returnedJSON = {"results": {
+                    "access_token": "alphanumber", 
+                    "expires_at": 3600, // one hour
+                    "account": {
+                        "user_id": 100,
+                        "email": "xyz@example.com"
+                        }
+                      }
+                    }
+              var json_response = login._checkResponse(returnedJSON);
+              if (login._checkResponse(returnedJSON)){
+                  console.log("[Success:seconds] test with returned JSON OK.");
+              } else {
+                  console.log("[Fail:seconds] test with returned JSON failed.");
+              }                
+              // test _setStorage and get
+              login._setStorage(json_response);
+              var db_session = login._getStorage();
+              if (db_session){
+                if (db_session['access_token'] === "alphanumber") {
+                    console.log("[Success] test with _setStorage or _getStorage OK.");    
+                }
+              } else {
+                console.log("[Fail] test fail in _setStorage or _getStorage.");
+              }
+            
+            }
+            
+        });
+    </script>
+</dom-module>
+
+
+<test-sc-login></test-sc-login>
+    
+</body>
+</html>

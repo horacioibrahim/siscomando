@@ -9,6 +9,12 @@ Example:
 
     <sc-remote></sc-remote>
 
+Remember to set headers in th backend. e.g.:
+
+Access-Control-Allow-Headers: Content-Type,Authorization
+Access-Control-Allow-Methods: GET,POST,PUT 
+Access-Control-Allow-Origin: https://api.myapi.com
+
 TODO: 
     - We can to appreciate check an "updated" field for conditional requests with
       "If-Modified-Since"
@@ -17,6 +23,11 @@ TODO:
     below image for more intuition.
     (http://betterexplained.com/wp-content/uploads/compression/HTTP_caching_expires.png)
     - Or rather Expires date to use "max-age".
+    - sessionKey/tokenKey (or JWT token) is importante for all requests. The server will 
+    handle if or not reply the request based on sessionKey is expired r not. More:
+    http://stackoverflow.com/questions/20963273/spa-best-practices-for-authentication-and-session-management#answer-28259165 (Remember: Authorization: Bearer <token>)
+    - We to handler HTTP 401 Not Authorized status when sessionKey expired or not 
+    authorization must to generate 
 
 @demo demo/index.html
 @hero hero.svg
@@ -26,9 +37,11 @@ TODO:
     <template>
         <iron-ajax id="ajax"
            url={{url}}
+           method="{{method}}"
            handle-as="json"
            on-response="_handleResponse"
-           debounce-duration="300"></iron-ajax>  
+           debounce-duration="300"
+           withCredentials="true"></iron-ajax>  
          <sc-cache expires-time="{{expiresTime}}" id="cache"></sc-cache>
     </template>
     <script>
@@ -41,28 +54,37 @@ TODO:
                     reflectToAttribute: true
                 },
                 hashable_url: String,
+                auto: {
+                  type: Boolean,
+                  value: true
+                },
                 url: {
                   type: String,
                   observer: "_changedConfig"
+                },
+                method: {
+                    type: String,
+                    value: "GET"
                 },
                 body: {
                     type: Object,
                     observer: "_changedConfig"
                 },
                 contentType: {
-                    type: String,
-                    observer: "_changedConfig"
+                    type: String
                 },
                 headers: {
-                    type: String,
-                    observer: "_changedConfig"
+                    type: String
                 },
                 method: {
-                    type: String,
-                    observer: "_changedConfig"
+                    type: String
                 },
                 response: {
                     type: Object
+                },
+                withAuth: {
+                  type: Boolean,
+                  value: true
                 },
                 handleAsync: Object,
                 /** `responseFromRequest` response from iron-ajax */
@@ -72,7 +94,25 @@ TODO:
                 expiresTime: {
                     type: Number,
                     value: 10
-                }                
+                },
+                /** `jsonToken` a token for all requests. This token can be 
+                * generate by JWT flow.
+                */
+                jsonToken: String,
+                authMethod: {
+                    type: String,
+                    value: 'Basic' // Bearer, Token, etc...
+                }
+            },
+            ready: function() {
+              // set headers default for SPA context
+                if (this.withAuth) {
+                    var headers = {}
+                    // TODO: ask sc-login instead get from sessionStorage?
+                    var token = JSON.parse(sessionStorage.getItem(siscomando.SESSION_KEY)); 
+                    headers['Authorization'] = this.authMethod + ' ' + token;
+                    this.headers = headers;                    
+                }
             },
             /** `_changedConfig` to change sc-cache properties
             */
@@ -83,15 +123,22 @@ TODO:
                 ajax.body = this.body ? this.body : undefined;
                 ajax.method = this.method ? this.method : undefined;
                 ajax.contentType = this.contentType ? this.contentType : undefined;
-                ajax.headers = this.headers ? this.headers : undefined;
-                ajax.method = this.method ? this.method : undefined;
+                ajax.headers = this.headers;
                 
-                this.checkCache();
+                if (this.auto) {
+                    this.checkCache();    
+                }
+                
             },
             /** `_nameFromUrl` creates a hashable token from url
             */
             _nameFromUrl: function(url) {
                 return url.replace(/[\:\/\%\?\&\.\=\-\,]/g, '_') + '_api';
+            },
+            /** `go` calls checkCache. 
+            */
+            go: function() {
+              this.checkCache();  
             },
             checkCache: function(){
                 var self = this;

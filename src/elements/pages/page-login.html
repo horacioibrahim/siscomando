@@ -1,0 +1,92 @@
+<dom-module id="page-login">
+    <template>
+        <style>
+            :host {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: #135FB8;
+                /* background: linear-gradient(#53A0FD, #135FB8);*/
+                color: white;
+                font-family: Roboto;
+            }
+            .container {
+                @apply(--layout-vertical);
+                height: 100%;
+            }
+            .container .row:nth-child(1) {
+                @apply(--layout-flex-3);
+            }
+            .container .row:nth-child(2) {
+                @apply(--layout-flex-3);
+            }
+            .container .row:nth-child(3) {
+                @apply(--layout-flex-2);
+            }            
+            .container .row {
+                @apply(--layout-flex);
+                text-align: center;
+                vertical-align: middle;
+            }
+            .logo img {
+                margin-top: 15%;
+            }
+            .inputs {
+                padding: 40px 30px;
+                vertical-align: middle;
+            }
+            .actions {
+                margin-top: 20px;
+            }
+            .actions paper-button {
+                width: 80%;
+                background: #7ED321;
+            }
+            paper-input {
+                --paper-input-container-focus-color: rgba(255, 255, 255, 0.50);
+                --paper-input-container-input-color: #F9F9F9;
+            }
+        </style>
+        <div class="container">
+            <div class="row logo">
+                <img src="/assets/img/logo-login-page.png" width="120px">
+            </div>
+            <div class="row inputs">
+                <paper-input label="e-mail" id="inputUsername">
+                  <iron-icon icon="mail" prefix></iron-icon>
+                  <div suffix>@serpro.gov.br</div>
+                </paper-input>    
+                <paper-input label="senha" id="inputPassword" type="password">  
+                    <iron-icon icon="communication:vpn-key" prefix></iron-icon>
+                     <paper-icon-button suffix on-click="clearInputs" icon="clear" alt="clear" title="clear">
+                  </paper-icon-button>
+                </paper-input>
+            </div>
+            <div class="row actions"> 
+                <paper-button on-click="send">Entrar</paper-button>
+            </div>
+        </div>
+        <sc-login id="login"></sc-login>
+    </template>
+    <script>
+    Polymer({
+        is: "page-login",
+        ready: function() {
+            // sc-login.has_access_token'; sc-login.is_expired; sc-login.is_valid
+            this.$.login.url = siscomando.url.login;
+            this.$.login.accessTokenField = ['result', 'jsonKey'];
+            // this.$.login.accessTokenExpiresAtField = ['result', 'expires_at'];
+        },
+        clearInputs: function() {
+            this.$.inputUsername.value = '';
+            this.$.inputPassword.value = '';
+        },
+        send: function() {
+            var login = this.$.login;
+            var username = this.$.inputUsername.value;
+            var password = this.$.inputPassword.value;
+            login.authenticate(username, password);
+        }
+    });
+    </script>
+</dom-module>

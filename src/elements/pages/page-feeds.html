@@ -22,6 +22,9 @@
         /*width: 100%;
         height: 100%;*/
       }
+      paper-toolbar  .title {
+            margin-left: 30px;
+        }
       .container-feeds .rowOne, div.rowOne {
         positon: absolute;
         height: 100%;
@@ -45,6 +48,12 @@
             border-top: 1px solid rgba(0,0,0,.10);
           }
       }  
+      sc-form {
+            background-color: rgba(255,255,255,0.8);
+            /* padding-left: 10px;*/
+            padding-right: 6px;
+            border-top: 1px solid rgba(0,0,0,.10);          
+      }
       paper-input.short {
         width: 100%;
        }        
@@ -97,7 +106,8 @@
                     permissão para editar determinado feeds. (Não implementado).
                     -->
                     <div class="bottomInput">
-                        <paper-textarea flex class="short shadow-2dp main" label="O que você pode resolver..." id="inputLikeZap"></paper-textarea>
+                        <sc-form id="form"></sc-form>
+                        <sc-keys id="keys"></sc-keys>
                     </div>
                 </div> 
             </div>                 
@@ -118,13 +128,50 @@
           hashtag: {
               type: String,
               observer: 'hashtagChanged'
+          },
+          urlPost: {
+              type: String,
+              value: siscomando.url.feeds
           }
       },
+      // lifecyle....
+      ready: function() {
+          var self = this;
+          var keys = this.$.keys;
+          var form = this.$.form;
+          form.url = this.urlPost;
+          // keys.keyEventTarget = this.$.form;
+          keys.callback = function(keyPressed) {
+              // if sc-keys ha pressed (keyPressed) equal 'enter'
+              // send form.
+              if (keyPressed === 'enter') {
+                  // to pass body for sc-form.
+                  self.$.form.body = { // requirements fields for to post a feed. E.g.: Schema
+                    /*{
+                      "announcer" : "mauro.naves",
+                      "timestamp" : 1447183050,
+                      "body" : "Os resultados traduzem um problema no escopo das definições do processo.",
+                      "has_avatar" : true,
+                      "image" : "https://randomuser.me/api/portraits/thumb/men/70.jpg",
+                      "target" : "2015RI/00000145",
+                      "target_hashtag" : "2015RI00000145",
+                      "hashtag" : "bicorporativo",
+                      "type" : "system"
+                    }*/
+                    announcer: 'horacio.moreira',
+                    timestamp: Date.now(),
+                    body: '', // data will be inserted by sc-form
+                    hashtag: this.hashtag
+                  }
+                  self.$.form.go();   
+              }
+          };
+      },
+      // locals methods...
       hashtagChanged: function() {          
           var hashtag = this.hashtag;
+          this.title = hashtag;
           this.$.feeds.hashtag = hashtag;
-          //this.title = hashtag;
-          
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);

@@ -215,27 +215,27 @@ Example:
               <!-- div header -->
               <div class="content" on-tap="selectItem">
                   <div class="service-item-headers service-item-header">
-                    <div class="flexchild"><h3>[[item.service]]</h3></div>
+                    <div class="flexchild"><h3>[[item.value.service]]</h3></div>
                     <!-- TODO: create method to add new-message class -->
-                    <div><div class="service-counter">[[item.opened_ticket]]</div></div>
+                    <div><div class="service-counter">[[item.value.opened_ticket]]</div></div>
                   </div>
                   <!-- div subheader -->
                   <div class="service-item-headers service-item-subheader">
-                    <span>[[item.hashtag]]</span>
+                    <span>[[item.value.hashtag]]</span>
                     <!-- colocar um filter momentjs aqui quando integrado com meteor -->
                     <span>
-                      <sc-timeago datetime="[[_convertTimestamp(item.lastMessage.timestamp)]]"></sc-timeago>
+                      <sc-timeago datetime="[[_convertTimestamp(item.value.lastMessage.timestamp)]]"></sc-timeago>
                     </span>
                   </div>
                   <!-- div message -->
                   <div class="service-item-body">
-                    <template is="dom-if" if="{{item.lastMessage.user.avatar}}">
+                    <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
                         <div class="avatarBox">
-                            <img src="[[item.lastMessage.user.avatar]]">
+                            <img src="[[item.value.lastMessage.user.avatar]]">
                         </div>
                     </template>                          
                     <div class="service-item-body-content">                       
-                      [[item.lastMessage.body]]
+                      [[item.value.lastMessage.body]]
                     </div>
                   </div>
               </div>
@@ -299,22 +299,21 @@ Example:
         */
         dialogItemSelected: {
           type: Object
-        }
+        },
+        callbackResponse: Object
       },
 
       // Element Lifecycle
       ready: function () {
           var self = this;
           var request = this.$.request;
-          request.url = siscomando.url.home;
+          // setup callback
+          this.callbackResponse = this.callbackToResponse;
+          request.url = siscomando.url.channels;
           request.addEventListener('sc-request-response', function(e){
-             self.documents = e.detail.response;
+             res = self.callbackResponse(e.detail.response);
+             self.documents = res; //e.detail.response;
           });
-      },
-      // Ajax response
-      ajaxResponse: function(event) {
-          // DEPRECATED
-          this.documents = event.detail.response;
       },
       // Selection Behavior
       selectItem: function(e) {
@@ -324,7 +323,7 @@ Example:
        *
        */
       _selectItem: function(e){
-        var hashtag = e.model.item.hashtag;
+        var hashtag = e.model.item.value.hashtag; // closed with backend #CWB
         // if new selected item was already prevously selected
         // we must unselect it. ELSE ..
         // to select new item and fire 'home-selected' event.
@@ -392,6 +391,11 @@ Example:
         // activing ...
         // change and add class enabled for #
         this.$.dialog.open();
+      },
+      callbackToResponse: function(response) {
+          // console.log(response);
+          // TODO: um personalizavel map-reduce.
+          return response;
       }
     });
   </script>

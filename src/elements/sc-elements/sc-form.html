@@ -1,0 +1,89 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+
+<!--
+An element providing a form components and suport the methods POST and GET
+
+Example:
+
+    <sc-form method="POST" url="/message" field="textarea"></sc-form>
+
+Example:
+
+    <sc-form>
+    </sc-form>
+
+@demo demo/index.html
+@hero hero.svg
+@Event `sc-form-response` if REST API reply exists.
+-->
+
+<dom-module id="sc-form">
+<template>
+<style>
+    :host {
+        font-family: Roboto;
+        width: 100%;
+        background: white;
+    }
+    .container {
+        background-color: white;
+        margin-left: 8px;
+        margin-right: 16px;
+    }
+    .container iron-autogrow-textarea {
+        width: 100%;
+        min-height: 30px;
+        border: 0;
+        color: rgba(0,0,0,0.75);
+    }
+</style>
+    <div class="container">
+        <iron-autogrow-textarea flex class="short shadow-2dp main" 
+            max-rows="4" 
+            placeholder="O que você pode resolver..."
+            autofocus
+            maxlength="240"
+            bind-value="{{bindValue}}"></iron-autogrow-textarea>
+    </div>
+    <sc-request id="request"></sc-request>
+</template>
+<script>
+    Polymer({
+       is: "sc-form",
+       properties: {
+           url: String,
+           method: {
+              type: String,
+              value: "POST"
+           },
+           field: { // not implemented
+              type: String,
+              value: 'textarea'
+           },
+           bindValue: String,
+           /** `body` join bindValue and all required fields to build 
+           * the payload for POST.
+           * Remember: this is body of the JSON's payload. But the application 
+           * must have a field 'body' to receive the value of this form
+           * field, in this case, we have used textarea.
+           */
+           body: Object
+       },
+       // public methods 
+       go: function() {
+           var request = this.$.request;
+           this.body['body'] = this.bindValue; // The object this.body forever must have 'body'.
+           request.auto = false;
+           request.url = this.url;
+           request.body = this.body;
+           request.method = this.method;
+           request.contentType = 'application/json';
+           request.checkCache();
+       }
+    });
+</script>
+</dom-module>

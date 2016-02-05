@@ -17,8 +17,9 @@ Example:
     </template>
     <script>
       (function(){
-        const dbName = "scdb_v1";
+        const dbName = "scdb_v2";
         var transaction = transaction || {};
+        var db;
     
         /** fallbacks for find object default. the actions below are useful
         * to find the indexedDB object in the many browsers or raise alert. 
@@ -35,7 +36,7 @@ Example:
         /** Initializing database. This opens existent database or create a new. 
         * 
         **/
-        var request = window.indexedDB.open(dbName, 6);
+        var request = window.indexedDB.open(dbName, 1);
         request.onblocked = function(event) {
           // Se existe outra aba com a versão antiga
           var msg = "Existe uma versão antiga da web app aberta em outra aba, feche-a por favor!"
