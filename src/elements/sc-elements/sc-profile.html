@@ -118,7 +118,7 @@ Example:
       </div>
       <div class="logoff">
         <div>
-          <paper-item>
+          <paper-item on-click="exit">
             <iron-icon icon="exit-to-app" item-icon></iron-icon>
               Sair
             </paper-item>
@@ -191,7 +191,10 @@ Example:
       },
       _changeUser: function() {
           this.firstChar = this.user.username[0];
-      }    
+      },
+      exit: function() {
+          this.fire('sc-profile-exit');
+      }
     });
   </script>
 </dom-module>

@@ -36,6 +36,11 @@
             username: currentUser.result.account.accountFirstName,
             avatar: null
           }
+          this.$.profile.addEventListener('sc-profile-exit', function(){
+             sessionStorage.setItem('currentUser', null);
+             sessionStorage.setItem(siscomando.SESSION_KEY, null);
+             window.location.href = '/';
+          });
       },
       _historyBack: function() {
         history.back();
