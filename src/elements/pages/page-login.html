@@ -86,6 +86,10 @@
             var username = this.$.inputUsername.value;
             var password = this.$.inputPassword.value;
             login.authenticate(username, password);
+            login.addEventListener('sc-login-response', function(evt) {
+               // handling returned data.
+               sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
+            });
         }
     });
     </script>

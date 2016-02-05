@@ -58,6 +58,21 @@ Example:
         background-color: #CCC;
         overflow: hidden;
       }
+      .avatar span {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.12);
+        width: 60px;
+        height: 60px;
+        padding: 50px;
+        right: 0;
+        margin-right: 40px;
+        font-size: 4em;
+        font-weight: 300;
+        color: rgba(255,255,255,0.86);
+        /* margin: 10px auto; */
+        margin-top: 20px;
+      }
       .username {
         padding: 20px;
         font-weight: 700;
@@ -83,6 +98,7 @@ Example:
     <div class="container">
       <div class="actions">
             <div class="avatar">
+                <span id="letter">{{firstChar}}</span>
             </div>
             <div class="username">
               {{user.username}}
@@ -136,10 +152,13 @@ Example:
         */
         user: {
           type: Object,
-          value: {username: "horacio.moreira",
-                  avatar: "https://avatars.githubusercontent.com/u/1104460?v=3"
-          }
+          value: {
+              username: "horacio.moreira",
+              avatar: null
+          },
+          observer: '_changeUser'
         },
+        firstChar: String,
         /**
          * `fancy` indicates that the element should don a monocle and tophat,
          * while checking its pocket watch.
@@ -155,16 +174,24 @@ Example:
       },
 
       // Element Lifecycle
-
       ready: function() {
+          
       },
-
       attached: function() {
         var avatarPlace = this.querySelector('.avatar');
-        avatarPlace.style.background = 'url(' + this.user.avatar + ')';
-        avatarPlace.style.backgroundSize = '75%';
-        avatarPlace.style.backgroundSize = 'cover';
-      }
+        if (this.user.avatar) {
+            avatarPlace.style.background = 'url(' + this.user.avatar + ')';
+            avatarPlace.style.backgroundSize = '75%';
+            avatarPlace.style.backgroundSize = 'cover'; 
+            this.$.letter.style.display = 'none';
+        } else {
+            avatarPlace.style.backgroundColor = '#3F51B5';
+            this.$.letter.style.display = 'block';
+        }
+      },
+      _changeUser: function() {
+          this.firstChar = this.user.username[0];
+      }    
     });
   </script>
 </dom-module>

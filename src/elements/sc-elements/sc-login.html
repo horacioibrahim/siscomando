@@ -95,6 +95,11 @@ Example:
             setExpires: {
                 type: Number,
                 value: 0
+            },
+            response: {
+                type: Object,
+                value: null,
+                observer: '_responseChanged'
             }
         },
         ready: function() {
@@ -122,22 +127,26 @@ Example:
                 request.withAuth = false; // not sents any json-session-key
                 request.go();
                 request.addEventListener("sc-request-response", function(evt) {
-                    // TODO.
                     var response = evt.detail.response;
-                    console.log(response);
                     // check if json returned has fields access_token, expires_at (default)
                     var tokenValidated = self._checkResponse(response);
+                    self.response = response;
                     if (tokenValidated) {
                         // persist the json object into sessionStorage with sessionKey 
                         self._setStorage(tokenValidated);
-                        this.goto();
+                        self.goto();
                     }
                 });  
             }
         },
         logoff: function() {
             window.localStorage.setItem(this.sessionKey, null);
-        },          
+        }, 
+        /** `goto` if successful go to page */
+        goto: function(home){
+            var page = home || siscomando.url.home;
+            window.location.href = page;
+        },        
         /************************** implicit methods ****************************/
         /** `_checkSettedProperty` checks if the custom array to locate fields in 
         * returned JSON is valid protecting against very deep validation. 
@@ -235,7 +244,6 @@ Example:
                     expires = 2569000; // one month. default expiration.
                 }
             }
-            console.log(expires);
             if ((token !== undefined) && (expires !== undefined)) {
                 // successful achieved 
                 this.accessToken = token;
@@ -271,10 +279,8 @@ Example:
                 return true;
             }
         },
-        /** `goto` if successful go to page */
-        goto: function(home){
-            var page = home || siscomando.url.home;
-            window.location.href = page;
+        _responseChanged: function() {
+            this.fire('sc-login-response', {response: this.response});
         }
         /* {problema:}
         //{"message":"Valid credentials are required.","code":"security_unauthorized"}

@@ -22,7 +22,7 @@
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
             </paper-toolbar>
             <!-- who is main class -->
-            <sc-profile class="fit"></sc-profile>              
+            <sc-profile id="profile" class="fit"></sc-profile>              
           </paper-header-panel>
     </drawer-panel-layout>
 
@@ -30,7 +30,13 @@
   <script>
     Polymer({
       is: 'page-profile',
-      
+      ready: function() {
+          var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+          this.$.profile.user = {
+            username: currentUser.result.account.accountFirstName,
+            avatar: null
+          }
+      },
       _historyBack: function() {
         history.back();
     }         
