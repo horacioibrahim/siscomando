@@ -10,6 +10,12 @@ if [ ! -z "$WEINER" ]
     sed -i.bak "s/<\/body>/$WEINER/g" src/index.html
 fi
 
+realpath() {
+  [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"
+}
+
+DIRECTORY_PROJECT=`realpath`
+
 # Vulcanize
 vulcanize --strip-comments --inline-css src/index.html > scapp/www/index.html
 
@@ -21,7 +27,9 @@ cp -r src/assets/img/* scapp/www/img/
 mv src/index.html.bak src/index.html
 
 # Deploy cordova
-cd /Users/horacioibrahim/Developer/projetos/siscomando_mobile/scapp
+cd DIRECTORY_PROJECT 
+cd scapp
+
 cordova build android
 # if android device connected will work fine!
 cordova run android
