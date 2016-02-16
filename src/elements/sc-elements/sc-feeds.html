@@ -259,14 +259,7 @@ Example:
             type: String,
             notify: true,
             observer: '_hashtagChanged',
-            value: null,
         },
-        /**
-         * `fancy` indicates that the element should don a monocle and tophat,
-         * while checking its pocket watch.
-         */
-        fancy: Boolean,
-
         /**
          * Describes the author of the element, but is really just an excuse to
          * show off JSDoc annotations.
@@ -373,7 +366,7 @@ Example:
         if ('target_hashtag' in e.model.message.value) { // #CWB: closed with backend
           // Nows we sure that back history
           window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
-          // ativar botao voltar
+          
         }
 
       }
