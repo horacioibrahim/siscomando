@@ -37,6 +37,7 @@ Example:
         * 
         **/
         var request = window.indexedDB.open(dbName, 1);
+
         request.onblocked = function(event) {
           // Se existe outra aba com a versão antiga
           var msg = "Existe uma versão antiga da web app aberta em outra aba, feche-a por favor!"
@@ -55,8 +56,48 @@ Example:
 
         request.onsuccess = function() {
           db = request.result;
-          // console.log(db);
           useDatabase(db);
+            /** `txInsert` creates a transaction to insert data on object store
+            * and return it to handle the "oncomplete". You must to implement it as:
+            *
+            * tx.oncomplete = function(){
+            *      // all requests have succeeded and the transaction has commited
+            *  }
+            *
+            * @objItems: array with items. Remember: must be exist hashable_url in 
+            * each item.
+            **/
+            txInsert = function(objItems) {
+              var tx = db.transaction("requests", "readwrite");
+              var store = tx.objectStore("requests");
+              for (var i in objItems) {
+                  store.put(objItems[i]);
+              } 
+              return tx
+            };
+            /** `txReadOne` gets item on object store
+            * and return it (request) to handle the "onsuccess". You must to implement the
+            * onsuccess as:
+            *
+            *  request.onsuccess = function(evt) {
+            *      console.log(evt.target.result);
+            *
+            **/        
+            txReadOne = function(query) {
+              if (!db) {
+                  console.log('db object not defined!');
+              }
+              // Uncaught TypeError: Cannot read property 'transaction' of undefined
+              var tx = db.transaction("requests", "readonly");
+              var store = tx.objectStore("requests");
+              var index = store.index("hashable_url");
+              var request = index.get(query);
+              return request;
+            };  
+
+            // "public" methods
+            transaction.insert = txInsert;
+            transaction.getItem = txReadOne;            
           return;
         };
         
@@ -78,43 +119,9 @@ Example:
           };   
             
         }
-        /** `txInsert` creates a transaction to insert data on object store
-        * and return it to handle the "oncomplete". You must to implement it as:
-        *
-        * tx.oncomplete = function(){
-        *      // all requests have succeeded and the transaction has commited
-        *  }
-        *
-        * @objItems: array with items. Remember: must be exist hashable_url in 
-        * each item.
-        **/
-        txInsert = function(objItems) {
-          var tx = db.transaction("requests", "readwrite");
-          var store = tx.objectStore("requests");
-          for (var i in objItems) {
-              store.put(objItems[i]);
-          } 
-          return tx
-        };
-        /** `txReadOne` gets item on object store
-        * and return it (request) to handle the "onsuccess". You must to implement the
-        * onsuccess as:
-        *
-        *  request.onsuccess = function(evt) {
-        *      console.log(evt.target.result);
-        *
-        **/        
-        txReadOne = function(query) {
-          var tx = db.transaction("requests", "readonly");
-          var store = tx.objectStore("requests");
-          var index = store.index("hashable_url");
-          var request = index.get(query);
-          return request;
-        };  
-        
-        // "public" methods
-        transaction.insert = txInsert;
-        transaction.getItem = txReadOne;
+          
+        /** Polymer scope **/
+        /*******************/
           
         Polymer({
             is: 'sc-cache',
