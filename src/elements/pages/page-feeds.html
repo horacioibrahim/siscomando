@@ -180,8 +180,6 @@
           var feeds = document.querySelector('sc-feeds#feeds.page-feeds');
           var self = document.querySelector('page-feeds');
           var docs = feeds.documents.slice();
-          console.log("check response: ");
-          console.log(evt.detail.response); // check response
           docs.push(evt.detail.response);
           feeds.documents = docs.slice();
           feeds.playAnimation();
@@ -191,7 +189,6 @@
       * show.
       */
       scrollDown: function() {
-          console.log('scroll running...'); 
           var element = document.querySelector('.rowOne');
           element.scrollTop = element.scrollHeight;        
       }        
