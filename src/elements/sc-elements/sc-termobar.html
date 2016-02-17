@@ -129,7 +129,9 @@
       /* The backend end could to send the TOP5 class from workflow */
       data: {
         type: Array,
-        value: [],
+        value: function(){
+            return []
+        },
         observer: "_computeData"
       },
       limit: {
@@ -138,7 +140,9 @@
       },
       _data : {
         type: Array,
-        value: []
+        value: function(){
+            return []
+        }
       }
     },
     ready: function() {

@@ -131,7 +131,7 @@
           },
           urlPost: {
               type: String,
-              value: siscomando.url.feeds
+              value: siscomando.url.feeds // Nas paginas eh local das configurações especificas da app. 
           }
       },
       // lifecyle....
@@ -139,35 +139,32 @@
           var self = this;
           var keys = this.$.keys;
           var form = this.$.form;
+          var feeds = this.$.feeds;
           form.url = this.urlPost;
           // keys.keyEventTarget = this.$.form;
           keys.callback = function(keyPressed) {
-              // if sc-keys ha pressed (keyPressed) equal 'enter'
-              // send form.
-              if (keyPressed === 'enter') {
-                  // to pass body for sc-form.
-                  self.$.form.body = { // requirements fields for to post a feed. E.g.: Schema
-                    /*{
-                      "announcer" : "mauro.naves",
-                      "timestamp" : 1447183050,
-                      "body" : "Os resultados traduzem um problema no escopo das definições do processo.",
-                      "has_avatar" : true,
-                      "image" : "https://randomuser.me/api/portraits/thumb/men/70.jpg",
-                      "target" : "2015RI/00000145",
-                      "target_hashtag" : "2015RI00000145",
-                      "hashtag" : "bicorporativo",
-                      "type" : "system"
-                    }*/
-                    announcer: 'horacio.moreira',
-                    timestamp: Date.now(),
-                    body: '', // data will be inserted by sc-form
-                    hashtag: this.hashtag
-                  }
-                  self.$.form.go();   
+              // if sc-keys has pressed (keyPressed) equal 'enter' so go().
+              if (keyPressed === 'enter') {                
+                  self.$.form.body = self.setBody();
+                  // Header authorization: Basic TOKEN is already attached
+                  self.$.form.go();
+                  self.$.form.$.request.addEventListener('sc-request-response', self._updateAfterPOST);
               }
           };
       },
-      // locals methods...
+      // Custom behavior. //
+        
+      /** `setBody` sets the fields app's schema.*/
+      setBody: function() {
+        var body = {};
+        var currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
+        // body['announcer'] = 'horacio.moreira'; // handler by JSON Token
+        // to solve with body['timestamp'] = Date.now();
+        body['body'] = this.$.form.bindValue;
+        body['hashtag'] = this.hashtag; 
+        
+        return body
+      },
       hashtagChanged: function() {          
           var hashtag = this.hashtag;
           this.title = hashtag;
@@ -178,7 +175,26 @@
       },
       _historyBack: function() {
         history.back();
-    }
+      },
+      _updateAfterPOST: function(evt) {
+          var feeds = document.querySelector('sc-feeds#feeds.page-feeds');
+          var self = document.querySelector('page-feeds');
+          var docs = feeds.documents.slice();
+          console.log("check response: ");
+          console.log(evt.detail.response); // check response
+          docs.push(evt.detail.response);
+          feeds.documents = docs.slice();
+          feeds.playAnimation();
+          this.async(self.scrollDown, 600);
+      },
+      /** `scrollDown` moves scroll to down making last update to be 
+      * show.
+      */
+      scrollDown: function() {
+          console.log('scroll running...'); 
+          var element = document.querySelector('.rowOne');
+          element.scrollTop = element.scrollHeight;        
+      }        
     });
   </script>
 </dom-module>
