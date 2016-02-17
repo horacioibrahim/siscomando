@@ -17,9 +17,10 @@ Install all requirements.
 For successfully deployment you need kwnow that basically the cordova project already was created and the "deployment flow" is only to build .html, .js, .css and images to `DIRECTORY_PROJECT/scapp/www` folder. The 
 `www` folder is a concept from cordova's projects (if you uses it. you knows).
     
-# Deploy in the device: 
+# Deploy in the device (in the terminal): 
     1. Connect the device
-    2. Check if it's connected with: $ adb devices (you can need run adb without arguments to run adb server)
+    2. Check if it's connected with: 
+        $ adb devices (you can need run adb without arguments to run adb server)
     3. Run custom script: 
         $ cd DIRECTORY_PROJECT/
         $ ./deploy.sh

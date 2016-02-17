@@ -19,6 +19,13 @@ Example:
 
 @demo demo/index.html
 @hero hero.svg
+
+
+TODO:
+ - pagination with scroll top-down
+ - update via listener
+ - update after post before persistence.
+
 -->
 
 <dom-module id="sc-feeds">
@@ -209,7 +216,11 @@ Example:
                      <sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago>
                    </div>                     
                  </div>
-                 <div class="item-target">[[message.value.target]]</div>
+                 <template is="dom-if" if="[[message.value.target]]">
+                    <div class="item-target">
+                         [[message.value.target]]
+                    </div>
+                 </template>
                  <div class="item-text">
                    <marked-element markdown="[[message.value.body]]">
                      <div class="markdown-html"></div>
@@ -253,7 +264,7 @@ Example:
          * `document` array content the items for iron-list.
          */
         documents: {
-          type: Object
+          type: Array
         },
         hashtag: {
             type: String,
@@ -292,7 +303,6 @@ Example:
           // this._setUrl('all');
           request.addEventListener('sc-request-response', function(evt){
               self.documents = evt.detail.response.results;
-              //self.fire('feeds-updated', {type: self.documents.type});
               self.playAnimation();
           });
       },
@@ -368,7 +378,6 @@ Example:
           window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
           
         }
-
       }
     });
   </script>

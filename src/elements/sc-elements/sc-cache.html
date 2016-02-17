@@ -97,7 +97,8 @@ Example:
 
             // "public" methods
             transaction.insert = txInsert;
-            transaction.getItem = txReadOne;            
+            transaction.getItem = txReadOne; 
+            
           return;
         };
         
@@ -155,11 +156,23 @@ Example:
             },
             getCache: function(query_hashable_url) {
                 var self = this;
-                var r = transaction.getItem(query_hashable_url);
-                r.onsuccess = function(evt) {
-                    self.lastResponse = evt.target.result;
-                    self.fire("sc-cache", {response: evt.target.result});
+                var r;
+                
+                if (!transaction.getItem) {
+                    this.async(function(){
+                        r = transaction.getItem(query_hashable_url);
+                    }, 300);
+                } else {
+                    r = transaction.getItem(query_hashable_url);
                 }
+                
+                if (r) {
+                    r.onsuccess = function(evt) {
+                        self.lastResponse = evt.target.result;
+                        self.fire("sc-cache", {response: evt.target.result});
+                    }                    
+                }
+
             }
         });          
       }());

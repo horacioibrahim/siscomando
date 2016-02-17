@@ -65,24 +65,24 @@ Example:
               value: 'textarea'
            },
            bindValue: String,
-           /** `body` join bindValue and all required fields to build 
-           * the payload for POST.
-           * Remember: this is body of the JSON's payload. But the application 
-           * must have a field 'body' to receive the value of this form
-           * field, in this case, we have used textarea.
+           /** `body` is the payload for POST. See: 
+           * https://elements.polymer-project.org/elements/iron-ajax
+           * 
            */
            body: Object
        },
        // public methods 
        go: function() {
-           var request = this.$.request;
-           this.body['body'] = this.bindValue; // The object this.body forever must have 'body'.
+           var request = this.$.request;       
+           // This is body of the request (or JSON payload)
            request.auto = false;
            request.url = this.url;
-           request.body = this.body;
+           request.body = JSON.stringify(this.body);
            request.method = this.method;
            request.contentType = 'application/json';
-           request.checkCache();
+           request.noCache = true; // request without verify cache.
+           request.go();
+           this.bindValue = '';
        }
     });
 </script>
