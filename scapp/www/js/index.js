@@ -34,6 +34,8 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
+        // initialize db
+        var db = window.sqlitePlugin.openDatabase({name: "siscomando_v1.db"});
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
