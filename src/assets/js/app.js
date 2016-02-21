@@ -12,13 +12,13 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'http://localhost:9000'
+siscomando.REMOTE_ADDR = 'http://192.168.1.104:9000'
 siscomando.SESSION_KEY = 'scdata' // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
 /* Siscomando URL's */
 siscomando.url = {
-  home: '/#/home',
+  home: '#/home',
   channels: siscomando.REMOTE_ADDR + '/channels',
   feeds: siscomando.REMOTE_ADDR + '/feeds',
   login: siscomando.REMOTE_ADDR + '/loginexp'

@@ -27,7 +27,7 @@ cp -r src/assets/img/* scapp/www/img/
 mv src/index.html.bak src/index.html
 
 # Deploy cordova
-cd DIRECTORY_PROJECT 
+cd $DIRECTORY_PROJECT 
 cd scapp
 
 cordova build android

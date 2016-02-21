@@ -83,10 +83,10 @@ Example:
                       <div class="card-content">
                         <div class="checkbox">
                           <template is="dom-if" if="{{item.following}}">
-                            <paper-checkbox noink checked></paper-checkbox>
+                            <paper-checkbox noink="true" checked></paper-checkbox>
                           </template>
                           <template is="dom-if" if="{{!item.following}}">
-                            <paper-checkbox noink></paper-checkbox>
+                            <paper-checkbox noink="true"></paper-checkbox>
                           </template>
                         </div>
                         <div class="title">

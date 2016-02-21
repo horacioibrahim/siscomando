@@ -95,6 +95,9 @@
             login.authenticate(username, password);
             login.addEventListener('sc-login-response', function(evt) {
                // handling returned data.
+               if (evt.detail.response.result.success == "false") {
+                
+               }
                sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
             });
         }
