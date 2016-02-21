@@ -32,17 +32,18 @@
     Polymer({
       is: 'page-profile',
       ready: function() {
+          var self = this;
           var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
           if (!(currentUser) || !(currentUser.result.account)) {
-            window.location.href = '/';
             this.clearSession();
+            window.location.href = '/';
           } 
           this.$.profile.user = {
             username: currentUser.result.account.accountFirstName,
             avatar: null
           }
           this.$.profile.addEventListener('sc-profile-exit', function(){
-            this.clearSession();
+            self.clearSession();
              /* CHANGED: to support crosswalk 
              * window.location.href = '/';
              */
