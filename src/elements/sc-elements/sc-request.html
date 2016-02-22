@@ -158,7 +158,7 @@ TODO:
                     return;
                 }
                 var cache = this.$.cache;
-                cache.getCache(self.hashable_url);
+                // first listen
                 cache.addEventListener('sc-cache', function(evt){
                     if (evt.detail.response) {
                         // Main action
@@ -170,15 +170,15 @@ TODO:
                         
                         // check if response is expired so make update.
                         if (self.checkExpired(expires)) {
+                            console.log("marked as expired");
                             self._callBackRequest();    
                         }
                     } else  {
+                        console.log("marked as not cached");
                         self._callBackRequest();
                     }
-                    // or runs async tasks for update cache. To verify if response
-                    // from iron-ajax is not equal response from cache.
-                    // self.handleAsync = this.async(self._callBackRequest(), 300);
                 });
+                cache.getCache(self.hashable_url); 
             },
             _callBackRequest: function() {
                 this.$.ajax.generateRequest();
@@ -189,14 +189,18 @@ TODO:
                 var cache = this.$.cache;
                 var hashable_url = this.hashable_url;
                 var response = evt.detail.response;
-                self.responseFromRequest = response;
+                this.responseFromRequest = response;
+
                 // Main action
                 this._responseAfterFlow(response); // levanta o evento
+
                 if (!this.responsesIsEquals()) {
-                    cache.putCache(hashable_url, response); // atualizao cache com novos informacoes.    
+                    cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.    
                 }
             },
             _responseAfterFlow: function(response) {
+                console.log("res: ");
+                console.log(response);
                 this.fire("sc-request-response", {"response": response});
             },
             /** `checkExpired` returns true if cache data is expired or false

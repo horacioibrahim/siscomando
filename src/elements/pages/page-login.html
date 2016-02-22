@@ -73,14 +73,16 @@
                 <paper-button on-click="send">Entrar</paper-button>
             </div>
         </div>
-        <sc-login id="login"></sc-login>
+        <sc-login id="login" url-after-logged="#/home"></sc-login>
     </template>
     <script>
     Polymer({
         is: "page-login",
         ready: function() {
+            // SETUP sc-login: 
             // sc-login.has_access_token'; sc-login.is_expired; sc-login.is_valid
             this.$.login.url = siscomando.url.login;
+            this.$.login.urlAfterLogged = siscomando.url.home;
             this.$.login.accessTokenField = ['result', 'jsonKey'];
             // this.$.login.accessTokenExpiresAtField = ['result', 'expires_at'];
         },
@@ -92,12 +94,16 @@
             var login = this.$.login;
             var username = this.$.inputUsername.value;
             var password = this.$.inputPassword.value;
+            var home = siscomando.url.home;
             login.authenticate(username, password);
             login.addEventListener('sc-login-response', function(evt) {
-               // handling returned data.
+               // handling returned data specific this app.
                if (evt.detail.response.result.success == "false") {
-                
+                 console.log("Invalid login.");
+               } else {
+                 login.goto(home);
                }
+
                sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
             });
         }

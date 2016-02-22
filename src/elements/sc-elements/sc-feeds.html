@@ -302,7 +302,7 @@ TODO:
           var request = this.$.request;
           // this._setUrl('all');
           request.addEventListener('sc-request-response', function(evt){
-              self.documents = evt.detail.response.results;
+              self.documents = evt.detail.response;
               self.playAnimation();
           });
       },

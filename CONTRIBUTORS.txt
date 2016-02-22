@@ -1,4 +1,4 @@
-Thi file contains a list of people who have made large contributions
+This file contains a list of people who have made large contributions
 to the public version of the Siscomando.
 
 Original design and implementation of the core business: 
