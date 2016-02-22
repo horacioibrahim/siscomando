@@ -241,7 +241,6 @@ Example:
 
       }
     </style>
-
     <sc-request expires-time="600" id="request"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
@@ -438,8 +437,7 @@ Example:
         this.$.dialog.open();
       },
       callbackToResponse: function(response) {
-          // console.log(response);
-          // TODO: um personalizavel map-reduce.
+          // TODO: create your map-reduce.
           return response;
       },
       _computedClassAvatar: function(username) {
