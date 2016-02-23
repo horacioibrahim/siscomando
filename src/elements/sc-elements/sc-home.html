@@ -34,7 +34,11 @@ Example:
       }
       /* News */
       .list-container {
-        height: 100%;
+        /* ancestor of iron-list need explicit height 
+        * see more: https://github.com/PolymerElements/iron-list/issues/73
+        */
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
         width: 100%;
         /* overflow-y: scroll; vulcanized problems */
 
@@ -51,7 +55,7 @@ Example:
         padding-left: 8px;
         padding-right: 6px;
         cursor: pointer;
-        min-height: 80px;
+        min-height: 40px;
         text-overflow: ellipsis;
       }
       .content {
@@ -241,7 +245,7 @@ Example:
 
       }
     </style>
-    <sc-request expires-time="600" id="request"></sc-request>
+      <sc-request expires-time="600" id="request" no-cache="true"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
       <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
@@ -250,9 +254,9 @@ Example:
               <!-- div header -->
               <div class="content" on-tap="selectItem">
                   <div class="service-item-headers service-item-header">
-                    <div class="flexchild"><h3>[[item.value.service]]</h3></div>
+                    <div class="flexchild"><h3>[[item.value.name]]</h3></div>
                     <!-- TODO: create method to add new-message class -->
-                    <div><div class="service-counter">[[item.value.opened_ticket]]</div></div>
+                    <div><div class="service-counter">[[item.value.open]]</div></div>
                   </div>
                   <!-- div subheader -->
                   <div class="service-item-headers service-item-subheader">
@@ -262,27 +266,24 @@ Example:
                       <sc-timeago datetime="[[_convertTimestamp(item.value.lastMessage.timestamp)]]"></sc-timeago>
                     </span>
                   </div>
-                  <!-- div message -->
-                  <div class="service-item-body">
-                    <div class$="[[_computedClassAvatar(item.value.lastMessage.user.username)]]">
-                        <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
-                            <div class="avatar-letter">
-                                <span>[[_demoLetter(item.value.lastMessage.user.username)]]</span>
-                            </div>
-                        </template>
-                        <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
-                            <img src="[[item.value.lastMessage.user.avatar]]">
-                        </template>     
-                    </div>
-                    <!--
-                        <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
-                        </template>     
-                    -->
-                    <div class="service-item-body-content">                       
-                      [[item.value.lastMessage.body]]
-                    </div>
-                  </div>
-              </div>
+                  <template is="dom-if" if="{{item.value.lastMessage}}">
+                    <div class="service-item-body">
+                      <div class$="[[_computedClassAvatar(item.value.lastMessage.user.username)]]">
+                          <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
+                              <div class="avatar-letter">
+                                  <span>[[_demoLetter(item.value.lastMessage.user.username)]]</span>
+                              </div>
+                          </template>
+                          <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
+                              <img src="[[item.value.lastMessage.user.avatar]]">
+                          </template>     
+                      </div>
+                      <div class="service-item-body-content">                       
+                        [[item.value.lastMessage.body]]
+                      </div>
+                    </div> 
+                  </template>
+              </div> 
               <!-- menu more options -->
                 <!--
               <div class="more" on-tap="dialogToggle">
@@ -357,6 +358,7 @@ Example:
           request.addEventListener('sc-request-response', function(e){
              res = self.callbackResponse(e.detail.response);
              self.documents = res; //e.detail.response;
+             console.log(res.length);
           });
       },
       // Selection Behavior
