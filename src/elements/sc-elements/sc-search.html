@@ -90,8 +90,8 @@ Example:
                           </template>
                         </div>
                         <div class="title">
-                          <div class="medium">[[item.title]]</div>
-                          <div class="small">[[item.message]]</div>
+                          <div class="medium">[[item.value.name]] <small>&nbsp;[[item.value.commercial]]</small></div>
+                          <div class="small">[[item.value.description]]</div>
                           <div><small>[[_computedStatus(selected)]]</small></div>
                         </div>
                       </div>
@@ -111,13 +111,14 @@ Example:
                 documents: {
                     type: Array,
                     value: function() {
-                        return [{title:'Polymer System', message: 'Conteudo que pode ser previa descricao'},
+                        return []
+                        /*[{title:'Polymer System', message: 'Conteudo que pode ser previa descricao'},
                             {title:'Expresso System', message: 'Conteudo que pode ser previa descricao'},
                             {title:'BI Corporativo', message: 'Conteudo que pode ser previa descricao'},
                             {title:'AIM', message: 'Conteudo que pode ser previa descricao'},
                             {title:'IRPF INFRA', message: 'Conteudo que pode ser previa descricao'},
                             {title:'Sinesp', message: 'Conteudo que pode ser previa descricao',
-                            following:true}]
+                            following:true}]*/
                         }
                 },
                 selectedItems: {

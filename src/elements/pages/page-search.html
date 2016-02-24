@@ -67,11 +67,10 @@
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
             </div>
           <!-- who is main class -->
-          <sc-search class="fit"></sc-search>
+          <sc-search id="scsearch" class="fit"></sc-search>
           </paper-header-panel>
 
-
-
+          <sc-request id="request" no-cache="true"></sc-request>
       </drawer-panel-layout>
 
   </template>
@@ -80,6 +79,9 @@
       is: 'page-search',
       properties: {
           q: {type: String, notify: true, value: '', observer: '_qChanged'},
+      },
+      ready: function(){
+
       },
       _historyBack: function() {
           history.back();
@@ -93,13 +95,29 @@
             // input. Only an issue in Firefox.
             this.$.query.setSelectionRange(q.length, q.length);
           });
+          this.getServices(q);
         }
       },
       onSearch: function(e) {
         // when a user clicks on the (x) button we need to be sure to
         // clear the query
         this.q = this.$.query.value;
+      },
+      /** `getServices` gets all services matched with q.
+      * @param q: ter
+      **/
+      getServices: function(q){
+          var self = this;
+          var request = this.$.request;
+
+          request.addEventListener('sc-request-response', function(evt){
+            self.$.scsearch.documents = evt.detail.response;
+            console.log(evt.detail.response);
+          });
+
+          request.url = siscomando.url.searchservices + q;
       }
+
     });
   </script>
 </dom-module>
