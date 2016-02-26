@@ -10,19 +10,19 @@
   <template>
     <style>
         paper-toolbar {
-        --paper-toolbar-background: #135FB8;
-        color: white;
-        }
-        sc-home {
-        padding-bottom: 62px;
+          --paper-toolbar-background: #135FB8;
+          color: white;
         }
         #search {
+          position: fixed;
+          width: 100%; 
           height: 56px;
           line-height: 56;
-          margin-bottom: 12px;
+          /* margin-bottom: 12px;*/
           position: relative;
+          z-index: 0;  
+          @apply(--layout-horizontal);     
         }
-
         #search iron-icon {
           margin-left: 16px;
           margin-right: 8px;
@@ -30,7 +30,6 @@
           top: 12px;
           left: 2px;
         }
-
         #search input {
           height: 56px;
           -webkit-appearance: none;
@@ -42,32 +41,38 @@
           border-top: 1px solid #e5e5e5;
           @apply(--paper-font-body1);
         }
-
         #search input:focus {
           outline: 0;
           background-color: #eceff1;
           border-color: #cfd8dc;
         }
-
         #search input::-webkit-search-cancel-button{
           position: relative;
           right: 15px;
         }
+        sc-search {
+          position: fixed;
+          width: 100%;  
+          height: 100%;          
+          margin: 56px 0 0 0;
+          overflow-y: scroll;
+        }
     </style>
     <drawer-panel-layout>
-          <!-- who is drawer class -->
-          <paper-header-panel class="main">
+          <paper-header-panel class="main">        
+            <!-- toolbar/title -->
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
-            <div id="search" class="layout horizontal center">
+            <!-- search input -->
+            <div id="search" class="center verts" style="position: fixed;">
                 <iron-icon icon="search"></iron-icon>
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
-            </div>
-          <!-- who is main class -->
-          <sc-search id="scsearch" class="fit"></sc-search>
+            </div>              
+            <!-- list of data -->
+            <sc-search id="scsearch" class="verts"></sc-search>              
           </paper-header-panel>
 
           <sc-request id="request" no-cache="true"></sc-request>
@@ -109,12 +114,11 @@
       getServices: function(q){
           var self = this;
           var request = this.$.request;
-
+          // waiting event...
           request.addEventListener('sc-request-response', function(evt){
             self.$.scsearch.documents = evt.detail.response;
-            console.log(evt.detail.response);
           });
-
+          // fires event
           request.url = siscomando.url.searchservices + q;
       }
 

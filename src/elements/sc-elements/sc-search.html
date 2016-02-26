@@ -58,6 +58,7 @@ Example:
             .fancy .medium {
               font-size: 16px;
               padding-bottom: 1px;
+              text-overflow: ellipsis;
             }
             small {
                 font-size: 12px;
@@ -71,26 +72,31 @@ Example:
             .pink {
                 --paper-card-header-color: var(--paper-pink-500);
             }
+            paper-tooltip {
+              --paper-tooltip-background: rgba(0,0,0,0.12);
+              --paper-tooltip-text-color: rgba(0,0,0.54);
+            }
 
         </style>
         <div class="container">
-            <iron-list id="list-results" items="{{documents}}" as="item" multi-selection="true"
-            selection-enabled>
+            <iron-list id="list-results" items="[[documents]]" as="item">
                 <template>
                     <paper-card
                       aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]"
                       on-tap="mSelect">
                       <div class="card-content">
                         <div class="checkbox">
-                          <template is="dom-if" if="{{item.following}}">
+                          <template is="dom-if" if="{{item.value.following}}">
                             <paper-checkbox noink="true" checked></paper-checkbox>
                           </template>
-                          <template is="dom-if" if="{{!item.following}}">
+                          <template is="dom-if" if="{{!item.value.following}}">
                             <paper-checkbox noink="true"></paper-checkbox>
                           </template>
                         </div>
                         <div class="title">
-                          <div class="medium">[[item.value.name]] <small>&nbsp;[[item.value.commercial]]</small></div>
+                          <div id="title" class="medium">[[item.value.name]] <small>&nbsp;[[item.value.commercial]]</small>
+                          <paper-tooltip offset="3" position-"bottom">[[item.value.name]]</paper-tooltip>
+                          </div>
                           <div class="small">[[item.value.description]]</div>
                           <div><small>[[_computedStatus(selected)]]</small></div>
                         </div>
@@ -109,29 +115,15 @@ Example:
                     type: Array,
                 },
                 documents: {
-                    type: Array,
-                    value: function() {
-                        return []
-                        /*[{title:'Polymer System', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'Expresso System', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'BI Corporativo', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'AIM', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'IRPF INFRA', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'Sinesp', message: 'Conteudo que pode ser previa descricao',
-                            following:true}]*/
-                        }
+                    type: Array
                 },
                 selectedItems: {
                   type: Object
                 }
             }, //properties closed
             mSelect: function(e) {
+              console.log(e);
                 var listResults = this.querySelector('#list-results');
-                //console.log(e.model.item);
-                //console.log(e.model.selectedItems);
-                //console.log(e.model);
-                //console.log(listResults.selectedItems);
-                // Se o target for checkbox deixa ele trabalhar...normalmente.
                 if (e.target.classList.contains('paper-checkbox')) {
                     return ;
                 }
@@ -140,7 +132,7 @@ Example:
                     // selecionar o checkbox
                     checkbox = parent.querySelector('paper-checkbox');
                     checkbox.active = !checkbox.active;
-                    e.model.item.following = checkbox.active;
+                    e.model.item.path.following = checkbox.active;
                 }
             },
             _computedClass: function(isSelected) {
