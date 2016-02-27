@@ -15,6 +15,12 @@ Example:
     <sc-search data=[[results]]>
 
     </sc-search>
+
+   //*************** ATTENTION ****************************************/
+   /*  `sc-search` is very fit built for siscomando-app and not follows
+   /* the our best practices of the deploy business logic into page-*.html.
+   /******************************************************************/
+
 -->
 <dom-module id="sc-search">
     <template>
@@ -78,8 +84,10 @@ Example:
             }
 
         </style>
+        <sc-request id="request" no-cache="true"></sc-request>
         <div class="container">
-            <iron-list id="list-results" items="[[documents]]" as="item">
+            <iron-list id="list-results" items="[[documents]]" as="item" 
+              selection-enabled multi-selection>
                 <template>
                     <paper-card
                       aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]"
@@ -87,6 +95,7 @@ Example:
                       <div class="card-content">
                         <div class="checkbox">
                           <template is="dom-if" if="{{item.value.following}}">
+                            [[_forceSelect(item)]]
                             <paper-checkbox noink="true" checked></paper-checkbox>
                           </template>
                           <template is="dom-if" if="{{!item.value.following}}">
@@ -119,21 +128,49 @@ Example:
                 },
                 selectedItems: {
                   type: Object
+                },
+                url: String,
+                /** `itemKey` contains ordered string separated by comma. This
+                * string is converted in array. 
+                */
+                itemKey: {
+                  type: String
                 }
-            }, //properties closed
+            },
+            attached: function(){
+                this.url = siscomando.url.followservices;
+            },
+            /** `mSelect` toggle following properties and checkbox status.
+            */
             mSelect: function(e) {
-              console.log(e);
                 var listResults = this.querySelector('#list-results');
+                var parent = this._getParent(e.target, 'fancy');
+                var pk = this._getItemKey(e.model.item);
+                var is_following = e.model.item.value.following;
+                var body = {};
+                console.log("uma jaca: " + is_following);
+                body['activated'] = is_following === true ? false : true; 
+                body['serviceId'] = e.model.item.value._id;
+                if (pk) {
+                    // assumes is exists
+                    body['pk'] = pk;
+                }                
+
+                // make request
+                this._request(body);
+
+                // update UI
                 if (e.target.classList.contains('paper-checkbox')) {
                     return ;
                 }
-                var parent = this._getParent(e.target, 'fancy');
+                
                 if (parent !== undefined) {
                     // selecionar o checkbox
                     checkbox = parent.querySelector('paper-checkbox');
                     checkbox.active = !checkbox.active;
                     e.model.item.path.following = checkbox.active;
                 }
+                
             },
             _computedClass: function(isSelected) {
               var classes = 'pink fancy';
@@ -163,13 +200,65 @@ Example:
                 }
                 return undefined; // returns an Array []
             },
-            _computedStatus: function(selected){
+            _computedStatus: function(selected, followed){
                 if (selected) {
                     return ';) você está seguindo este assunto.';
                 } else {
                     return ':/ você não está seguindo este assunto.';
                 }
-            }
+            },
+            /** `_forceSelect` if the item have following marked as true
+            */
+            _forceSelect: function(item) {
+                var listResults = this.querySelector('#list-results');
+                listResults.selectItem(item);
+            },
+            _hasObject: function(arr, obj) {
+              var hasObject = (
+                  !Array.indexOf ? function (o)
+                  {
+                    var l = arr.length + 1;
+                    while (l -= 1)
+                    {
+                        if (arr[l - 1] === o)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                  } : function (o)
+                  {
+                    return (arr.indexOf(o) !== -1);
+                  }
+                );
+            return hasObject(obj);              
+            },
+            /** `_getItemKey` returns string of the primary key if provieded.
+            */
+            _getItemKey: function(item){
+                var self = this;
+                var orderedField = this.itemKey.replace(' ', '').split(',');
+                var obj;
+                for (var i = 0; i < orderedField.length; i++) {
+                    if (!obj) {
+                      obj = item[orderedField[i]];  
+                    } else {
+                      obj = obj[orderedField[i]];
+                    }
+                }
+                return obj;
+            },
+            _request: function(body) {
+              var request = this.$.request;       
+               // This is body of the request (or JSON payload)
+               request.auto = false;
+               request.contentType = 'application/json';
+               request.method = "POST";
+               request.noCache = true; // request without verify cache.
+               request.url = this.url;
+               request.body = body;
+               request.go();
+            }                    
         });
     </script>
 </dom-module>

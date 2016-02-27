@@ -72,7 +72,8 @@
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
             </div>              
             <!-- list of data -->
-            <sc-search id="scsearch" class="verts"></sc-search>              
+            <!-- item-key is useful to found primary key. See sc-search's documentation -->
+            <sc-search id="scsearch" class="verts" item-key="value,followingKey"></sc-search>              
           </paper-header-panel>
 
           <sc-request id="request" no-cache="true"></sc-request>
@@ -83,10 +84,19 @@
     Polymer({
       is: 'page-search',
       properties: {
-          q: {type: String, notify: true, value: '', observer: '_qChanged'},
+          q: {type: String, notify: true, value: '', observer: '_qChanged'}
       },
-      ready: function(){
-
+      attached: function(){
+        // TODO: o ideial seria definir a url aqui para seguir
+        // as boas praticas de personalização do page-*.html, mas
+        // nao rolou, por enquanto. Então como o sc-search está
+        // todo personalizado vamos deixar esse melhoria para o
+        // futuro disparando eventos entre esses elementos.
+        /*
+        this.async(function(){
+          this.$.scsearch.url = siscomando.url.followservices;  
+        }, 300); */
+        
       },
       _historyBack: function() {
           history.back();
@@ -100,7 +110,12 @@
             // input. Only an issue in Firefox.
             this.$.query.setSelectionRange(q.length, q.length);
           });
-          this.getServices(q);
+          if (q.length > 3) {
+            this.cancelAsync(this.handlerAsync);
+            this.handlerAsync = this.async(function(){
+              this.getServices(q);
+            }, 300);            
+          }
         }
       },
       onSearch: function(e) {

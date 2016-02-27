@@ -22,7 +22,8 @@ siscomando.url = {
   channels: siscomando.REMOTE_ADDR + '/api/services',
   feeds: siscomando.REMOTE_ADDR + '/api/feeds',
   login: siscomando.REMOTE_ADDR + '/loginexp',
-  searchservices: siscomando.REMOTE_ADDR + '/api/search/services/?q='
+  searchservices: siscomando.REMOTE_ADDR + '/api/search/services/?q=',
+  followservices: siscomando.REMOTE_ADDR + '/api/follow/services'
 };
 
 
