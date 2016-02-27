@@ -57,10 +57,19 @@
           margin: 56px 0 0 0;
           overflow-y: scroll;
         }
+
+        paper-spinner-lite.blue {
+            position: fixed;
+            left: 50%;
+            top: 12px;
+            z-index: 100;
+            --paper-spinner-color: var(--paper-light-blue-600);
+        }
     </style>
     <drawer-panel-layout>
           <paper-header-panel class="main">        
             <!-- toolbar/title -->
+            <paper-spinner-lite id="spinnerPageSearch" class="blue"></paper-spinner-lite>        
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">Siscomando</div>
@@ -130,8 +139,15 @@
           var self = this;
           var request = this.$.request;
           // waiting event...
+          var spinner = this.$.spinnerPageSearch;
+          
+          spinner.active = true;
           request.addEventListener('sc-request-response', function(evt){
             self.$.scsearch.documents = evt.detail.response;
+            spinner.active = false;
+          });
+          request.addEventListener('error', function(){
+            spinner.active = false;
           });
           // fires event
           request.url = siscomando.url.searchservices + q;

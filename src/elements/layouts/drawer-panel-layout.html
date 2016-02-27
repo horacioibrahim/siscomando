@@ -32,6 +32,15 @@
               border: 0;
           }
 
+          paper-spinner-lite.orange {
+              position: fixed;
+              left: 50%;
+              top: 12px;
+              opacity: 0.2;
+              z-index: 100;
+              --paper-spinner-color: var(--google-yellow-500);
+          }
+
         </style>
         <sc-termobar id="termobar"></sc-termobar>
         <!-- Tablet yet not supported so force-narrow and default-selected main -->
@@ -44,6 +53,7 @@
                 <content select=".drawer"></content>
             </div>
             <div main>
+                <!--<paper-spinner-lite class="orange"></paper-spinner-lite>-->
                 <content select=".main"></content>
             </div>
         </paper-drawer-panel>

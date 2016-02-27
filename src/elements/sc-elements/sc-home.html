@@ -241,11 +241,21 @@ Example:
         .vert-bar {
             background: #ccc;
         }
+      paper-spinner-lite.blue {
+          position: fixed;
+          left: 50%;
+          top: 12px;
+          z-index: 100;
+          --paper-spinner-color: var(--paper-light-blue-600);
+      }    
+          
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
+
     </style>
       <sc-request expires-time="600" id="request" no-cache="true"></sc-request>
+      <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>        
     <!-- Start: html common -->
     <div class="list-container">
       <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
@@ -351,15 +361,20 @@ Example:
       // Element Lifecycle
       ready: function () {
           var self = this;
+          var spinner = this.$.spinnerScHome;
           var request = this.$.request;
           // setup callback
           this.callbackResponse = this.callbackToResponse;
           request.url = siscomando.url.channels;
+          spinner.active = true;
           request.addEventListener('sc-request-response', function(e){
              res = self.callbackResponse(e.detail.response);
              self.documents = res; //e.detail.response;
-             console.log(res.length);
+             spinner.active = false;
           });
+          request.addEventListener('error', function(spinner){
+            spinner.active = false;
+          })
       },
       // Selection Behavior
       selectItem: function(e) {
