@@ -23,6 +23,24 @@
         sc-home {
             padding-bottom: 62px;
         }
+        .float-button {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            margin-right: 16px;
+            margin-bottom: 20px;
+            width: 56px;
+            height: 56px;          
+            width: 56dp;
+            height: 56dp;
+            background-color: #;
+            color: white;
+            -webkit-border-radius: 50%;
+            moz-border-radius: 50%;
+            border-radius: 50%;            
+            --paper-fab-background: #7ED321;
+            --paper-fab-keyboard-focus-background: #417505;
+        }
     </style>
     <drawer-panel-layout>
           <!--
@@ -38,7 +56,8 @@
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
             </paper-toolbar>
            <!-- who is content class -->
-          <sc-home id="home" class="shadow-2dp fit"></sc-home>              
+          <sc-home id="home" class="shadow-2dp fit"></sc-home>    
+          <paper-fab icon="add" title="Seguir" class="float-button" noink="true" on-tap="toSearch"></paper-fab>          
           </paper-header-panel>
 
     </drawer-panel-layout>
@@ -55,7 +74,10 @@
       },
       showProfile: function() {
         this.fire('nav', {url: '/profile'});
-    }
+      },
+      toSearch: function(){
+        window.location.href = "#/search"
+      }
     });
   </script>
 </dom-module>
