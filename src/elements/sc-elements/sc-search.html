@@ -130,7 +130,7 @@ Example:
                   type: Object
                 },
                 url: String,
-                /** `itemKey` contains ordered string separated by comma. This
+                /** `itemKey` contains ordered string separated dot. This
                 * string is converted in array. 
                 */
                 itemKey: {
@@ -237,7 +237,7 @@ Example:
             */
             _getItemKey: function(item){
                 var self = this;
-                var orderedField = this.itemKey.replace(' ', '').split(',');
+                var orderedField = this.itemKey.replace(' ', '').split('.');
                 var obj;
                 for (var i = 0; i < orderedField.length; i++) {
                     if (!obj) {

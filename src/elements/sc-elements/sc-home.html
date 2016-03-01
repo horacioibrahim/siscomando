@@ -242,7 +242,7 @@ Example:
             background: #ccc;
         }
       paper-spinner-lite.blue {
-          position: fixed;
+          position: absolute;
           left: 50%;
           top: 12px;
           z-index: 100;
@@ -252,12 +252,11 @@ Example:
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
-
     </style>
-      <sc-request expires-time="600" id="request" no-cache="true"></sc-request>
-      <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>        
+      <sc-request expires-time="600" id="request" no-cache="true"></sc-request>        
     <!-- Start: html common -->
     <div class="list-container">
+    <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>
       <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
         <template>
             <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
@@ -273,7 +272,8 @@ Example:
                     <span>[[item.value.hashtag]]</span>
                     <!-- colocar um filter momentjs aqui quando integrado com meteor -->
                     <span>
-                      <sc-timeago datetime="[[_convertTimestamp(item.value.lastMessage.timestamp)]]"></sc-timeago>
+                      <!-- <sc-timeago datetime="[[_convertTimestamp(item.value.updatedAt)]]"></sc-timeago> -->
+                      <sc-timeago datetime="[[item.value.updatedAt]]"></sc-timeago>
                     </span>
                   </div>
                   <template is="dom-if" if="{{item.value.lastMessage}}">
@@ -355,7 +355,17 @@ Example:
         dialogItemSelected: {
           type: Object
         },
-        callbackResponse: Object
+        callbackResponse: Object,
+        /** `itemKey` contains ordered string separated by comma. This
+        * string is converted in array for to find primary key field in the
+        * model. 
+        * e.g.:
+        * model = {users: {pk: 123, name: "john"}}
+        * itemKey should be `users.pk`
+        */
+        itemKey: {
+          type: String
+        }        
       },
 
       // Element Lifecycle
@@ -385,6 +395,8 @@ Example:
        */
       _selectItem: function(e){
         var hashtag = e.model.item.value.hashtag; // closed with backend #CWB
+        var itemId = this._getItemKey(e.model.item);
+        var querystring;
         // if new selected item was already prevously selected
         // we must unselect it. ELSE ..
         // to select new item and fire 'home-selected' event.
@@ -394,13 +406,12 @@ Example:
             this._computedClass(false);
         } else {
             this.$.itemsList.selectItem(e.model.item);
-            //this.fire('home-selected');
-            // normalize
-            if (hashtag.slice(0, 1) === '#') {
-              hashtag = hashtag.substr(1);
+            // very fit with backend. #FWB
+            querystring = "q=" + itemId + '&title=' + e.model.item.value.name + "&scope=service";
+            if (itemId) {
+                window.location.href = '#/feeds/' + querystring;
             }
-            window.location.href = '#/feeds/' + hashtag;
-        }
+        } 
       },
       unselect: function() {
         this._unselect();
@@ -466,7 +477,27 @@ Example:
       },
       _demoLetter: function(username) {
         return (typeof(username) == "string" && username.length > 0) ? username[0] : 'h';
-      }
+      },
+      /** `_getItemKey` returns string of the primary key if provieded.
+      */
+      _getItemKey: function(item){
+          // simple validation
+          if (!this.itemKey) {
+            console.warn('itemKey invalid or not exists.');
+            return ;  
+          }
+          var self = this;
+          var orderedField = this.itemKey.replace(' ', '').split('.');
+          var obj;
+          for (var i = 0; i < orderedField.length; i++) {
+              if (!obj) {
+                obj = item[orderedField[i]];  
+              } else {
+                obj = obj[orderedField[i]];
+              }
+          }
+          return obj;
+      }     
     });
   </script>
 </dom-module>

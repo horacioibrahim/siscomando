@@ -93,12 +93,17 @@
             <!-- header -->
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
-              <div class="title">{{title}}</div>
+              <div class="title">
+                {{title}}
+                <!-- <marquee behavior="scroll" scrollamount="4" direction="left"> 
+                </marquee> -->
+              </div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
             <!-- content -->
             <div class="container-feeds fit">
                 <div class="rowOne">
+                    <iron-icon icon="pregnant-woman"></iron-icon>
                     <sc-feeds id="feeds"></sc-feeds>
                 </div>
                 <div class="rowTwo">
@@ -126,9 +131,9 @@
               type: String,
               value: 'Feeds'
           },
-          hashtag: {
+          querystring: {
               type: String,
-              observer: 'hashtagChanged'
+              observer: '_querystringChanged'
           },
           urlPost: {
               type: String,
@@ -162,14 +167,14 @@
         // body['announcer'] = 'horacio.moreira'; // handler by JSON Token
         // to solve with body['timestamp'] = Date.now();
         body['body'] = this.$.form.bindValue;
-        body['hashtag'] = this.hashtag; 
+        body['_id'] = siscomando.getParameterByName('q', this.querystring); 
         
         return body
       },
-      hashtagChanged: function() {          
-          var hashtag = this.hashtag;
-          this.title = hashtag;
-          this.$.feeds.hashtag = hashtag;
+      _querystringChanged: function() {
+          var querystring = this.querystring;
+          this.title = siscomando.getParameterByName('title', querystring);
+          this.$.feeds.querystring = querystring;
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
