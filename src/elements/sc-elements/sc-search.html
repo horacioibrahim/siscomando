@@ -15,6 +15,12 @@ Example:
     <sc-search data=[[results]]>
 
     </sc-search>
+
+   //*************** ATTENTION ****************************************/
+   /*  `sc-search` is very fit built for siscomando-app and not follows
+   /* the our best practices of the deploy business logic into page-*.html.
+   /******************************************************************/
+
 -->
 <dom-module id="sc-search">
     <template>
@@ -29,6 +35,7 @@ Example:
             }
             .container {
                 margin-top: 2px;
+                margin-bottom: 60px;
             }
             paper-card {
               width: 100%;
@@ -58,10 +65,11 @@ Example:
             .fancy .medium {
               font-size: 16px;
               padding-bottom: 1px;
+              text-overflow: ellipsis;
             }
             small {
                 font-size: 12px;
-                color: rgba(0,0,0, 0.12);
+                color: rgba(0,0,0, 0.38);
             }
             .fancy .small {
                 font-weight: 300;
@@ -71,27 +79,35 @@ Example:
             .pink {
                 --paper-card-header-color: var(--paper-pink-500);
             }
+            paper-tooltip {
+              --paper-tooltip-background: rgba(0,0,0,0.12);
+              --paper-tooltip-text-color: rgba(0,0,0.54);
+            }
 
         </style>
+        <sc-request id="request" no-cache="true"></sc-request>
         <div class="container">
-            <iron-list id="list-results" items="{{documents}}" as="item" multi-selection="true"
-            selection-enabled>
+            <iron-list id="list-results" items="[[documents]]" as="item" 
+              selection-enabled multi-selection>
                 <template>
                     <paper-card
                       aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]"
                       on-tap="mSelect">
                       <div class="card-content">
                         <div class="checkbox">
-                          <template is="dom-if" if="{{item.following}}">
+                          <template is="dom-if" if="{{item.value.following}}">
+                            [[_forceSelect(item)]]
                             <paper-checkbox noink="true" checked></paper-checkbox>
                           </template>
-                          <template is="dom-if" if="{{!item.following}}">
+                          <template is="dom-if" if="{{!item.value.following}}">
                             <paper-checkbox noink="true"></paper-checkbox>
                           </template>
                         </div>
                         <div class="title">
-                          <div class="medium">[[item.title]]</div>
-                          <div class="small">[[item.message]]</div>
+                          <div id="title" class="medium">[[item.value.name]] <small>&nbsp;[[item.value.commercial]]</small>
+                          <!-- <paper-tooltip offset="3" position-"bottom">[[item.value.name]]</paper-tooltip>-->
+                          </div>
+                          <div class="small">[[item.value.description]]</div>
                           <div><small>[[_computedStatus(selected)]]</small></div>
                         </div>
                       </div>
@@ -109,38 +125,55 @@ Example:
                     type: Array,
                 },
                 documents: {
-                    type: Array,
-                    value: function() {
-                        return [{title:'Polymer System', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'Expresso System', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'BI Corporativo', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'AIM', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'IRPF INFRA', message: 'Conteudo que pode ser previa descricao'},
-                            {title:'Sinesp', message: 'Conteudo que pode ser previa descricao',
-                            following:true}]
-                        }
+                    type: Array
                 },
                 selectedItems: {
                   type: Object
+                },
+                url: String,
+                /** `itemKey` contains ordered string separated dot. This
+                * string is converted in array. 
+                */
+                itemKey: {
+                  type: String
                 }
-            }, //properties closed
+            },
+            attached: function(){
+                // This is must be placed page-search.html. The `url` is 
+                // entrypoint for follow/unfollow services.
+                this.url = siscomando.url.followservices;
+            },
+            /** `mSelect` toggle following properties and checkbox status.
+            */
             mSelect: function(e) {
                 var listResults = this.querySelector('#list-results');
-                //console.log(e.model.item);
-                //console.log(e.model.selectedItems);
-                //console.log(e.model);
-                //console.log(listResults.selectedItems);
-                // Se o target for checkbox deixa ele trabalhar...normalmente.
+                var parent = this._getParent(e.target, 'fancy');
+                var pk = this._getItemKey(e.model.item);
+                var is_following = e.model.item.value.following;
+                var body = {};
+                console.log("uma jaca: " + is_following);
+                body['activated'] = is_following === true ? false : true; 
+                body['serviceId'] = e.model.item.value._id;
+                if (pk) {
+                    // assumes is exists
+                    body['pk'] = pk;
+                }                
+
+                // make request
+                this._request(body);
+
+                // update UI
                 if (e.target.classList.contains('paper-checkbox')) {
                     return ;
                 }
-                var parent = this._getParent(e.target, 'fancy');
+                
                 if (parent !== undefined) {
                     // selecionar o checkbox
                     checkbox = parent.querySelector('paper-checkbox');
                     checkbox.active = !checkbox.active;
-                    e.model.item.following = checkbox.active;
+                    e.model.item.path.following = checkbox.active;
                 }
+                
             },
             _computedClass: function(isSelected) {
               var classes = 'pink fancy';
@@ -170,13 +203,65 @@ Example:
                 }
                 return undefined; // returns an Array []
             },
-            _computedStatus: function(selected){
+            _computedStatus: function(selected, followed){
                 if (selected) {
                     return ';) você está seguindo este assunto.';
                 } else {
                     return ':/ você não está seguindo este assunto.';
                 }
-            }
+            },
+            /** `_forceSelect` if the item have following marked as true
+            */
+            _forceSelect: function(item) {
+                var listResults = this.querySelector('#list-results');
+                listResults.selectItem(item);
+            },
+            _hasObject: function(arr, obj) {
+              var hasObject = (
+                  !Array.indexOf ? function (o)
+                  {
+                    var l = arr.length + 1;
+                    while (l -= 1)
+                    {
+                        if (arr[l - 1] === o)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                  } : function (o)
+                  {
+                    return (arr.indexOf(o) !== -1);
+                  }
+                );
+            return hasObject(obj);              
+            },
+            /** `_getItemKey` returns string of the primary key if provieded.
+            */
+            _getItemKey: function(item){
+                var self = this;
+                var orderedField = this.itemKey.replace(' ', '').split('.');
+                var obj;
+                for (var i = 0; i < orderedField.length; i++) {
+                    if (!obj) {
+                      obj = item[orderedField[i]];  
+                    } else {
+                      obj = obj[orderedField[i]];
+                    }
+                }
+                return obj;
+            },
+            _request: function(body) {
+              var request = this.$.request;       
+               // This is body of the request (or JSON payload)
+               request.auto = false;
+               request.contentType = 'application/json';
+               request.method = "POST";
+               request.noCache = true; // request without verify cache.
+               request.url = this.url;
+               request.body = body;
+               request.go();
+            }                    
         });
     </script>
 </dom-module>

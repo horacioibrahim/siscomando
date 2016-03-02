@@ -10,19 +10,19 @@
   <template>
     <style>
         paper-toolbar {
-        --paper-toolbar-background: #135FB8;
-        color: white;
-        }
-        sc-home {
-        padding-bottom: 62px;
+          --paper-toolbar-background: #135FB8;
+          color: white;
         }
         #search {
+          position: fixed;
+          width: 100%; 
           height: 56px;
           line-height: 56;
-          margin-bottom: 12px;
+          /* margin-bottom: 12px;*/
           position: relative;
+          z-index: 0;  
+          @apply(--layout-horizontal);     
         }
-
         #search iron-icon {
           margin-left: 16px;
           margin-right: 8px;
@@ -30,7 +30,6 @@
           top: 12px;
           left: 2px;
         }
-
         #search input {
           height: 56px;
           -webkit-appearance: none;
@@ -42,36 +41,72 @@
           border-top: 1px solid #e5e5e5;
           @apply(--paper-font-body1);
         }
-
         #search input:focus {
           outline: 0;
           background-color: #eceff1;
           border-color: #cfd8dc;
         }
-
         #search input::-webkit-search-cancel-button{
           position: relative;
           right: 15px;
         }
+        sc-search {
+          position: fixed;
+          width: 100%;  
+          height: 100%;          
+          margin: 56px 0 0 0;
+          overflow-y: scroll;
+        }
+
+      paper-spinner-lite.blue {
+          position: absolute;
+          left: 50%;
+          top: 12px;
+          z-index: 100;
+          --paper-spinner-color: var(--paper-light-blue-600);
+      }
+      .blanks {
+        position: absolute;
+        width: 100%;
+        margin-top: 64px;
+        text-align: center;
+        @apply(--layout-vertical);
+        @apply(--layout-horizontal);
+        @apply(--layout-fit);
+      }
+      .blanks #searchBlank {
+        display: inline-block;
+        margin: calc(50% - 64px) auto; 
+        --iron-icon-height: 120px;
+        --iron-icon-width: 120px;  
+        --iron-icon-fill-color: rgba(0,0,0,0.12);      
+      }
     </style>
     <drawer-panel-layout>
-          <!-- who is drawer class -->
-          <paper-header-panel class="main">
+          <paper-header-panel class="main">        
+            <!-- toolbar/title 
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
-            <div id="search" class="layout horizontal center">
-                <iron-icon icon="search"></iron-icon>
+            -->       
+            <!-- search input -->
+            <div id="search" class="center verts" style="position: fixed;">
+                <!-- <iron-icon icon="search"></iron-icon> -->
+                <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
+            </div>              
+            <!-- list of data -->
+            <!-- item-key is useful to found primary key. See sc-search's documentation -->
+            <div class="blanks">
+              <iron-icon id="searchBlank" icon="find-in-page"></iron-icon>
+              <paper-spinner-lite id="spinnerPageSearch" class="blue"></paper-spinner-lite> 
             </div>
-          <!-- who is main class -->
-          <sc-search class="fit"></sc-search>
+            <sc-search id="scsearch" class="verts" item-key="value.followingKey"></sc-search>              
           </paper-header-panel>
 
-
-
+          <sc-request id="request" no-cache="true"></sc-request>
       </drawer-panel-layout>
 
   </template>
@@ -79,7 +114,21 @@
     Polymer({
       is: 'page-search',
       properties: {
-          q: {type: String, notify: true, value: '', observer: '_qChanged'},
+          q: {type: String, notify: true, value: '', observer: '_qChanged'}
+      },
+      ready: function(){
+        // TODO: o ideial seria definir a url aqui para seguir
+        // as boas praticas de personalização do page-*.html, mas
+        // nao rolou, por enquanto. Então como o sc-search está
+        // todo personalizado vamos deixar esse melhoria para o
+        // futuro disparando eventos entre esses elementos.
+        /*
+        this.async(function(){
+          this.$.scsearch.url = siscomando.url.followservices;  
+        }, 300); */
+        this.async(function() {
+          this.$.query.focus();}, 100);        
+        
       },
       _historyBack: function() {
           history.back();
@@ -98,8 +147,47 @@
       onSearch: function(e) {
         // when a user clicks on the (x) button we need to be sure to
         // clear the query
-        this.q = this.$.query.value;
+        console.log("passando...");
+        var q = this.$.query.value;
+        if (q.length > 3) {
+          this.cancelAsync(this.handlerAsync);
+          this.handlerAsync = this.async(function(){
+            this.getServices(q);
+          }, 300);            
+        }        
+      },
+      /** `getServices` gets all services matched with q.
+      * @param q: ter
+      **/
+      getServices: function(q){
+          var self = this;
+          var request = this.$.request;
+          // // UI status for waiting event...
+          var spinner = this.$.spinnerPageSearch;
+          var searchBlank = this.$.searchBlank;
+          
+          // UI status
+          searchBlank.style.display = "none";
+          spinner.active = true;
+
+          request.addEventListener('sc-request-response', function(evt){
+            self.$.scsearch.documents = evt.detail.response;
+            
+            if (evt.detail.response.length === 0){
+              // UI status
+              searchBlank.style.display = "inline-block";
+            }
+            // UI status
+            spinner.active = false;
+          });
+          request.addEventListener('error', function(){
+            // UI status
+            spinner.active = false;
+          });
+          // fires event
+          request.url = siscomando.url.searchservices + q;
       }
+
     });
   </script>
 </dom-module>

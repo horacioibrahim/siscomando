@@ -47,6 +47,7 @@ TODO:
 
   .message-item {
     cursor: pointer;
+    padding-top: 8px;
   }
   .message-item:hover {
     background-color: rgba(19,95,184,0.015);
@@ -177,6 +178,82 @@ TODO:
     color: #777;
     border-left: 4px solid #ddd;
   }
+
+  /** BEGIN: new avatar mock **/
+  .avatarBox {
+    float:left;
+    width: 32px;
+    height: 32px;
+    -webkit-border-radius: 50%; /* Can also be 55px */
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    margin-right: 0px;
+    /* @apply(--layout-flex);
+    @apply(--layout-flex-1);*/
+   }
+    
+   .avatarBox.a, .avatarBox.t  {background-color: #F44336;}
+   .avatarBox.b, .avatarBox.u {background-color: #E91E63;}
+   .avatarBox.c, .avatarBox.w {background-color: #9C27B0;}
+   .avatarBox.d, .avatarBox.v {background-color: #673AB7;}
+   .avatarBox.f, .avatarBox.y {background-color: #3F51B5;}
+   .avatarBox.g, .avatarBox.k {background-color: #2196F3;}
+   .avatarBox.h, .avatarBox.x {background-color: #00BCD4;}
+   .avatarBox.i, .avatarBox.z {background-color: #009688;}
+   .avatarBox.j {background-color: #8BC34A;}
+   .avatarBox.l {background-color: #FFC107;}
+   .avatarBox.m {background-color: #FF9800;}    
+   .avatarBox.n {background-color: #795548;}
+   .avatarBox.e, .avatarBox.o {background-color: #9E9E9E;}
+   .avatarBox.p {background-color: #607D8B;}
+   .avatarBox.q {background-color: #5C4B77;}
+   .avatarBox.r {background-color: #FF5722;}
+   .avatarBox.s {background-color: #53A8B6;}         
+
+  .avatarBox .avatar-letter {
+    height: 100%;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.86);
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.12);
+    font-size: 1.25em;
+   }
+   .avatarBox .avatar-letter::before {
+        display: inline-block;
+        height: 100%;
+        vertical-align: middle;
+        content:"";
+    }        
+    .avatarBox .avatar-letter span {
+        vertical-align: middle;
+        text-transform: uppercase;
+    }  
+  .avatarBox img {
+    width: 33px;
+    height: 33px;
+    -webkit-border-radius: 50%; /* Can also be 50px */
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    float: left;
+    right: 0;
+   }  
+
+  /** END: new avatar mock **/
+
+  #emptyState {
+    @apply(--layout-horizontal);
+    @apply(--layout-vertical);
+    @apply(--layout-fit);
+    text-align: center;
+    display: none;
+  }
+  #emptyState * {
+    margin: 0 auto;
+  }
+  #emptyState img {
+    bottom: 0;
+    margin-bottom: 0;
+  }    
   @media (min-width: 768px) and (orientation: landscape) {
     .message-item-container {
       padding-left: 10px;
@@ -200,20 +277,24 @@ TODO:
              <!-- class$="[[_computedClass(selected)]]" message.value.continued-->
              <div class$="[[_computedClass(false)]]">
                <div class="item-aside">
-                 <div>
-                   <span>
-                     <div class="avatar dispImage">
-                       <img src$=[[message.value.image]]>
-                     </div>
-                   </span>
-                 </div>
+                <div class$="[[_computedClassAvatar(message.value.authorAvatar)]]">
+                    <template is="dom-if" if="{{!message.value.authorAvatar}}">
+                        <div class="avatar-letter">
+                            <span>[[_demoLetter(message.value.authorName)]]</span>
+                        </div>
+                    </template>
+                    <template is="dom-if" if="{{message.value.authorAvatar}}">
+                        <img src="[[message.value.authorAvatar]]">
+                    </template>     
+                </div>
                </div>
                <div class="item-actions"></div>
                <div class="item-content">
                  <div class="item-details">
-                   <div class="item-details-from">[[message.value.announcer]]</div>
+                   <!-- change it to page-feeds as itemKey -->
+                   <div class="item-details-from">[[message.value.authorName]]</div>
                    <div class="item-details-timestamp">
-                     <sc-timeago datetime="[[_convertTimestamp(1447183053)]]"></sc-timeago>
+                     <sc-timeago datetime="[[message.value.updatedAt]]"></sc-timeago>
                    </div>                     
                  </div>
                  <template is="dom-if" if="[[message.value.target]]">
@@ -232,6 +313,10 @@ TODO:
         </template>
       </iron-list>
     </div>
+    <div id="emptyState">
+      <img src="/assets/img/empty_feeds.gif">
+    </div>
+
     <!-- End: html common -->
 </template>
 
@@ -264,12 +349,23 @@ TODO:
          * `document` array content the items for iron-list.
          */
         documents: {
-          type: Array
+          type: Array,
+          observer: "_documentsChanged"
         },
+        /** `hashtag` used to search items. But this is DEPRECATED. Please
+        * use querystring.
+        */
         hashtag: {
             type: String,
             notify: true,
             observer: '_hashtagChanged',
+        },
+        /** `querystring` pass the querystring fields for GET.
+        */
+        querystring: {
+          type: String,
+          notify: true,
+          observer: '_querystringChanged'
         },
         /**
          * Describes the author of the element, but is really just an excuse to
@@ -309,17 +405,27 @@ TODO:
       /** mock function for development
       */
       _setUrl: function(hashtag) {
-          
+          var url;
+          var base_url;
+
           if (!hashtag) {
-              return;
+              // default for NEW querystring behavior.
+              url = siscomando.url.feeds + "/" + this.querystring;
+              this.$.request.url = url;
+          } else {
+              // DEPRECATED.
+              // oldest behavior this api.
+              base_url = siscomando.url.feeds + "/"; // #CHANGED: relative path
+              url = base_url + this._normalizeHashtag(hashtag);
+              this.$.request.url = url;
           }
           
-          var base_url = siscomando.url.feeds + "/"; // #CHANGED: relative path
-          var url = base_url + this._normalizeHashtag(hashtag);
-          this.$.request.url = url;
       },
       _hashtagChanged: function() {
           this._setUrl(this.hashtag);
+      },
+      _querystringChanged: function() {
+          this._setUrl();
       },
       _normalizeHashtag: function(hashtag) {
           // lower case
@@ -363,6 +469,16 @@ TODO:
         var formattedTime = year + '-' +  month.substr(-2) + '-' +  day.substr(-2) + 'T' + hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + '.000Z';
         return formattedTime;
       },
+      _computedClassAvatar: function(username) {
+        var classes = "avatarBox";  
+        var firstLetter;
+        firstLetter = (typeof(username) == "string" && username.length > 0) ? username[0] : 'h'; // TODO: h
+        classes += " " + firstLetter;
+        return classes;
+      }, 
+      _demoLetter: function(username) {
+        return (typeof(username) == "string" && username.length > 0) ? username[0] : 'h';
+      },           
       // Selection Behavior
       selectItem: function(e) {
          this._selectItem(e);
@@ -378,6 +494,14 @@ TODO:
           window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
           
         }
+      },
+      _documentsChanged: function(){
+
+          if (this.documents.length == 0) {
+            this.$.emptyState.style.display = "block";
+          } else {
+            this.$.emptyState.style.display = "none";
+          }
       }
     });
   </script>

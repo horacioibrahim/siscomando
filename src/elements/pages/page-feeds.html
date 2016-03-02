@@ -11,7 +11,6 @@
     <style>
       :host {
         
-        
       }
       paper-toolbar {
         --paper-toolbar-background: #135FB8;
@@ -93,7 +92,11 @@
             <!-- header -->
             <paper-toolbar>
               <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
-              <div class="title">{{title}}</div>
+              <div class="title">
+                {{title}}
+                <!-- <marquee behavior="scroll" scrollamount="4" direction="left"> 
+                </marquee> -->
+              </div>
               <app-bar class="horizontal layout center end-justified" no-search></app-bar>
             </paper-toolbar>
             <!-- content -->
@@ -126,9 +129,9 @@
               type: String,
               value: 'Feeds'
           },
-          hashtag: {
+          querystring: {
               type: String,
-              observer: 'hashtagChanged'
+              observer: '_querystringChanged'
           },
           urlPost: {
               type: String,
@@ -142,6 +145,10 @@
           var form = this.$.form;
           var feeds = this.$.feeds;
           form.url = this.urlPost;
+
+          // get and load feeds
+          // this._querystringChanged();
+
           // keys.keyEventTarget = this.$.form;
           keys.callback = function(keyPressed) {
               // if sc-keys has pressed (keyPressed) equal 'enter' so go().
@@ -158,18 +165,23 @@
       /** `setBody` sets the fields app's schema.*/
       setBody: function() {
         var body = {};
-        var currentUser = JSON.parse(sessionStorage.getItem('currentUser'))
-        // body['announcer'] = 'horacio.moreira'; // handler by JSON Token
-        // to solve with body['timestamp'] = Date.now();
+        var qs = this.querystring;
         body['body'] = this.$.form.bindValue;
-        body['hashtag'] = this.hashtag; 
-        
-        return body
+        body['_id'] = siscomando.getParameterByName('q', qs); 
+        body['scope'] = siscomando.getParameterByName('scope', qs); 
+        console.log("pg-ffeds:");
+        console.log(body);
+        return body;
       },
-      hashtagChanged: function() {          
-          var hashtag = this.hashtag;
-          this.title = hashtag;
-          this.$.feeds.hashtag = hashtag;
+      _querystringChanged: function() {
+          var qs = this.querystring;
+          //this.title = siscomando.getParameterByName('title', querystring);
+          if (!qs) {
+            // force querystring
+            qs = window.location.hash.replace('#/feeds/', '')
+          }
+
+          this.$.feeds.querystring = qs;
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -178,11 +190,19 @@
         history.back();
       },
       _updateAfterPOST: function(evt) {
+          var docs;
+          // document.querySelector get the first matched element. With
+          // `.page-feeds` make sure of the correct element.
           var feeds = document.querySelector('sc-feeds#feeds.page-feeds');
           var self = document.querySelector('page-feeds');
-          var docs = feeds.documents.slice();
-          docs.push(evt.detail.response);
-          feeds.documents = docs.slice();
+          console.log(evt.detail.response);
+          if (feeds.documents) {
+            docs = feeds.documents.slice(); 
+            docs.push(evt.detail.response[0]);
+            feeds.documents = docs.slice();
+          } else {
+            feeds.documents = evt.detail.response;
+          }
           feeds.playAnimation();
           this.async(self.scrollDown, 600);
       },
