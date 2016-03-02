@@ -3,7 +3,7 @@
 # Development time hacks. To comment this when in production
 # Access to see more http://debug-software.intel.com/client/#y2xTv4rXcg8e2Bx0Ht1OszIiSqmpJUxdmW_GcyVPcps
 # comment/uncomment:
-WEINER='<script src=\"http:\/\/debug-software.intel.com\/target\/target-script-min.js#y2xTv4rXcg8e2Bx0Ht1OszIiSqmpJUxdmW_GcyVPcps\"><\/script><\/body>'
+#WEINER='<script src=\"http:\/\/debug-software.intel.com\/target\/target-script-min.js#y2xTv4rXcg8e2Bx0Ht1OszIiSqmpJUxdmW_GcyVPcps\"><\/script><\/body>'
 
 if [ ! -z "$WEINER" ]
     then
@@ -32,7 +32,7 @@ cd scapp
 
 cordova build android
 # if android device connected will work fine!
-cordova run android
+#cordova run android
 
 # End 
 date
