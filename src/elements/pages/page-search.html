@@ -142,18 +142,19 @@
             // input. Only an issue in Firefox.
             this.$.query.setSelectionRange(q.length, q.length);
           });
-          if (q.length > 3) {
-            this.cancelAsync(this.handlerAsync);
-            this.handlerAsync = this.async(function(){
-              this.getServices(q);
-            }, 300);            
-          }
         }
       },
       onSearch: function(e) {
         // when a user clicks on the (x) button we need to be sure to
         // clear the query
-        this.q = this.$.query.value;
+        console.log("passando...");
+        var q = this.$.query.value;
+        if (q.length > 3) {
+          this.cancelAsync(this.handlerAsync);
+          this.handlerAsync = this.async(function(){
+            this.getServices(q);
+          }, 300);            
+        }        
       },
       /** `getServices` gets all services matched with q.
       * @param q: ter
@@ -171,6 +172,7 @@
 
           request.addEventListener('sc-request-response', function(evt){
             self.$.scsearch.documents = evt.detail.response;
+            
             if (evt.detail.response.length === 0){
               // UI status
               searchBlank.style.display = "inline-block";

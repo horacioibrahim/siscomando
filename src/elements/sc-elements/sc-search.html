@@ -105,7 +105,7 @@ Example:
                         </div>
                         <div class="title">
                           <div id="title" class="medium">[[item.value.name]] <small>&nbsp;[[item.value.commercial]]</small>
-                          <paper-tooltip offset="3" position-"bottom">[[item.value.name]]</paper-tooltip>
+                          <!-- <paper-tooltip offset="3" position-"bottom">[[item.value.name]]</paper-tooltip>-->
                           </div>
                           <div class="small">[[item.value.description]]</div>
                           <div><small>[[_computedStatus(selected)]]</small></div>
@@ -139,6 +139,8 @@ Example:
                 }
             },
             attached: function(){
+                // This is must be placed page-search.html. The `url` is 
+                // entrypoint for follow/unfollow services.
                 this.url = siscomando.url.followservices;
             },
             /** `mSelect` toggle following properties and checkbox status.

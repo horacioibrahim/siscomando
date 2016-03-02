@@ -247,8 +247,28 @@ Example:
           top: 12px;
           z-index: 100;
           --paper-spinner-color: var(--paper-light-blue-600);
-      }    
-          
+      }            
+      #emptyState {
+        @apply(--layout-horizontal);
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
+        text-align: center;
+      }
+      #emptyState * {
+        margin: 0 auto;
+        color: rgba(0,0,0,0.54);
+      }
+      #emptyState p {
+        font-size: 1.25em;
+        padding-right: 20px;
+        padding-left: 20px;
+        font-weight: 300;
+      }
+      #emptyState img {
+        margin-top: 25%;
+        width: 55%;
+
+      }          
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
@@ -303,6 +323,11 @@ Example:
         </template>
       </iron-list>
     </div>
+     <div id="emptyState">
+        <img src="/assets/img/first_empty.svg"></img>
+        <p>Adicione um serviço para seguí-lo e envolva-se!</p>   
+     </div>    
+    <!--
     <paper-dialog id="dialog" with-backdrop entry-animation="scale-up-animation" exit-animation="fade-out-animation">
       <h2>{{dialogItemSelected.service}}</h2>
         <paper-icon-item>
@@ -311,7 +336,7 @@ Example:
         <paper-icon-item>
           <iron-icon icon="social:notifications-off" item-icon></iron-icon> Silenciar notificações
         </paper-icon-item>
-    </paper-dialog>
+    </paper-dialog>-->
     <!-- End: html common -->
 </template>
 
@@ -342,6 +367,7 @@ Example:
          */
         documents: {
           type: Object,
+          observer: "_documentsChanged"
         },
 
         /**
@@ -407,8 +433,8 @@ Example:
         } else {
             this.$.itemsList.selectItem(e.model.item);
             // very fit with backend. #FWB
-            querystring = "q=" + itemId + '&title=' + e.model.item.value.name + "&scope=service";
-            if (itemId) {
+            querystring = "?q=" + itemId + '&title=' + e.model.item.value.name + "&scope=service";
+            if (itemId) { 
                 window.location.href = '#/feeds/' + querystring;
             }
         } 
@@ -497,6 +523,13 @@ Example:
               }
           }
           return obj;
+      },
+      _documentsChanged: function(){
+        this.$.emptyState.style.display = "inline-block";
+        if (this.documents.length > 0) {
+          this.$.emptyState.style.display = "none";
+        }
+
       }     
     });
   </script>

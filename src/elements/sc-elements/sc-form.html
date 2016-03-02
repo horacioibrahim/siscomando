@@ -76,9 +76,9 @@ Example:
            // This is body of the request (or JSON payload)
            request.auto = false;
            request.url = this.url;
-           request.body = JSON.stringify(this.body);
-           request.method = this.method;
            request.contentType = 'application/json';
+           request.body = this.body;
+           request.method = this.method;
            request.noCache = true; // request without verify cache.
            request.go();
            this.bindValue = '';

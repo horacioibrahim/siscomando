@@ -47,6 +47,7 @@ TODO:
 
   .message-item {
     cursor: pointer;
+    padding-top: 8px;
   }
   .message-item:hover {
     background-color: rgba(19,95,184,0.015);
@@ -238,6 +239,21 @@ TODO:
    }  
 
   /** END: new avatar mock **/
+
+  #emptyState {
+    @apply(--layout-horizontal);
+    @apply(--layout-vertical);
+    @apply(--layout-fit);
+    text-align: center;
+    display: none;
+  }
+  #emptyState * {
+    margin: 0 auto;
+  }
+  #emptyState img {
+    bottom: 0;
+    margin-bottom: 0;
+  }    
   @media (min-width: 768px) and (orientation: landscape) {
     .message-item-container {
       padding-left: 10px;
@@ -261,27 +277,16 @@ TODO:
              <!-- class$="[[_computedClass(selected)]]" message.value.continued-->
              <div class$="[[_computedClass(false)]]">
                <div class="item-aside">
-               <!--
-                 <div>
-                   <span>
-                     <div class="avatar dispImage">
-                       <img src$=[[message.value.image]]>
-                     </div>
-                   </span>
-                 </div>
-                -->
-<!--nova versao -->
-                  <div class$="[[_computedClassAvatar(message.value.authorAvatar)]]">
-                      <template is="dom-if" if="{{!message.value.authorAvatar}}">
-                          <div class="avatar-letter">
-                              <span>[[_demoLetter(message.value.authorName)]]</span>
-                          </div>
-                      </template>
-                      <template is="dom-if" if="{{message.value.authorAvatar}}">
-                          <img src="[[message.value.authorAvatar]]">
-                      </template>     
-                  </div>
-<!-- nova versao -->                 
+                <div class$="[[_computedClassAvatar(message.value.authorAvatar)]]">
+                    <template is="dom-if" if="{{!message.value.authorAvatar}}">
+                        <div class="avatar-letter">
+                            <span>[[_demoLetter(message.value.authorName)]]</span>
+                        </div>
+                    </template>
+                    <template is="dom-if" if="{{message.value.authorAvatar}}">
+                        <img src="[[message.value.authorAvatar]]">
+                    </template>     
+                </div>
                </div>
                <div class="item-actions"></div>
                <div class="item-content">
@@ -308,6 +313,10 @@ TODO:
         </template>
       </iron-list>
     </div>
+    <div id="emptyState">
+      <img src="/assets/img/empty_feeds.gif">
+    </div>
+
     <!-- End: html common -->
 </template>
 
@@ -340,7 +349,8 @@ TODO:
          * `document` array content the items for iron-list.
          */
         documents: {
-          type: Array
+          type: Array,
+          observer: "_documentsChanged"
         },
         /** `hashtag` used to search items. But this is DEPRECATED. Please
         * use querystring.
@@ -400,7 +410,7 @@ TODO:
 
           if (!hashtag) {
               // default for NEW querystring behavior.
-              url = siscomando.url.feeds + "/?" + this.querystring;
+              url = siscomando.url.feeds + "/" + this.querystring;
               this.$.request.url = url;
           } else {
               // DEPRECATED.
@@ -484,6 +494,14 @@ TODO:
           window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
           
         }
+      },
+      _documentsChanged: function(){
+
+          if (this.documents.length == 0) {
+            this.$.emptyState.style.display = "block";
+          } else {
+            this.$.emptyState.style.display = "none";
+          }
       }
     });
   </script>
