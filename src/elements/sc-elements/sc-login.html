@@ -130,11 +130,13 @@ Example:
                     var response = evt.detail.response;
                     // check if json returned has fields access_token, expires_at (default)
                     var tokenValidated = self._checkResponse(response);
-                    self.response = response;
+                    // is valid?
                     if (tokenValidated) {
                         // persist the json object into sessionStorage with sessionKey 
                         self._setStorage(tokenValidated);
                     }
+                    // valid or not send response.
+                    self.response = response;
                 });  
             }
         },

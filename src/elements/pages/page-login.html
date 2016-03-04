@@ -100,11 +100,11 @@
                // handling returned data specific this app.
                if (evt.detail.response.result.success == "false") {
                  console.log("Invalid login.");
+                 sessionStorage.setItem('currentUser', null);
                } else {
+                 sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
                  login.goto(home);
                }
-
-               sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
             });
         }
     });

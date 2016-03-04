@@ -113,16 +113,7 @@ TODO:
                 }
             },
             ready: function() {
-              // set headers default for SPA context
-                if (this.withAuth) {
-                    var headers = {}
-                    // TODO: ask sc-login instead get from sessionStorage?
-                    var token = JSON.parse(sessionStorage.getItem(siscomando.SESSION_KEY)); 
-                    if (token){
-                        headers['Authorization'] = this.authMethod + ' ' + token.access_token;
-                        this.headers = headers;                    
-                    }
-                }
+                this._setHeaders();
             },
             /** `_changedConfig` to change sc-cache properties
             */
@@ -133,6 +124,11 @@ TODO:
                 ajax.body = this.body ? this.body : undefined;
                 ajax.method = this.method ? this.method : undefined;
                 ajax.contentType = this.contentType ? this.contentType : undefined;
+                
+                // setup headers fallback
+                if (!this.headers) {
+                    this._setHeaders();
+                }
                 ajax.headers = this.headers;
 
                 if (this.auto === true) {
@@ -144,6 +140,18 @@ TODO:
             */
             _nameFromUrl: function(url) {
                 return url.replace(/[\:\/\%\?\&\.\=\-\,]/g, '_') + '_api';
+            },
+            _setHeaders: function(){
+              // set headers default for SPA context
+                if (this.withAuth) {
+                    var headers = {}
+                    // TODO: ask sc-login instead get from sessionStorage?
+                    var token = JSON.parse(sessionStorage.getItem(siscomando.SESSION_KEY)); 
+                    if (token){
+                        headers['Authorization'] = this.authMethod + ' ' + token.access_token;
+                        this.headers = headers;                    
+                    } 
+                }                
             },
             /** `go` calls checkCache. 
             */
