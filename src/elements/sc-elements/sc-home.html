@@ -401,8 +401,9 @@ Example:
           var request = this.$.request;
           // setup callback
           this.callbackResponse = this.callbackToResponse;
-          request.url = siscomando.url.channels;
+            
           spinner.active = true;
+          // Listeners
           request.addEventListener('sc-request-response', function(e){
              res = self.callbackResponse(e.detail.response);
              self.documents = res; //e.detail.response;
@@ -410,7 +411,9 @@ Example:
           });
           request.addEventListener('error', function(spinner){
             spinner.active = false;
-          })
+          });
+          // Call request (auto). 
+          request.url = siscomando.url.channels;
       },
       // Selection Behavior
       selectItem: function(e) {
@@ -529,7 +532,6 @@ Example:
         if (this.documents.length > 0) {
           this.$.emptyState.style.display = "none";
         }
-
       }     
     });
   </script>
