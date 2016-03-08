@@ -40,6 +40,7 @@ TODO:
            method="{{method}}"
            handle-as="json"
            on-response="_handleResponse"
+           on-error="_handleError"
            debounce-duration="300"
            withCredentials="true"></iron-ajax>  
          <sc-cache expires-time="{{expiresTime}}" id="cache"></sc-cache>
@@ -231,8 +232,10 @@ TODO:
                     }        
                 }
                 return false;
+            },
+            _handleError: function() {
+                this.fire("sc-request-error");
             }
-            
         });
     </script>
 </dom-module>

@@ -23,7 +23,7 @@ Example:
 
 <dom-module id="sc-login">
     <template>
-        <sc-request id="request"></sc-request>
+        <sc-request id="request" no-cache></sc-request>
     </template>
     <script>
     Polymer({
@@ -125,7 +125,11 @@ Example:
                 request.contentType = "application/x-www-form-urlencoded";
                 request.body = "username=" + username + "&" + "password=" + password; // foo=bar+baz&x=1
                 request.withAuth = false; // not sents any json-session-key
-                request.go();
+                
+                request.addEventListener('sc-request-error', function(){
+                   self.fire('sc-login-error'); 
+                });
+                
                 request.addEventListener("sc-request-response", function(evt) {
                     var response = evt.detail.response;
                     // check if json returned has fields access_token, expires_at (default)
@@ -137,7 +141,9 @@ Example:
                     }
                     // valid or not send response.
                     self.response = response;
-                });  
+                }); 
+                
+                request.go();
             }
         },
         logoff: function() {
