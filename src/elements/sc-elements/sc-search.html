@@ -136,31 +136,56 @@ Example:
                 */
                 itemKey: {
                   type: String
-                }
+                },
+                /** `itemTouched` contains items indexed by id to persist when
+                * the model is changed.
+                */                
+                itemTouched: Object  
             },
             attached: function(){
                 // This is must be placed page-search.html. The `url` is 
                 // entrypoint for follow/unfollow services.
                 this.url = siscomando.url.followservices;
+                this.itemTouched = {};
             },
             /** `mSelect` toggle following properties and checkbox status.
             */
             mSelect: function(e) {
+                var self = this;
                 var listResults = this.querySelector('#list-results');
                 var parent = this._getParent(e.target, 'fancy');
                 var pk = this._getItemKey(e.model.item);
                 var is_following = e.model.item.value.following;
+                // #HARDCODE
+                var modelServiceKey = e.model.item.path.key;
                 var body = {};
-                console.log("uma jaca: " + is_following);
+                
                 body['activated'] = is_following === true ? false : true; 
+                // fix local item
+                e.model.item.value.following = body['activated'];
                 body['serviceId'] = e.model.item.value._id;
+                body['modelServiceKey'] = modelServiceKey;
+
                 if (pk) {
                     // assumes is exists
                     body['pk'] = pk;
-                }                
+                } else {
+                    this.itemTouched[modelServiceKey] = e.model.item; // FTB #HARDCODED. :/  
+                }
 
-                // make request
-                this._request(body);
+                // Fix (or update) model.
+                this.$.request.addEventListener("sc-request-response", function(evt){
+                    // this response must be ONE item changed.
+                    if (evt.detail.response && evt.detail.response.modelServiceKey) {
+                        var idStored = evt.detail.response.modelServiceKey;
+                        var itemStored = self.itemTouched[idStored]
+                        itemStored.value.followingKey = evt.detail.response.key; // #HARDCODE
+                        // self._setItemKey(e.model.item, "retornado"); // #NOHARDCODE                 
+                    }
+                });
+                            
+                // make request           
+                this._request(body);    
 
                 // update UI
                 if (e.target.classList.contains('paper-checkbox')) {
@@ -251,6 +276,25 @@ Example:
                 }
                 return obj;
             },
+            /** `_setItemKey` sets string of the primary key.
+            */
+            _setItemKey: function(item, value){
+                var self = this;
+                var orderedField = this.itemKey.replace(' ', '').split('.');
+                var obj;
+                for (var i = 0; i < orderedField.length; i++) {
+                    if (!obj) {
+                      obj = item[orderedField[i]];  
+                    } else {
+                      if (i === (orderedField.length - 1)) {
+                        obj[orderedField[i]] = value;  
+                      } else {
+                        obj = obj[orderedField[i]];
+                      }
+                    }
+                }
+                return obj[orderedField[i]];
+            },            
             _request: function(body) {
               var request = this.$.request;       
                // This is body of the request (or JSON payload)

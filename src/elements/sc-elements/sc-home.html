@@ -277,7 +277,7 @@ Example:
     <!-- Start: html common -->
     <div class="list-container">
     <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>
-      <iron-list id="itemsList" items="{{documents}}" as="item" selected-item="{{selectedItem}}">
+      <iron-list id="itemsList" items="[[documents]]" as="item" selected-item="{{selectedItem}}">
         <template>
             <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
               <!-- div header -->
