@@ -145,17 +145,14 @@
           var feeds = this.$.feeds;
           form.url = this.urlPost;
 
-          // get and load feeds
-          // this._querystringChanged();
-
           // keys.keyEventTarget = this.$.form;
           keys.callback = function(keyPressed) {
               // if sc-keys has pressed (keyPressed) equal 'enter' so go().
               if (keyPressed === 'enter') {                
                   self.$.form.body = self.setBody();
                   // Header authorization: Basic TOKEN is already attached
-                  self.$.form.go();
-                  self.$.form.$.request.addEventListener('sc-request-response', self._updateAfterPOST);
+                  //self.$.form.$.request.addEventListener('sc-request-response', self._updateAfterPOST);
+                  self.$.form.go();                  
               }
           };
       },
@@ -168,7 +165,7 @@
         body['body'] = this.$.form.bindValue;
         body['_id'] = siscomando.getParameterByName('q', qs); 
         body['scope'] = siscomando.getParameterByName('scope', qs); 
-        console.log("pg-ffeds:");
+        console.log("pg-feeds[body:enviado]:");
         console.log(body);
         return body;
       },
@@ -179,8 +176,12 @@
             // force querystring
             qs = window.location.hash.replace('#/feeds/', '')
           }
-
+                    
           this.$.feeds.querystring = qs;
+          
+          // set channel of socket. 
+          var channel = siscomando.getParameterByName('q', qs);
+          this.pollingGet(channel);
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -188,30 +189,36 @@
       _historyBack: function() {
         history.back();
       },
-      _updateAfterPOST: function(evt) {
-          var docs;
-          // document.querySelector get the first matched element. With
-          // `.page-feeds` make sure of the correct element.
-          var feeds = document.querySelector('sc-feeds#feeds.page-feeds');
-          var self = document.querySelector('page-feeds');
-          console.log(evt.detail.response);
-          if (feeds.documents) {
-            docs = feeds.documents.slice(); 
-            docs.push(evt.detail.response[0]);
-            feeds.documents = docs.slice();
-          } else {
-            feeds.documents = evt.detail.response;
-          }
-          feeds.playAnimation();
-          this.async(self.scrollDown, 600);
-      },
       /** `scrollDown` moves scroll to down making last update to be 
       * show.
       */
       scrollDown: function() {
           var element = document.querySelector('.rowOne');
           element.scrollTop = element.scrollHeight;        
-      }        
+      },
+      /** `pollingGet` gets updates from socket.
+      *
+      * @serviceId: first level of the feeds.
+      * TODO: support @ticketId
+      **/
+      pollingGet: function(channel) {
+          var self = this;
+          var docs;
+          var feeds = this.$.feeds;
+          var socket = io(siscomando.REMOTE_ADDR);
+          console.log("channel: " + channel);
+          socket.on(channel, function (data) {
+              if (feeds.documents) {
+                docs = feeds.documents.slice(); 
+                docs.push(data[0]);
+                feeds.documents = docs.slice();
+              } else {
+                feeds.documents = data;
+              }
+              feeds.playAnimation();
+              self.async(self.scrollDown, 200);
+        });
+      }
     });
   </script>
 </dom-module>

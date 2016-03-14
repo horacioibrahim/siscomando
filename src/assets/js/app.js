@@ -23,7 +23,7 @@ siscomando.url = {
     feeds: siscomando.REMOTE_ADDR + '/api/feeds',
     login: siscomando.REMOTE_ADDR + '/loginexp',
     searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?q=',
-    followservices: siscomando.REMOTE_ADDR + '/api/services/follow'
+    followservices: siscomando.REMOTE_ADDR + '/api/services/follow',
 };
 
 /** `getParameterByName` simple way get simple params in the querystring.

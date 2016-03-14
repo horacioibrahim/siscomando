@@ -324,7 +324,7 @@ Example:
       </iron-list>
     </div>
      <div id="emptyState">
-        <img src="img/first_empty.svg"></img>
+        <img src="img/first_empty.svg">
         <p>Adicione um serviço para seguí-lo e envolva-se!</p>   
      </div>    
     <!--
@@ -396,12 +396,16 @@ Example:
 
       // Element Lifecycle
       ready: function () {
+          this.loader();
+      },
+      // Selection Behavior
+      loader: function() {
           var self = this;
-          var spinner = this.$.spinnerScHome;
-          var request = this.$.request;
+          var spinner = self.$.spinnerScHome;
+          var request = self.$.request;
           // setup callback
-          this.callbackResponse = this.callbackToResponse;
-            
+          self.callbackResponse = self.callbackToResponse;
+          request.auto = false;
           spinner.active = true;
           // Listeners
           request.addEventListener('sc-request-response', function(e){
@@ -413,9 +417,9 @@ Example:
             spinner.active = false;
           });
           // Call request (auto). 
-          request.url = siscomando.url.channels;
+          request.url = siscomando.url.channels; // #FTB #HARDCODE TODO: colocar em page-*  
+          request.go();
       },
-      // Selection Behavior
       selectItem: function(e) {
          this._selectItem(e);
        },

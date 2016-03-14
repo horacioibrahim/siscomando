@@ -42,6 +42,9 @@
             --paper-fab-keyboard-focus-background: #417505;
             @apply(--shadow-elevation-8dp);
         }
+        iron-icon[icon="cached"] {
+            margin-left: 20px;
+        }
     </style>
     <drawer-panel-layout>
           <!--
@@ -55,6 +58,7 @@
               <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
+              <iron-icon icon="cached" on-tap="reload" class="transformed"></iron-icon>
             </paper-toolbar>
            <!-- who is content class -->
           <sc-home id="home" class="shadow-2dp fit" item-key="value._id"></sc-home>    
@@ -78,6 +82,10 @@
       },
       toSearch: function(){
         window.location.href = "#/search"
+      },
+      reload: function() {
+        var scHome = this.$.home;
+        scHome.loader();
       }
     });
   </script>
