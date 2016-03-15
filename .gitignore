@@ -8,3 +8,7 @@ scapp/plugins
 # secutiry data
 *.developerprofile
 *.p12
+
+# OS  and npm files
+.DS_Store
+src/elements/npm-debug.log
