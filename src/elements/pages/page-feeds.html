@@ -118,7 +118,11 @@
 
      
     </drawer-panel-layout>
-
+      <!-- only audio -->
+            <audio id="sounds">
+              <source src="button_tiny.ogg" type="audio/ogg">
+              <source src="button_tiny.mp3" type="audio/mpeg">
+            </audio>
   </template>
   <script>
     Polymer({
@@ -214,9 +218,11 @@
                 feeds.documents = docs.slice();
               } else {
                 feeds.documents = data;
-              }
-              feeds.playAnimation();
-              self.async(self.scrollDown, 200);
+              }             
+              // feeds.playAnimation();
+              self.async(self.scrollDown, 300);
+              // temp NEW features. This can be applied via push-messages by device.
+              self.$.sounds.play();
         });
       }
     });
