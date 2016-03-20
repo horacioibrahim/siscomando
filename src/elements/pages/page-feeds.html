@@ -148,7 +148,7 @@
           var form = this.$.form;
           var feeds = this.$.feeds;
           form.url = this.urlPost;
-
+          
           // keys.keyEventTarget = this.$.form;
           keys.callback = function(keyPressed) {
               // if sc-keys has pressed (keyPressed) equal 'enter' so go().
@@ -197,13 +197,15 @@
       * show.
       */
       scrollDown: function() {
-          var element = document.querySelector('.rowOne');
+          var element = document.querySelector('page-feeds');
+          element = element.$.feeds.parentElement;
           element.scrollTop = element.scrollHeight;        
       },
       /** `pollingGet` gets updates from socket.
       *
       * @serviceId: first level of the feeds.
       * TODO: support @ticketId
+      * TODO: to use fooly-websocket
       **/
       pollingGet: function(channel) {
           var self = this;
@@ -220,7 +222,7 @@
                 feeds.documents = data;
               }             
               // feeds.playAnimation();
-              self.async(self.scrollDown, 300);
+              // self.async(feeds.scrollDown, 300);
               // temp NEW features. This can be applied via push-messages by device.
               self.$.sounds.play();
         });

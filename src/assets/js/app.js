@@ -12,7 +12,7 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = "http://localhost:5000"; //'https://agile-lake-26676.herokuapp.com';
+siscomando.REMOTE_ADDR = 'https://agile-lake-26676.herokuapp.com';
 siscomando.SESSION_KEY = 'scdata'; // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
@@ -25,6 +25,9 @@ siscomando.url = {
     searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?q=',
     followservices: siscomando.REMOTE_ADDR + '/api/services/follow',
 };
+
+/* Siscomando sounds */
+siscomando.sounds = {}
 
 /** `getParameterByName` simple way get simple params in the querystring.
 * This code is copied from:
@@ -40,4 +43,4 @@ siscomando.getParameterByName = function (name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
-//'https://gist.githubusercontent.com/horacioibrahim/55ce6b7b8a338ab2ad59/raw/09aa4c7af173f00b93010357ec2c808ab7d90647/data_home.json'
+

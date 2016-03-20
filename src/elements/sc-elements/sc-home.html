@@ -41,26 +41,24 @@ Example:
         @apply(--layout-fit);
         width: 100%;
         /* overflow-y: scroll; vulcanized problems */
-
         -webkit-transition-delay: 2s;
         transition-delay: 2s;
         -webkit-transition: 2s border linear,3s background-color linear;
         transition: 2s border linear,3s background-color linear;
       }
       .service-item {
-        @apply(--layout-horizontal);
+        /* @apply(--layout-horizontal); */
         border-bottom: 1px solid rgba(0, 0, 0, 0.09);
-        padding-bottom: 5px;
-        padding-top: 5px;
-        padding-left: 8px;
-        padding-right: 6px;
         cursor: pointer;
-        min-height: 40px;
+        min-height: 64px;
         text-overflow: ellipsis;
+        background-color: white;
       }
       .content {
-        @apply(--layout-vertical);
+        /* @apply(--layout-vertical); */
         @apply(--layout-flex);
+        background-color: white; 
+        padding: 6px;
       }
       .more {
         width: 56dp;
@@ -71,11 +69,15 @@ Example:
       .more iron-icon {
         margin-top: 36px;
         color: rgba(0,0,0, .30);
-      }
+      }     
       /* hover for desktop */
       .service-item.selected {
         background-color: rgba(19,95,184,.75);
         color: white !important;
+      }
+      .service-item-subheader {
+        margin-top: -4px;    
+        color: rgba(0,0,0,.54);
       }
       .service-item.selected .service-item-subheader span {
         color: white;
@@ -87,27 +89,48 @@ Example:
         background-color: #7ED321;
       }
       .service-item-headers {
-        @apply(--layout-horizontal);
+        /* @apply(--layout-horizontal); */
       }
       .service-item-header {
-
+        position: relative;
+        @apply(--layout-horizontal);
       }
+      .service-item-header div {
+            @apply(--layout-flex-10);
+       }
+       .service-item-header .service-counter {
+            @apply(--layout-flex-none);
+            position: absolute;
+            float: right;
+            top:0;
+            right: 0;
+       }
       .service-item-header h3 {
-        margin-top: 2px;
-        margin-bottom: 2px;
+        margin-top: 0px;
+        margin-bottom: 0px;
         font-size: 1em;
         font-weight: 500;
-      }
+      }     
       .service-item-subheader span, .service-item-subheader div {
+        display: block;
         padding: 5px 10px 5px 0px;
         color: #000;
         opacity: 0.54;
         font-size: 12px;
-        margin-top: -5px;
+        margin-top: 2px;
       }
+      .service-item-subheader sc-timeago {
+        color: #000;
+        opacity: 0.54;
+        font-size: 12px; 
+      }
+      .service-item-subheader span {
+            display: inline;
+      }           
       .service-counter {
-        position: absolute;
+        /* position: absolute;
         right: 0;
+        top:0; */
         font-size: 13px;
         width: 22px;
         height: 18px;
@@ -119,7 +142,7 @@ Example:
         background: #CCC;
         padding-top: 2px;
         color: #FFF;
-        margin-right: 12px;
+        /* margin-right: 7px;*/
       }
       .service-counter.new-message{
         background: #4A90E2;
@@ -134,7 +157,7 @@ Example:
         overflow: hidden;
         font-size: 14px;
         line-height: 17px;
-        padding-bottom: 5px;
+        /* padding-bottom: 5px;*/
         color: rgba(0,0,0,0.54);
       }
       .avatarBox {
@@ -188,7 +211,7 @@ Example:
       .service-item-body-content {
         @apply(--layout-flex);
         @apply(--layout-flex-11);
-        padding-left: 15px;
+        padding-left: 6px;
       }
       .avatarBox img {
         width: 33px;
@@ -268,57 +291,80 @@ Example:
         margin-top: 25%;
         width: 55%;
 
-      }          
+      }  
+      /* swipe setup */        
+      paper-swipe {
+        position: absolute;            
+        width: 100%;
+        height: 100%;
+      }
+      paper-swipe {
+        --paper-swipe: {
+            /* height: 100px;*/
+            
+        };
+      }   
+      div[underlay] {
+        background-color: #f1f1f1 /*whitesmoke*/;
+      }
+        
+     .shadow-inset {
+        box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -webkit-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -moz-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -o-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+     }     
+    .truncate {
+        width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }    
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
     </style>
-      <sc-request expires-time="600" id="request" no-cache="true"></sc-request>        
+      <sc-request expires-time="0" id="request" no-cache="true"></sc-request>        
     <!-- Start: html common -->
     <div class="list-container">
     <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>
       <iron-list id="itemsList" items="[[documents]]" as="item" selected-item="{{selectedItem}}">
-        <template>
+        <template>  
             <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
               <!-- div header -->
-              <div class="content" on-tap="selectItem">
-                  <div class="service-item-headers service-item-header">
-                    <div class="flexchild"><h3>[[item.value.name]]</h3></div>
-                    <!-- TODO: create method to add new-message class -->
-                    <div><div class="service-counter">[[item.value.open]]</div></div>
-                  </div>
-                  <!-- div subheader -->
-                  <div class="service-item-headers service-item-subheader">
-                    <span>[[item.value.hashtag]]</span>
-                    <!-- colocar um filter momentjs aqui quando integrado com meteor -->
-                    <span>
-                      <!-- <sc-timeago datetime="[[_convertTimestamp(item.value.updatedAt)]]"></sc-timeago> -->
+             <paper-swipe left-swipe="true">
+                 <div content class="content" on-tap="selectItem">
+                    <div class="service-item-headers service-item-header">
+                        <div><h3 class="truncate">[[item.value.name]]</h3></div>
+                        <!-- TODO: create method to add new-message class -->
+                        <div class="service-counter">[[item.value.open]]</div>
+                    </div>
+                    <!-- div subheader
+                    <div class="service-item-headers service-item-subheader">
                       <sc-timeago datetime="[[item.value.updatedAt]]"></sc-timeago>
-                    </span>
-                  </div>
-                  <template is="dom-if" if="{{item.value.lastMessage}}">
-                    <div class="service-item-body">
-                      <div class$="[[_computedClassAvatar(item.value.lastMessage.user.username)]]">
-                          <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
-                              <div class="avatar-letter">
-                                  <span>[[_demoLetter(item.value.lastMessage.user.username)]]</span>
-                              </div>
-                          </template>
-                          <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
-                              <img src="[[item.value.lastMessage.user.avatar]]">
-                          </template>     
-                      </div>
-                      <div class="service-item-body-content">                       
-                        [[item.value.lastMessage.body]]
-                      </div>
-                    </div> 
-                  </template>
-              </div> 
-              <!-- menu more options -->
-                <!--
-              <div class="more" on-tap="dialogToggle">
-                <iron-icon icon="more-vert"></iron-icon>
-              </div>-->
+                      <span>[[item.value.hashtag]]</span>
+                    </div>
+                    -->
+                      <template is="dom-if" if="{{item.value.lastMessage}}">
+                        <div class="service-item-body">
+                          <div class$="[[_computedClassAvatar(item.value.lastMessage.user.username)]]">
+                              <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
+                                  <div class="avatar-letter">
+                                      <span>[[_demoLetter(item.value.lastMessage.user.username)]]</span>
+                                  </div>
+                              </template>
+                              <template is="dom-if" if="{{item.value.lastMessage.user.avatar}}">
+                                  <img src="[[item.value.lastMessage.user.avatar]]">
+                              </template>
+                          </div>
+                          <div class="service-item-body-content">
+                            [[item.value.lastMessage.body]]
+                          </div>
+                        </div>
+                     </template>
+                </div>
+                <div underlay>Underlay content goes here...</div>
+              </paper-swipe>
             </div>
         </template>
       </iron-list>
@@ -326,18 +372,9 @@ Example:
      <div id="emptyState">
         <img src="img/first_empty.svg">
         <p>Adicione um serviço para seguí-lo e envolva-se!</p>   
-     </div>    
-    <!--
-    <paper-dialog id="dialog" with-backdrop entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-      <h2>{{dialogItemSelected.service}}</h2>
-        <paper-icon-item>
-          <iron-icon icon="icons:highlight-off" item-icon></iron-icon> Deixar de receber atualizações
-        </paper-icon-item>
-        <paper-icon-item>
-          <iron-icon icon="social:notifications-off" item-icon></iron-icon> Silenciar notificações
-        </paper-icon-item>
-    </paper-dialog>-->
-    <!-- End: html common -->
+     </div> 
+      <!-- no redenrized -->
+      <fooly-websocket id="foolyWS"></fooly-websocket>
 </template>
 
   <script>
@@ -391,7 +428,16 @@ Example:
         */
         itemKey: {
           type: String
-        }        
+        },
+        /** `noCache` makes request on/off cached.
+        */
+        noCache: {
+            type: Boolean,
+            value: false
+        },
+        /** `wsUrl` string to connect websocket server.
+        */          
+        wsUrl: String
       },
 
       // Element Lifecycle
@@ -407,6 +453,12 @@ Example:
           self.callbackResponse = self.callbackToResponse;
           request.auto = false;
           spinner.active = true;
+          
+          // Check if cache
+          if (!self.noCache) {
+              request.noCache = self.noCache;
+          }
+          
           // Listeners
           request.addEventListener('sc-request-response', function(e){
              res = self.callbackResponse(e.detail.response);
@@ -532,11 +584,29 @@ Example:
           return obj;
       },
       _documentsChanged: function(){
-        this.$.emptyState.style.display = "inline-block";
+        var ws = this.$.foolyWS;
+        ws.url = siscomando.REMOTE_ADDR;
+        
         if (this.documents.length > 0) {
           this.$.emptyState.style.display = "none";
+          
+          // setup web for each document.
+          var docs = this.documents;
+          var channels = [];
+          
+          docs.forEach(function(elem, idx, arr) {
+            channels.push(elem.value._id)
+          });
+          
+          ws.channels = channels.join();
+          ws.on();
+          ws.addEventListener('fooly-ws-updated', function(evt){
+            console.log(evt.detail.response.value._id);
+          });
+        } else {
+            this.$.emptyState.style.display = "inline-block";
         }
-      }     
+      }
     });
   </script>
 </dom-module>

@@ -30,7 +30,7 @@ mv src/index.html.bak src/index.html
 cd $DIRECTORY_PROJECT 
 cd scapp
 
-cordova build android
+# cordova build android
 # if android device connected will work fine!
 #cordova run android
 

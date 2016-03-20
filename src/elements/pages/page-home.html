@@ -64,7 +64,6 @@
           <sc-home id="home" class="shadow-2dp fit" item-key="value._id"></sc-home>    
           <paper-fab icon="add" title="Seguir" class="float-button" noink="true" on-tap="toSearch"></paper-fab>          
           </paper-header-panel>
-
     </drawer-panel-layout>
 
   </template>
@@ -85,6 +84,7 @@
       },
       reload: function() {
         var scHome = this.$.home;
+        scHome.noCache = true;
         scHome.loader();
       }
     });
