@@ -319,7 +319,17 @@ Example:
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }    
+     }  
+     .underlay-actions {
+        @apply(--layout-horizontal);       
+     } 
+     .underlay-actions paper-button {
+        @apply(--layout-flex);
+        color: rgba(0,0,0,.54);
+      }
+        .underlay-actions paper-button iron-icon {
+            padding-top: 6px;
+        }
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
@@ -363,7 +373,10 @@ Example:
                         </div>
                      </template>
                 </div>
-                <div underlay>Underlay content goes here...</div>
+                <div underlay class="underlay-actions">
+                     <paper-button><iron-icon icon="av:volume-off"></iron-icon></paper-button>
+                    <paper-button on-tap="unfollow" data-id="{{item.value._id}}"><iron-icon icon="close"></iron-icon></paper-button>
+                </div>
               </paper-swipe>
             </div>
         </template>
@@ -437,10 +450,15 @@ Example:
         },
         /** `wsUrl` string to connect websocket server.
         */          
-        wsUrl: String
+        wsUrl: String,
+        /** `url` string to send follow/unfollow actions.
+        */           
+        url: String
       },
-
       // Element Lifecycle
+      attached: function(){
+        this.url = siscomando.url.followservices; // #HARDCODE #FTB
+      },
       ready: function () {
           this.loader();
       },
@@ -606,7 +624,42 @@ Example:
         } else {
             this.$.emptyState.style.display = "inline-block";
         }
-      }
+      },
+      /** `unfollow` disconnect issue/service of the current user. This
+      * case not require to follow.
+      **/
+      unfollow: function(e){
+          console.log('-----------');
+          console.log(e.model.item);
+          var request = this.$.request;
+          var self = this;
+          var documents = self.documents.slice();
+          body = {}
+          body['pk'] = e.model.item.value.followingKey; // #HARDCODE #FTB
+          body['activated'] = false;
+          body['serviceId'] = e.model.item.value._id; // TODO: can be not required.
+          
+          var index = documents.indexOf(e.model.item);
+          request.addEventListener('sc-request-noemit', function(e){
+              if (index > -1) {            
+                  documents.splice(index, 1);
+                  self.documents = documents;
+              }              
+          });
+          this._request(body);
+       },
+      _request: function(body) {
+          var request = this.$.request;       
+          // This is body of the request (or JSON payload)
+          request.auto = false;
+          request.noEmit = true;
+          request.contentType = 'application/json';
+          request.method = "POST";
+          request.noCache = true; // request without verify cache.
+          request.url = this.url;
+          request.body = body;
+          request.go();
+      }    
     });
   </script>
 </dom-module>

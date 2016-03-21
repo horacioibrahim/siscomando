@@ -111,6 +111,13 @@ TODO:
                 noCache: {
                     type: Boolean,
                     value: false
+                },
+                /** `noEmit` if true not fire sc-request-response.
+                * 
+                */                
+                noEmit: {
+                    type: Boolean,
+                    value: false
                 }
             },
             ready: function() {
@@ -210,7 +217,11 @@ TODO:
             _responseAfterFlow: function(response) {
                 console.log("res: ");
                 console.log(response);
-                this.fire("sc-request-response", {"response": response});
+                if (!this.noEmit) {
+                  this.fire("sc-request-response", {"response": response});   
+                } else {
+                  this.fire("sc-request-noemit");
+                }
             },
             /** `checkExpired` returns true if cache data is expired or false
             * if not expired. 
