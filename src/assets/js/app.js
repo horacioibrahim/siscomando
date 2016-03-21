@@ -43,4 +43,32 @@ siscomando.getParameterByName = function (name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+// Cordova implementations
+function playAudio(src) {
 
+    // HTML5 Audio
+    if (typeof Audio != "undefined") { 
+        new Audio(src).play() ;
+
+    // Phonegap media
+    } else if (typeof device != "undefined") {
+
+        // Android needs the search path explicitly specified
+        if (device.platform == 'Android') {
+            src = 'file:///android_asset/www/' + src; //assets/sounds/XXX.ogg
+        }
+
+        var mediaRes = new Media(src,
+            function onSuccess() {
+                // release the media resource once finished playing
+                mediaRes.release();
+            },
+            function onError(e){
+                console.log("error playing sound: " + JSON.stringify(e));
+            });
+        mediaRes.play();
+
+    } else {
+        console.log("no sound API to play: " + src);
+    }
+ };
