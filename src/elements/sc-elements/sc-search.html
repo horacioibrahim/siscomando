@@ -170,10 +170,11 @@ Example:
                     // assumes is exists
                     body['pk'] = pk;
                 } else {
+                    // Prepare to update item loaded in the UI.
                     this.itemTouched[modelServiceKey] = e.model.item; // FTB #HARDCODED. :/  
                 }
 
-                // Fix (or update) model.
+                // Fix (or update) model. Update item loaded in the UI.
                 this.$.request.addEventListener("sc-request-response", function(evt){
                     // this response must be ONE item changed.
                     if (evt.detail.response && evt.detail.response.modelServiceKey) {

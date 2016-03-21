@@ -277,7 +277,7 @@ TODO:
              <!-- class$="[[_computedClass(selected)]]" message.value.continued-->
              <div class$="[[_computedClass(false)]]">
                <div class="item-aside">
-                <div class$="[[_computedClassAvatar(message.value.authorAvatar)]]">
+                <div class$="[[_computedClassAvatar(message.value.authorName)]]">
                     <template is="dom-if" if="{{!message.value.authorAvatar}}">
                         <div class="avatar-letter">
                             <span>[[_demoLetter(message.value.authorName)]]</span>
@@ -499,9 +499,19 @@ TODO:
           if (this.documents.length == 0) {
             this.$.emptyState.style.display = "block";
           } else {
-            this.$.emptyState.style.display = "none";
+            this.$.emptyState.style.display = "none";  
+            this.async(this.scrollDown, 300);
           }
-      }
+      },
+      /** `scrollDown` moves scroll to down making last update to be 
+      * show.
+      */
+      scrollDown: function() {
+          var element;
+          element = document.querySelector('page-feeds');
+          element = element.$.feeds.parentElement;
+          element.scrollTop = element.scrollHeight;        
+      },       
     });
   </script>
 </dom-module>
