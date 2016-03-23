@@ -169,8 +169,6 @@
         body['body'] = this.$.form.bindValue;
         body['_id'] = siscomando.getParameterByName('q', qs); 
         body['scope'] = siscomando.getParameterByName('scope', qs); 
-        console.log("pg-feeds[body:enviado]:");
-        console.log(body);
         return body;
       },
       _querystringChanged: function() {
@@ -225,7 +223,7 @@
               // self.async(feeds.scrollDown, 300);
               // temp NEW features. This can be applied via push-messages by device.
               var sound = "assets/sounds/button_tiny.ogg";
-              siscomando.playAudio(sound);
+              playAudio(sound);
         });
       }
     });

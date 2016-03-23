@@ -342,7 +342,7 @@ Example:
         <template>  
             <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
               <!-- div header -->
-             <paper-swipe left-swipe="true">
+             <paper-swipe swipe-left on-tap-underlay="resetAction">
                  <div content class="content" on-tap="selectItem">
                     <div class="service-item-headers service-item-header">
                         <div><h3 class="truncate">[[item.value.name]]</h3></div>
@@ -619,7 +619,7 @@ Example:
           ws.channels = channels.join();
           ws.on();
           ws.addEventListener('fooly-ws-updated', function(evt){
-            console.log(evt.detail.response.value._id);
+            // console.log(evt.detail.response.value._id);
           });
         } else {
             this.$.emptyState.style.display = "inline-block";
@@ -659,7 +659,18 @@ Example:
           request.url = this.url;
           request.body = body;
           request.go();
-      }    
+      },
+      resetAction: function(ev) {
+        var target = ev.target;
+        if (ev.type === 'tap-underlay') {
+          target = ev.detail.target.target;
+        }
+        while (target.localName !== 'paper-swipe') {
+          target = target.parentElement;
+        }
+        target.removeAttribute('disable-swipe');
+        target.resetPosition();
+      }        
     });
   </script>
 </dom-module>

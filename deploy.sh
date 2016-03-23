@@ -37,10 +37,10 @@ fi
 cd $DIRECTORY_PROJECT 
 cd scapp
 
-cordova prepare
-cordova build android
+#cordova prepare
+#cordova build android
 # if android device connected will work fine!
-cordova run android
+#cordova run android
 
 # End 
 date
