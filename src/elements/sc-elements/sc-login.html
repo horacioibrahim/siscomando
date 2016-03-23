@@ -34,7 +34,7 @@ Example:
             username: String,
             password: String,
             /** `sessionKey` property that stores the name of the key for
-            * sessionStorage.
+            * localStorage.
             */             
             sessionKey: {
                 type: String,
@@ -267,10 +267,10 @@ Example:
             var expirationDate = new Date();
             expirationDate.setSeconds(expirationDate.getSeconds() + tokenValidated['expires_at']);
             tokenValidated['expires_at'] = expirationDate;
-            sessionStorage.setItem(this.sessionKey, JSON.stringify(tokenValidated));
+            localStorage.setItem(this.sessionKey, JSON.stringify(tokenValidated));
         },
         _getStorage: function(key) {
-            return JSON.parse(sessionStorage.getItem(key));
+            return JSON.parse(localStorage.getItem(key));
         },
         _checkSession: function() {
             var now = new Date();

@@ -154,7 +154,7 @@ TODO:
                 if (this.withAuth) {
                     var headers = {}
                     // TODO: ask sc-login instead get from sessionStorage?
-                    var token = JSON.parse(sessionStorage.getItem(siscomando.SESSION_KEY)); 
+                    var token = JSON.parse(localStorage.getItem(siscomando.SESSION_KEY)); 
                     if (token){
                         headers['Authorization'] = this.authMethod + ' ' + token.access_token;
                         this.headers = headers;                    

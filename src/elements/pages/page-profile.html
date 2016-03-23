@@ -33,7 +33,7 @@
       is: 'page-profile',
       ready: function() {
           var self = this;
-          var currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+          var currentUser = JSON.parse(localStorage.getItem('currentUser'));
           if (!(currentUser) || !(currentUser.result.account)) {
             this.clearSession();
             window.location.href = '/';
@@ -54,8 +54,8 @@
         history.back();
       },
       clearSession: function() {
-          sessionStorage.setItem('currentUser', null);
-          sessionStorage.setItem(siscomando.SESSION_KEY, null);        
+          localStorage.setItem('currentUser', null);
+          localStorage.setItem(siscomando.SESSION_KEY, null);        
       }         
     });
   </script>

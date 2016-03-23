@@ -20,7 +20,7 @@ DIRECTORY_PROJECT=`realpath`
 
 # Vulcanize
 vulcanize --strip-comments --inline-css src/index.html > scapp/www/index.html
-sed -i.bak "s/<\/body>/$CORDOVA/g" scapp/www/index.html
+#sed -i.bak "s/<\/body>/$CORDOVA/g" scapp/www/index.html
 
 # Copy .js and images
 cp -r src/assets/* scapp/www/assets/

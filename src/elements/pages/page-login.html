@@ -1,4 +1,5 @@
 <dom-module id="page-login">
+<dom-module id="page-login">
     <template>
         <style>
             :host {
@@ -119,9 +120,11 @@
                // handling returned data specific this app.
                if (evt.detail.response.result.success == "false") {
                  console.log("Invalid login.");
-                 sessionStorage.setItem('currentUser', null);
+                 //sessionStorage.setItem('currentUser', null);
+                 localStorage.setItem('currentUser', null);
                } else {
-                 sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
+                 //sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
+                 localStorage.setItem('currentUser', JSON.stringify(evt.detail.response));   
                  login.goto(home);
                }
             });
