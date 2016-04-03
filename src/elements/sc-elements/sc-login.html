@@ -100,11 +100,18 @@ Example:
             response: {
                 type: Object,
                 observer: '_responseChanged'
-            }
+            },
+            checkOnlyStatus: Boolean
         },
         ready: function() {
+            console.log("login.ready");
             if (this._checkSession()) {
+                console.log("login.ready.goto-home");
                 this.goto(this.urlAfterLogged);
+            } else {
+                if (this.checkOnlyStatus) {
+                    this.goto("#/login");
+                }
             }
         },
         /** `login` the method used to make request with credentials info. It also
