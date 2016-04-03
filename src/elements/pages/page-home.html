@@ -65,7 +65,8 @@
           <paper-fab icon="add" title="Seguir" class="float-button" noink="true" on-tap="toSearch"></paper-fab>          
           </paper-header-panel>
     </drawer-panel-layout>
-
+    <!-- sc-login works as wrapper to check if session (authenticated) -->
+    <sc-login id="login" check-only-status></sc-login>
   </template>
   <script>
     Polymer({
