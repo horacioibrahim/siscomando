@@ -3,47 +3,105 @@
         <style>
             :host {
                 position: absolute;
+                font-family: Roboto;
                 width: 100%;
                 height: 100%;
-                background: red;
+                background: url(../../assets/img/walkthrough-bg.png);
+                background-repeat: repeat-x;
             }
             .content-1, .content-2,
             .content-3, .content-4{
-                position: absolute;
                 width: 100%;
                 height: 100%;
+                margin: 0 auto;
+                text-align: center;
+            }           
+            .content-1, .content-2, .content-3, .content-4 {
+                @apply(--layout-vertical);
             }
-            .content-1 {
-                background: blue;
+            .content-1 div, .content-2 div, .content-3 div, .content-4 div {
+                @apply(--layout-flex);
             }
-            .content-2 {
-                background: green;
+            .content-1 div img {
+                margin-top: 55%;
             }
-            .content-3 {
-                background: yellow;
+            .content-2 div img {
+                margin-top: 45px;
+                width: 155px;
             }
-            .content-4 {
-                background: pink;
+            .content-3 div img {
+                margin-top: 93px;
+                width: 255px;
+            }   
+            .content-4 div img {
+                margin-top: 70px;
+                width: 130px;
+            }               
+            .brand {
+                font-size: 20px;
+                padding-top: 25px;
+                font-weight: 500;
+                letter-spacing: 1px;
+                color: white;
+            }
+            p {
+                font-size: 16px;
+                color: white;
+                font-weight: 100;
+                padding: 10px 20px 10px 20px;
+            }
+            paper-button {
+                border: 1px solid rgba(255,255,255,0.54);
+                width: 80%;
             }
         </style>
-        <sc-walkthrough>
+        <sc-walkthrough>   
             <div class="content-1">
-                One
+                <div>
+                    <img src="../../assets/img/logo-white.svg" />
+                </div>
+                <div class="brand">
+                    Siscomando
+                </div>
             </div>
             <div class="content-2">
-                Two
+                <div>
+                    <img src="../../assets/img/iphone.svg" />
+                </div>
+                <div class="brand">
+                    Bem-vindo ao Siscomando
+                    <p>
+                        Toda comunicação sobre os problemas de <strong>alto impacto</strong> em um só lugar.
+                    </p>
+                </div>
             </div>
             <div class="content-3">
-                Three
+                <div>
+                    <img src="../../assets/img/messages.svg" />
+                </div>
+                <div class="brand">
+                    Canais por Serviços
+                    <p>Converse com os colaboradores em grupos baseados nos produtos e serviços.</p>
+                </div>
             </div>
             <div class="content-4">
-                Four
-            </div>            
+               <div>
+                    <img src="../../assets/img/messages_tag.svg" />
+                </div>
+                <div class="brand">
+                    Mensagens classificadas
+                    <p>Encontre rapidamente as mensagens classificadas por temas.</p>
+                    <paper-button on-tap="goto" class="">Começar</paper-button>
+                </div>
+            </div>
         </sc-walkthrough>
     </template>
     <script>
         Polymer({
-           is: 'page-walkthrough' 
+           is: 'page-walkthrough',
+           goto: function() {
+               window.location.href = "#/home";
+           }
         });
     </script>
 </dom-module>

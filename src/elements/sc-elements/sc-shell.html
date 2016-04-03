@@ -5,11 +5,12 @@
   <template>
         <!-- bindRouter onUrlChange="updateModel" -->
         <app-router id="router" class="flex">
-          <app-route path="/" element="page-login"></app-route>
           <!-- 
           Commented to support crosswalk.
           <app-route path="/**/www/index.html" element="page-login"></app-route> -->
-          <app-route path="index.html" element="page-login"></app-route>
+          <app-route path="/" element="page-walkthrough"></app-route>
+          <app-route path="index.html" element="page-walkthrough"></app-route>
+          <app-route path="/login" element="page-login"></app-route>
           <app-route path="/home" element="page-home"></app-route>
           <app-route path="/feeds/:querystring" element="page-feeds"></app-route>
           <app-route path="/walk" element="page-walkthrough"></app-route>
