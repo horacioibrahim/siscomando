@@ -224,6 +224,8 @@
               // temp NEW features. This can be applied via push-messages by device.
               var sound = "assets/sounds/button_tiny.ogg";
               playAudio(sound);
+              navigator.vibrate(100);
+              cordova.plugins.notification.badge.increase();
         });
       }
     });
