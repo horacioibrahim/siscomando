@@ -85,16 +85,16 @@ Example:
             var accessCounter = window.localStorage.getItem("_access");
             accessCounter = parseInt(accessCounter);
             console.log("counter: " + accessCounter);
-            if (accessCounter > 0) {
+            if (!(accessCounter > 0)) {
+                window.localStorage.setItem("_access", "1");
+                // It's 0. Show walkthrough
+                // var ironSwipeablePages = this.querySelector("iron-swipeable-pages");
+                // this.toggleClass("fadein", true, ironSwipeablePages);
+            } else {
                 accessCounter += 1;
                 window.localStorage.setItem("_access", String(accessCounter));
                 // GOTO login.
-                window.location.href = "/"
-            } else {
-                window.localStorage.setItem("_access", "0");
-                // It's 0. Show walkthrough
-                var ironSwipeablePages = this.querySelector("iron-swipeable-pages");
-                this.toggleClass("fadein", true, ironSwipeablePages);
+                window.location.href = "#/home"
             }
         }
         

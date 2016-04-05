@@ -106,8 +106,9 @@ Example:
         ready: function() {
             console.log("login.ready");
             if (this._checkSession()) {
-                console.log("login.ready.goto-home");
-                this.goto(this.urlAfterLogged);
+                if (!this.checkOnlyStatus) {
+                    this.goto(this.urlAfterLogged);    
+                }
             } else {
                 if (this.checkOnlyStatus) {
                     this.goto("#/login");

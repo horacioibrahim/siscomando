@@ -23,9 +23,9 @@ vulcanize --strip-comments --inline-css src/index.html > scapp/www/index.html
 #sed -i.bak "s/<\/body>/$CORDOVA/g" scapp/www/index.html
 
 # Copy .js and images
-cp -r src/assets scapp/www/assets
+cp -r src/assets scapp/www/
 # cp -r src/assets/img/* scapp/www/img/
-cp -r src/elements scapp/www/elements
+cp -r src/elements scapp/www/
 
 # Return original HTML
 if [ ! -z "$WEINER" ]
@@ -37,8 +37,8 @@ fi
 cd $DIRECTORY_PROJECT 
 cd scapp
 
-cordova prepare
-cordova build android
+#cordova prepare
+#cordova build android
 # if android device connected will work fine!
 #cordova run android
 

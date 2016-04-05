@@ -4,10 +4,16 @@
             :host {
                 position: absolute;
                 font-family: Roboto;
+                overflow: hidden;
                 width: 100%;
                 height: 100%;
-                background: url(../../assets/img/walkthrough-bg.png);
-                background-repeat: repeat-x;
+                /* background: url(../../assets/img/walkthrough-bg.png);
+                background-repeat: repeat-x;*/
+                background: #53a0fd;
+                background: -moz-linear-gradient(top,  #53a0fd 0%, #135fb8 100%);
+                background: -webkit-linear-gradient(top,  #53a0fd 0%,#135fb8 100%);
+                background: linear-gradient(to bottom,  #53a0fd 0%,#135fb8 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#53a0fd', endColorstr='#135fb8',GradientType=0 );
             }
             .content-1, .content-2,
             .content-3, .content-4{
@@ -16,11 +22,8 @@
                 margin: 0 auto;
                 text-align: center;
             }           
-            .content-1, .content-2, .content-3, .content-4 {
-                @apply(--layout-vertical);
-            }
-            .content-1 div, .content-2 div, .content-3 div, .content-4 div {
-                @apply(--layout-flex);
+            div.flex-based {
+                min-height: 50%;
             }
             .content-1 div img {
                 margin-top: 55%;
@@ -30,8 +33,8 @@
                 width: 155px;
             }
             .content-3 div img {
-                margin-top: 93px;
-                width: 255px;
+                margin-top: 80px;
+                width: 270px;
             }   
             .content-4 div img {
                 margin-top: 70px;
@@ -43,6 +46,34 @@
                 font-weight: 500;
                 letter-spacing: 1px;
                 color: white;
+            }     
+            .placeviewer {
+                float: left;
+                width: 100%;
+                text-align: center;
+                bottom: 0;
+                bottom: 16px;
+                position: absolute;
+            }
+            .placeviewer ul {
+               padding:0px;
+	           margin:0px;
+	           list-style:none;
+            }
+            .placeviewer ul li {
+                display: inline;
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+            .placeviewer ul li > span {
+                display: inline-block;
+                border-radius: 100%;
+                border: 1px solid rgba(255,255,255,0.54);
+                width: 9px;
+                height: 9px;
+            }
+            .placeviewer ul li.activate > span{
+                background-color: #7ED321;
             }
             p {
                 font-size: 16px;
@@ -57,22 +88,38 @@
         </style>
         <sc-walkthrough>   
             <div class="content-1">
-                <div>
+                <div class="flex-based">
                     <img src="../../assets/img/logo-white.svg" />
                 </div>
-                <div class="brand">
+                <div class="flex-based brand">
                     Siscomando
-                </div>
+                    <div class="placeviewer">
+                        <ul>
+                            <li class="activate"><span></span></li>
+                            <li><span></span></li>
+                            <li><span></span></li>
+                            <li><span></span></li>
+                        </ul>
+                    </div>       
+                </div>         
             </div>
             <div class="content-2">
-                <div>
+                <div class="flex-based">
                     <img src="../../assets/img/iphone.svg" />
                 </div>
-                <div class="brand">
+                <div class="flex-based brand">
                     Bem-vindo ao Siscomando
                     <p>
                         Toda comunicação sobre os problemas de <strong>alto impacto</strong> em um só lugar.
                     </p>
+                    <div class="placeviewer">
+                        <ul>
+                            <li><span></span></li>
+                            <li class="activate"><span></span></li>
+                            <li><span></span></li>
+                            <li><span></span></li>
+                        </ul>
+                    </div>                       
                 </div>
             </div>
             <div class="content-3">
@@ -82,6 +129,14 @@
                 <div class="brand">
                     Canais por Serviços
                     <p>Converse com os colaboradores em grupos baseados nos produtos e serviços.</p>
+                    <div class="placeviewer">
+                        <ul>
+                            <li><span></span></li>
+                            <li><span></span></li>
+                            <li class="activate"><span></span></li>
+                            <li><span></span></li>
+                        </ul>
+                    </div>                     
                 </div>
             </div>
             <div class="content-4">
