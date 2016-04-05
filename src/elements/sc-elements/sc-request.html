@@ -151,8 +151,10 @@ TODO:
             },
             _setHeaders: function(){
               // set headers default for SPA context
+                var headers = {}
+                headers['Cache-control'] = 'no-cache';
+                
                 if (this.withAuth) {
-                    var headers = {}
                     // TODO: ask sc-login instead get from sessionStorage?
                     var token = JSON.parse(localStorage.getItem(siscomando.SESSION_KEY)); 
                     if (token){
