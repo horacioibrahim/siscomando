@@ -336,6 +336,10 @@ Example:
       .underlay-actions paper-button iron-icon {
             padding-top: 14px;
         }
+      paper-toast {
+            color: #eeff41;
+            font-weight: 500;
+      }
       @media (min-width: 768px) and (orientation: portrait) {
 
       }
@@ -392,6 +396,7 @@ Example:
         <img src="img/first_empty.svg">
         <p>Adicione um serviço para seguí-lo e envolva-se!</p>   
      </div> 
+      <paper-toast id="slowProblemas" text="Conexão lenta? Tente novamente."></paper-toast>
       <!-- no redenrized -->
       <fooly-websocket id="foolyWS"></fooly-websocket>
 </template>
@@ -477,12 +482,20 @@ Example:
           // setup callback
           self.callbackResponse = self.callbackToResponse;
           request.auto = false;
+          request.method = "GET";
           spinner.active = true;
           
           // Check if cache
           if (!self.noCache) {
               request.noCache = self.noCache;
           }
+          
+          this.async(function(){
+              if (spinner.active) {
+                spinner.active = false;
+                self.$.slowProblemas.open();                  
+              }
+          }, 10000);
           
           // Listeners
           request.addEventListener('sc-request-response', function(e){
