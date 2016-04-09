@@ -316,9 +316,12 @@ Example:
         -webkit-box-shadow: inset 1px 0px 5px 0px #ABABAB;
         -moz-box-shadow: inset 1px 0px 5px 0px #ABABAB;
         -o-box-shadow: inset 1px 0px 5px 0px #ABABAB;
-     }     
+     }  
+    .service-item-header div.organizer-title {
+        width: 100%;        
+    }
     .truncate {
-        width: 60%;
+        width: 70%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -337,7 +340,7 @@ Example:
 
       }
     </style>
-      <sc-request expires-time="0" id="request" no-cache="true"></sc-request>        
+      <sc-request expires-time="0" id="request" no-cache="false"></sc-request>        
     <!-- Start: html common -->
     <div class="list-container">
     <paper-spinner-lite id="spinnerScHome" class="blue"></paper-spinner-lite>
@@ -348,7 +351,7 @@ Example:
              <paper-swipe swipe-left on-tap-underlay="resetAction">
                  <div content class="content" on-tap="selectItem">
                     <div class="service-item-headers service-item-header">
-                        <div><h3 class="truncate">[[item.value.name]]</h3></div>
+                        <div class="organizer-title"><h3 class="truncate">[[item.value.name]]</h3></div>
                         <!-- TODO: create method to add new-message class -->
                         <div class="service-counter">[[item.value.open]]</div>
                     </div>

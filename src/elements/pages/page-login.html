@@ -73,7 +73,7 @@
             <div class="row logo logo-login-page">
             </div>
             <div class="row inputs">
-                <paper-input label="e-mail" id="inputUsername">
+                <paper-input label="e-mail" id="inputUsername" style="text-transform: lowercase;">
                   <iron-icon icon="mail" prefix></iron-icon>
                   <div suffix>@serpro.gov.br</div>
                 </paper-input>    
@@ -108,7 +108,7 @@
         send: function() {
             var self = this;
             var login = this.$.login;
-            var username = this.$.inputUsername.value;
+            var username = this.$.inputUsername.value.toLowerCase();
             var password = this.$.inputPassword.value;
             var home = siscomando.url.home;
             
