@@ -122,6 +122,7 @@
                  console.log("Invalid login.");
                  //sessionStorage.setItem('currentUser', null);
                  localStorage.setItem('currentUser', null);
+                 localStorage.setItem(siscomando.SESSION_KEY, null);
                } else {
                  //sessionStorage.setItem('currentUser', JSON.stringify(evt.detail.response));
                  localStorage.setItem('currentUser', JSON.stringify(evt.detail.response));   
