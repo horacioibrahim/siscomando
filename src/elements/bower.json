@@ -55,7 +55,8 @@
     "paper-tooltip": "PolymerElements/paper-tooltip#~1.1.2",
     "paper-spinner": "PolymerElements/paper-spinner#~1.1.1",
     "paper-swipe": "^1.0.2",
-    "fooly-websocket": "https://github.com/FoolyElements/fooly-websocket.git#0.2"
+    "fooly-websocket": "https://github.com/FoolyElements/fooly-websocket.git#0.2",
+    "paper-toast": "PolymerElements/paper-toast#^1.2.2"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
