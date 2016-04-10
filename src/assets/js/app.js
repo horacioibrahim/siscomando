@@ -12,7 +12,7 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'https://agile-lake-26676.herokuapp.com';
+siscomando.REMOTE_ADDR = 'http://localhost:5000'; //'https://agile-lake-26676.herokuapp.com';
 siscomando.SESSION_KEY = 'scdata'; // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
@@ -22,6 +22,7 @@ siscomando.url = {
     channels: siscomando.REMOTE_ADDR + '/api/services/followed',
     feeds: siscomando.REMOTE_ADDR + '/api/feeds',
     login: siscomando.REMOTE_ADDR + '/loginexp',
+    logoff: siscomando.REMOTE_ADDR + '/logoff',
     searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?q=',
     followservices: siscomando.REMOTE_ADDR + '/api/services/follow'
 };
