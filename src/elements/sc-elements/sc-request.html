@@ -212,8 +212,9 @@ TODO:
                 // Main action
                 this._responseAfterFlow(response); // levanta o evento
 
+                cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.
                 if (!this.responsesIsEquals()) {
-                    cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.    
+                    //cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.    
                 }
             },
             _responseAfterFlow: function(response) {
