@@ -26,13 +26,14 @@
             <sc-profile id="profile" class="fit"></sc-profile>              
           </paper-header-panel>
     </drawer-panel-layout>
-
+      <sc-request id="request" no-cache></sc-request>
   </template>
   <script>
     Polymer({
       is: 'page-profile',
       ready: function() {
           var self = this;
+          var request = this.$.request;
           var currentUser = JSON.parse(localStorage.getItem('currentUser'));
           if (!(currentUser) || !(currentUser.result.account)) {
             this.clearSession();
@@ -43,7 +44,9 @@
             avatar: null
           }
           this.$.profile.addEventListener('sc-profile-exit', function(){
-            self.clearSession();
+             request.method = "GET";
+             request.url = siscomando.url.logoff;
+             self.clearSession();
              /* CHANGED: to support crosswalk 
              * window.location.href = '/';
              */
