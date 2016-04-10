@@ -55,10 +55,11 @@
           <!-- who is header class -->
           <paper-header-panel class="main">
             <paper-toolbar>
-              <iron-icon icon="menu" on-tap="showProfile"></iron-icon>
+              <paper-icon-button on-tap="showProfile" icon="menu"></paper-icon-button>
+              <!-- <iron-icon icon="menu" ></iron-icon>-->
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
-              <iron-icon icon="cached" on-tap="reload" class="transformed"></iron-icon>
+              <paper-icon-button on-tap="reload" icon="cached" class="transformed"></paper-icon-button>
             </paper-toolbar>
            <!-- who is content class -->
           <sc-home id="home" class="shadow-2dp fit" item-key="value._id"></sc-home>    

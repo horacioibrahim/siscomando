@@ -30,6 +30,13 @@
           top: 12px;
           left: 2px;
         }
+        #search paper-icon-button {
+            margin-left: 10px;
+            margin-right: 8px;
+            position: absolute;
+            top: 6px;
+            left: 0px;        
+        }
         #search input {
           height: 56px;
           -webkit-appearance: none;
@@ -94,7 +101,7 @@
             <!-- search input -->
             <div id="search" class="center verts" style="position: fixed;">
                 <!-- <iron-icon icon="search"></iron-icon> -->
-                <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
+                <paper-icon-button icon="chevron-left" on-tap="_historyBack"></paper-icon-button>
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
             </div>              
             <!-- list of data -->
