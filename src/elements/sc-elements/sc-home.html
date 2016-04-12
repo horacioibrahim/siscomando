@@ -484,7 +484,6 @@ Example:
         this.url = siscomando.url.followservices; // #HARDCODE #FTB
       },
       ready: function () {
-          
           this.loader();
       },
       // Selection Behavior
@@ -495,7 +494,6 @@ Example:
           // setup callback
           self.callbackResponse = self.callbackToResponse;
           request.auto = false;
-          request.method = "GET";
           spinner.active = true;
           
           // Check if cache
@@ -519,7 +517,12 @@ Example:
           request.addEventListener('error', function(spinner){
             spinner.active = false;
           });
+          request.addEventListener('sc-request-error', function(spinner){
+            spinner.active = false;
+          });          
+          
           // Call request (auto). 
+          request.method = "GET";
           request.url = siscomando.url.channels; // #FTB #HARDCODE TODO: colocar em page-*  
           request.go();
       },
