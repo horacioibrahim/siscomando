@@ -118,6 +118,14 @@ TODO:
                 noEmit: {
                     type: Boolean,
                     value: false
+                },
+                /** `_taskTimeout` stores async tasks ids.
+                */                 
+                _taskTimeout: {
+                    type: Array,
+                    value: function() {
+                        return [];
+                    }
                 }
             },
             ready: function() {
@@ -188,7 +196,7 @@ TODO:
                         
                         // check if response is expired so make update.
                         if (self.checkExpired(expires)) {
-                            console.log("marked as expired");
+                            console.log("marked as expired.");
                             self._callBackRequest();    
                         }
                     } else  {
@@ -199,11 +207,26 @@ TODO:
                 cache.getCache(self.hashable_url); 
             },
             _callBackRequest: function() {
+                var self = this;
                 this.$.ajax.generateRequest();
+                // Error handle. not yet implemented
+                this._taskTimeout.push(this.async(function(){
+                    this._handleError(); // what error?
+                }, 30000));
+                console.log(this._taskTimeout);
             },
             /** `_handleResponse`
             */
             _handleResponse: function(evt) {
+                var self = this;
+                // Error handle. not yet implemented
+                // cancel async
+                if (this._taskTimeout) {
+                    this._taskTimeout.forEach(function(elem, idx, array){
+                        self.cancelAsync(elem);    
+                    });                    
+                }
+
                 var cache = this.$.cache;
                 var hashable_url = this.hashable_url;
                 var response = evt.detail.response;
