@@ -190,7 +190,7 @@ Example:
        .avatarBox.p {background-color: #607D8B;}
        .avatarBox.q {background-color: #5C4B77;}
        .avatarBox.r {background-color: #FF5722;}
-       .avatarBox.s {background-color: #53A8B6;}         
+       .avatarBox.s {background-color: #135FB8;}         
     
       .avatarBox .avatar-letter {
         height: 100%;
@@ -382,6 +382,19 @@ Example:
                           </div>
                         </div>
                      </template>
+                     <!-- This implementation can be to backend. This wrapper when empty lastMessage -->
+                      <template is="dom-if" if="{{!item.value.lastMessage}}">
+                        <div class="service-item-body">
+                          <div class$="[[_computedClassAvatar('system')]]">
+                                  <div class="avatar-letter">
+                                      <span>[[_demoLetter('system')]]</span>
+                                  </div>
+                          </div>
+                          <div class="service-item-body-content">
+                             Seja o primeiro por aqui! Sugira, crie e faça a diferença neste tema.
+                          </div>
+                        </div>
+                     </template>                     
                 </div>
                 <div underlay class="underlay-actions">
                      <paper-button><iron-icon icon="av:volume-off"></iron-icon></paper-button>
@@ -471,7 +484,6 @@ Example:
         this.url = siscomando.url.followservices; // #HARDCODE #FTB
       },
       ready: function () {
-          
           this.loader();
       },
       // Selection Behavior
@@ -482,7 +494,6 @@ Example:
           // setup callback
           self.callbackResponse = self.callbackToResponse;
           request.auto = false;
-          request.method = "GET";
           spinner.active = true;
           
           // Check if cache
@@ -506,7 +517,12 @@ Example:
           request.addEventListener('error', function(spinner){
             spinner.active = false;
           });
+          request.addEventListener('sc-request-error', function(spinner){
+            spinner.active = false;
+          });          
+          
           // Call request (auto). 
+          request.method = "GET";
           request.url = siscomando.url.channels; // #FTB #HARDCODE TODO: colocar em page-*  
           request.go();
       },

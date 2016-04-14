@@ -104,7 +104,7 @@ Example:
               {{user.username}}
             </div>
             <paper-menu selected="0">
-              <paper-item>
+              <paper-item on-tap="goToPage_addchannel" >
                 <iron-icon icon="add" item-icon></iron-icon>
                 Criar Canal </paper-item>
               <!-- <paper-item on-tap="openPage">
@@ -118,7 +118,7 @@ Example:
       </div>
       <div class="logoff">
         <div>
-          <paper-item on-click="exit">
+          <paper-item on-tap="exit">
             <iron-icon icon="exit-to-app" item-icon></iron-icon>
               Sair
             </paper-item>
@@ -196,6 +196,9 @@ Example:
       },
       exit: function() {
           this.fire('sc-profile-exit');
+      },
+      goToPage_addchannel: function(){
+          window.location.href = "#/addchannel"
       }
     });
   </script>

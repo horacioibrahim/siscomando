@@ -20,11 +20,13 @@ siscomando.currentUser = null;
 siscomando.url = {
     home: '#/home',
     channels: siscomando.REMOTE_ADDR + '/api/services/followed',
+    addchannel: siscomando.REMOTE_ADDR + '/api/services/addchannel', // not REST complaince 
     feeds: siscomando.REMOTE_ADDR + '/api/feeds',
     login: siscomando.REMOTE_ADDR + '/loginexp',
     logoff: siscomando.REMOTE_ADDR + '/logoff',
     searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?q=',
-    followservices: siscomando.REMOTE_ADDR + '/api/services/follow'
+    followservices: siscomando.REMOTE_ADDR + '/api/services/follow',
+    checkavailabilitydata: siscomando.REMOTE_ADDR + '/api/services/checkavailabilitydata'
 };
 
 /* Siscomando sounds */

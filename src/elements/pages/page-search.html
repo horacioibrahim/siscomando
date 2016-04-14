@@ -30,6 +30,13 @@
           top: 12px;
           left: 2px;
         }
+        #search paper-icon-button {
+            margin-left: 10px;
+            margin-right: 8px;
+            position: absolute;
+            top: 6px;
+            left: 0px;        
+        }
         #search input {
           height: 56px;
           -webkit-appearance: none;
@@ -58,13 +65,6 @@
           overflow-y: scroll;
         }
 
-      paper-spinner-lite.blue {
-          position: absolute;
-          left: 50%;
-          top: 12px;
-          z-index: 100;
-          --paper-spinner-color: var(--paper-light-blue-600);
-      }
       .blanks {
         position: absolute;
         width: 100%;
@@ -94,14 +94,13 @@
             <!-- search input -->
             <div id="search" class="center verts" style="position: fixed;">
                 <!-- <iron-icon icon="search"></iron-icon> -->
-                <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
+                <paper-icon-button icon="chevron-left" on-tap="_historyBack"></paper-icon-button>
                 <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
             </div>              
             <!-- list of data -->
             <!-- item-key is useful to found primary key. See sc-search's documentation -->
             <div class="blanks">
               <iron-icon id="searchBlank" icon="find-in-page"></iron-icon>
-              <paper-spinner-lite id="spinnerPageSearch" class="blue"></paper-spinner-lite> 
             </div>
             <sc-search id="scsearch" class="verts" item-key="value.followingKey"></sc-search>              
           </paper-header-panel>
@@ -170,13 +169,15 @@
       getServices: function(q){
           var self = this;
           var request = this.$.request;
+          var scsearch = this.$.scsearch;
           // // UI status for waiting event...
-          var spinner = this.$.spinnerPageSearch;
+          // var spinner = this.$.spinnerPageSearch;
           var searchBlank = this.$.searchBlank;
           
           // UI status
           searchBlank.style.display = "none";
-          spinner.active = true;
+          //spinner.active = true;
+          scsearch.activeSpinner();
 
           request.addEventListener('sc-request-response', function(evt){
             self.$.scsearch.documents = evt.detail.response;
@@ -186,11 +187,13 @@
               searchBlank.style.display = "inline-block";
             }
             // UI status
-            spinner.active = false;
+            //spinner.active = false;
+            scsearch.deactiveSpinner();
           });
           request.addEventListener('error', function(){
             // UI status
-            spinner.active = false;
+            //spinner.active = false;
+            scsearch.deactiveSpinner();
           });
           // fires event
           request.url = siscomando.url.searchservices + q;

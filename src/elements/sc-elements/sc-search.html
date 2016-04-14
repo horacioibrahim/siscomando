@@ -83,10 +83,18 @@ Example:
               --paper-tooltip-background: rgba(0,0,0,0.12);
               --paper-tooltip-text-color: rgba(0,0,0.54);
             }
+            paper-spinner-lite.blue {
+              position: absolute;
+              left: 50%;
+              top: 12px;
+              z-index: 100;
+              --paper-spinner-color: var(--paper-light-blue-600);
+           }            
 
         </style>
         <sc-request id="request" no-cache="true"></sc-request>
         <div class="container">
+            <paper-spinner-lite id="spinnerPageSearch" class="blue"></paper-spinner-lite> 
             <iron-list id="list-results" items="[[documents]]" as="item" 
               selection-enabled multi-selection>
                 <template>
@@ -306,7 +314,13 @@ Example:
                request.url = this.url;
                request.body = body;
                request.go();
-            }                    
+            },
+            activeSpinner: function() {
+                this.$.spinnerPageSearch.active = true;
+            },
+            deactiveSpinner: function() {
+                this.$.spinnerPageSearch.active = false;
+            }            
         });
     </script>
 </dom-module>

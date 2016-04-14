@@ -1,0 +1,181 @@
+<dom-module id="page-addchannel">
+  <template>
+    <style>
+        :host {
+            font-family: Roboto;
+        }
+        paper-toolbar {
+            --paper-toolbar-background: #F9F9F9;
+            color: rgba(0,0,0,.86);
+        }
+        .containerForm {
+            padding: 24px 24px 10px 24px;
+            @apply(--layout-vertical);
+        }
+        .containerForm paper-input {
+            
+        }
+        h4 {
+            color: rgba(0,0,0,.54);
+        } 
+        paper-button {
+            width: 80%;
+            background: #7ED321;
+            color: white;
+        } 
+        paper-icon-button[icon="check"] {
+            color: #135FB8;
+        }
+        paper-icon-button[disabled] {
+            opacity: 0.36;
+        }
+        #divStatus {
+            position: absolute;
+            width: 100%;
+            height: 100%;            
+            opacity: 0;
+            top: 0;
+            left: 0;
+            font-size: 21px;
+            text-align: center;
+            -webkit-transition: opacity 0.3s ease-in;
+            -moz-transition: opacity 0.3s ease-in;
+            -o-transition: opacity 0.3s ease-in;
+            -ms-transition: opacity 0.3s ease-in;
+            transition: opacity 0.2s ease-in;
+            z-index: -100;
+        } 
+        #divStatus.active {
+            opacity: 1;
+            z-index: 100;
+        }
+        #divStatus iron-icon[icon="check"] {
+            color: white;
+            font-size: 3em;
+            margin-top: 50%;
+        }
+        #divStatus img {
+            margin-top: 40%;
+            opacity: 0.9;
+        }
+        #divStatus.success {
+            background: #00B16A;
+        }
+        #divStatus p {
+            color: white;
+            font-weight: 100;
+            font-size: 0.75em;
+        }
+        
+    </style>
+    <drawer-panel-layout>
+          <!-- who is drawer class -->
+          <paper-header-panel class="main">
+            <paper-toolbar>
+              <paper-icon-button icon="clear" on-tap="_historyBack"></paper-icon-button>
+              <div class="title">Novo Canal</div>
+              <paper-icon-button id="addChannel" icon="check" on-tap="addChannel" disabled></paper-icon-button>
+            </paper-toolbar>
+            <!-- who is main class -->
+            <div class="containerForm">
+                    <paper-input required label="Nome do canal *" placeholder="Meu Sistema" error-message="Este canal já existe." on-blur="checkAvailability" name="channel">
+                    </paper-input>
+                    <paper-input label="UG atual" placeholder="Minha Unidade" name="commercial">
+                    </paper-input>                
+                    <paper-input label="Existe um código?" placeholder="82392ANP" error-message="Código já foi utilizado." name="codename">
+                    </paper-input>
+                    <paper-input label="Tente uma hashtag" placeholder="#MeuSistema" error-message="A hashtag já foi utilizada." name="hashtag">
+                    </paper-input>   
+                    <paper-input type="number" label="Prazo em minutos para antendimento" placeholder="120" name="deadline">
+                    </paper-input>                                 
+            </div>           
+          </paper-header-panel>          
+    </drawer-panel-layout>
+          <div id="divStatus" class="success">
+                <img src="img/check.svg" width="75%">
+                <p>Canal criado com sucesso!</p>
+          </div>   
+          <paper-toast id="createdSuccess" text="Canal criado com sucesso!"></paper-toast>
+      <sc-request id="request" no-cache></sc-request>
+  </template>
+  <script>
+    Polymer({
+      is: 'page-addchannel',
+      ready: function() {
+        
+      },
+      _historyBack: function() {
+        history.back();
+      },  
+      checkAvailability: function(evt) {
+          var addChannel = this.$.addChannel;
+          var fieldElem = evt.target;
+          var nameModel = evt.target.getAttribute("name");
+          var request = this.$.request;
+          var doneListener = false;
+          var updatesFunc = function(evt){
+             if (evt.detail.response === false) {
+                 value = fieldElem.value;
+                 fieldElem.value = '';
+                 fieldElem.validate();
+                 fieldElem.value = value;
+             }
+             // success checking...
+             if (evt.detail.response === true) {
+                 fieldElem.validate();          
+                 addChannel.removeAttribute('disabled');
+             }
+             // pass by here
+             doneListener = true;
+          };
+          // wait response
+          request.addEventListener('sc-request-response', updatesFunc);
+          if (doneListener) {
+              request.removeEventListener('sc-request-response', updatesFunc);
+          }
+          
+          // action
+          request.auto = false;
+          request.method = "GET";
+          request.url = siscomando.url.checkavailabilitydata + '/?q=' + nameModel + "&value=" + fieldElem.value;
+          request.go();
+      },
+      addChannel: function() {
+          // url is addchannel
+          var self = this;
+          var inputChannelValue = this.querySelector('paper-input[name="channel"]').value;
+          var inputCodenameValue = this.querySelector('paper-input[name="codename"]').value;
+          var inputCommercialValue = this.querySelector('paper-input[name="commercial"]').value;
+          var inputHashtagValue = this.querySelector('paper-input[name="hashtag"]').value;
+          var inputDeadlineValue = this.querySelector('paper-input[name="deadline"]').value;
+          var doneListener = false;
+          var returnedFunc = function(evt) {
+              console.log(evt);
+              doneListener = true;
+              self.toggleClass("active", true, self.$.divStatus);
+              var sound = "assets/sounds/SynthChime2.mp3";
+              playAudio(sound);              
+              self.async(function(){
+                history.back();
+              },2000);
+          };
+          
+          request.addEventListener('sc-request-response', returnedFunc);
+          if (doneListener) request.removeEventListener('sc-request-response', returnedFunc);
+              
+          request.auto = false;
+          request.method = "POST";
+          request.contentType = 'application/json';
+          request.url = siscomando.url.addchannel;
+          request.body = {
+              name: inputChannelValue,
+              codename: inputCodenameValue,
+              commercial: inputCommercialValue, 
+              hashtag: inputHashtagValue,
+              deadlineTicket: inputDeadlineValue
+          }
+          request.go();
+      }
+    });
+  </script>
+</dom-module>
