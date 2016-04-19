@@ -39,17 +39,15 @@ Example:
         height: 100%;
       }
       .container {
-        @apply(--layout-vertical);
+        
       }
       .actions {
+    
       }
       .logoff {
-        @apply(--layout-flex);
         position: relative;
       }
       .logoff div {
-        position: absolute;
-        bottom: 76px;
         border-top: 1px solid rgba(0,0,0,0.12);
         width: 100%;
       }
@@ -103,17 +101,17 @@ Example:
             <div class="username">
               {{user.username}}
             </div>
-            <paper-menu selected="0">
-              <paper-item on-tap="goToPage_addchannel" >
+            <paper-menu selected="0">    
+                <paper-item>
+                <iron-icon id="messages" icon="question-answer" item-icon></iron-icon>
+                Conversas Diretas</paper-item>
+                <paper-badge for="messages" label="4"></paper-badge>
+              <paper-item on-tap="goToPage" data-link="addchannel" >
                 <iron-icon icon="add" item-icon></iron-icon>
-                Criar Canal </paper-item>
-              <!-- <paper-item on-tap="openPage">
-                <iron-icon icon="question-answer" item-icon></iron-icon>
-                Conversas </paper-item>
-              -->
-              <paper-item>
+                Criar Canal </paper-item>                
+              <paper-item on-tap="goToPage" data-link="dashboard">
                 <iron-icon icon="dashboard" item-icon></iron-icon>
-                Dashboard </paper-item>
+                Dashboard </paper-item>                
             </paper-menu>
       </div>
       <div class="logoff">
@@ -158,19 +156,7 @@ Example:
           },
           observer: '_changeUser'
         },
-        firstChar: String,
-        /**
-         * `fancy` indicates that the element should don a monocle and tophat,
-         * while checking its pocket watch.
-         */
-        fancy: Boolean,
-
-        /**
-         * Describes the author of the element, but is really just an excuse to
-         * show off JSDoc annotations.
-         *
-         * @type {{name: string, image: string}}
-         */
+        firstChar: String
       },
 
       // Element Lifecycle
@@ -197,9 +183,10 @@ Example:
       exit: function() {
           this.fire('sc-profile-exit');
       },
-      goToPage_addchannel: function(){
-          window.location.href = "#/addchannel"
-      }
+      goToPage: function(evt){
+          var name = evt.target.getAttribute('data-link');
+          window.location.href = "#/" + name;
+      }     
     });
   </script>
 </dom-module>
