@@ -13,7 +13,7 @@
             @apply(--layout-vertical);
         }
         .containerForm paper-input {
-            
+            margin-top: 14px;
         }
         h4 {
             color: rgba(0,0,0,.54);
@@ -153,7 +153,7 @@
               console.log(evt);
               doneListener = true;
               self.toggleClass("active", true, self.$.divStatus);
-              var sound = "assets/sounds/SynthChime2.mp3";
+              var sound = "assets/sounds/SynthChime2.ogg";
               playAudio(sound);              
               self.async(function(){
                 history.back();
