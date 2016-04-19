@@ -1,0 +1,198 @@
+<!-- 
+
+ `page-dashboard` list block and graph of the followed services.
+
+-->
+
+<dom-module id="page-dashboard">
+  <template>
+    <style>
+        :host {
+            font-family: Roboto;
+            width: 100%;
+        }
+        paper-toolbar {
+            background: #135FB8;
+        }
+        paper-header-panel {
+            background: #F2F2F2;
+        }
+        paper-card {
+            margin-top: 14px;
+            margin-bottom: 4px;
+        }
+        paper-card.white {
+            --paper-card-header-color: rgba(0,0,0,0.86);
+            --paper-card-header-text: {
+                text-align: center;
+                font-size: 1em;
+            }
+            --paper-card-content : {
+                padding: 2px;
+                margin-top: 14px;
+                text-align: center;
+            }
+        }
+        .horizontal {
+            @apply(--layout-horizontal);
+        }
+        .container {
+            width: 100%;
+            text-align: center;
+            padding-bottom: 30px;
+        }
+        .clear { clear: both; }
+        .card-actions {
+            margin-top: 14px;
+            padding-left: 12px;
+            padding-right: 12px;            
+        }
+        .card-actions div.status-issues {
+            @apply(--layout-flex);
+            display: inline-block;
+            text-align: center;
+            margin-top: 16px;
+            width: 40px;
+            height: 40px;
+            font-size: 0.95em;
+            color: rgba(0,0,0,0.54);
+            font-weight: 500;
+        }
+        .card-actions div.status-issues .label {
+            font-size: 10px;
+            font-weight: 300;
+        }
+        ul.legend-box {
+            @apply(--layout-horizontal);
+            list-style: none;
+            color: rgba(0,0,0,.54);
+            font-size: 11px;
+            padding-left: 20px;
+            padding-right: 20px;
+            
+        }
+        .card-content ul.legend-box li {
+            display: inline-block;
+            @apply(--layout-flex);
+            text-align: center;
+        }
+        .card-content ul.legend-box li .legend {
+            padding: 0;
+            position: relative;
+            display: inline-block;
+            width: 12px;
+            height: 12px;            
+            -webkit-border-radius: 2px;
+            -moz-border-radius: 2px;
+            border-radius: 2px;            
+        }
+    </style>
+    <drawer-panel-layout>
+        <paper-header-panel class="main">        
+            <paper-toolbar>
+              <paper-icon-button icon="chevron-left" on-tap="_historyBack"></paper-icon-button>
+              <div class="title">Dashboard</div>
+              <sc-filter-bar id="filter" class="horizontal layout center end-justified" query="{{q}}"></sc-filter-bar>    
+            </paper-toolbar>
+            <div class="container">
+              <template is="dom-repeat" items="{{data}}">
+                  <paper-card heading="Disp. {{item.title}} (mensal)" class="white" style="margin-right:4px;">
+                   <div class="card-content content">
+                        <chart-doughnut id="{{item.title}}" data="[[item.datasets]]"></chart-doughnut>
+                        <ul class="legend-box">
+                            <template is="dom-repeat" items="{{item.datasets}}">
+                                <li>
+                                    <span class="legend" style="background-color:{{item.color}};">&nbsp;</span>
+                                    <span>{{item.value}}%</span>
+                                </li>
+                            </template>                   
+                        </ul>
+                    </div>
+                    <div class="card-actions horizontal justified">
+                      <div class="status-issues"><span class="value">{{item.ri}}</span><div class="label">RI</div></div>
+                      <div class="status-issues"><span class="value">{{item.rs}}</span><div class="label">RS</div></div>
+                      <div class="status-issues"><span class="value">{{item.rdm}}</span><div class="label">RDM</div></div>
+                    </div>
+                  </paper-card>
+                  <div class="clear"></div>
+              </template>
+            </div>    
+        </paper-header-panel>
+        
+        <!-- not rendered -->
+        <sc-request id="request" no-cache="true"></sc-request>
+      </drawer-panel-layout>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'page-dashboard',
+      properties: {         
+        data: {
+          type: Array,
+          value: function(){
+            return [{
+                title: "SiscUmex",
+                ri: 3,
+                rs: 21,
+                rdm: 11,
+                datasets:[
+                      {
+                        value: 95,
+                        color:"rgba(19, 95, 184, 0.94)",
+                        highlight: "rgba(19, 95, 184, 1)",
+                        label: "Dentro"
+                      },
+                      {
+                        value: 5,
+                        color: "rgba(247, 70, 73, 0.94)",
+                        highlight: "rgba(247, 70, 73, 1)",
+                        label: "Fora"
+                      }
+                    ]
+              },
+              {
+                title: "Siscomex",
+                ri: 1,
+                rs: 11,
+                rdm: 15,
+                datasets:[
+                      {
+                        value: 98,
+                        color:"rgba(19, 95, 184, 0.94)",
+                        highlight: "rgba(19, 95, 184, 1)",
+                        label: "Dentro"
+                      },
+                      {
+                        value: 2,
+                        color: "rgba(247, 70, 73, 0.94)",
+                        highlight: "rgba(247, 70, 73, 1)",
+                        label: "Fora"
+                      }
+                    ]
+              }                     
+           ]},
+          observer: "_dataChanged"
+        }    
+      },
+      ready: function(){ 
+          var self = this;
+          this.$.filter.addEventListener('sc-filter', function(evt){
+              console.log('filter');
+              self.dataOld = self.data; // save
+              self.data = evt.detail.response;
+          });
+          this.$.filter.addEventListener('sc-filter-closed', function(){
+              console.log('back old');
+              self.data = self.dataOld;
+          });
+      },
+      _historyBack: function() {
+          history.back();
+      },
+      _dataChanged: function() {
+          this.$.filter.documents = this.data;   
+      }
+    });
+  </script>
+</dom-module>
