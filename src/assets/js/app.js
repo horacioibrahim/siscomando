@@ -12,7 +12,7 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'http://localhost:5000'; //'https://agile-lake-26676.herokuapp.com';
+siscomando.REMOTE_ADDR = 'https://agile-lake-26676.herokuapp.com';
 siscomando.SESSION_KEY = 'scdata'; // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
