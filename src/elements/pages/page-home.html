@@ -45,6 +45,10 @@
         iron-icon[icon="cached"] {
             margin-left: 20px;
         }
+        paper-badge {
+            --paper-badge-margin-bottom: -10px;
+            --paper-badge-margin-left: -6px;
+        }
     </style>
     <drawer-panel-layout>
           <!--
@@ -55,7 +59,8 @@
           <!-- who is header class -->
           <paper-header-panel class="main">
             <paper-toolbar>
-              <paper-icon-button on-tap="showProfile" icon="menu" noink></paper-icon-button>
+              <paper-badge for="menu" label="4"></paper-badge>
+              <paper-icon-button id="menu" on-tap="showProfile" icon="menu" noink></paper-icon-button>
               <!-- <iron-icon icon="menu" ></iron-icon>-->
               <div class="title">Siscomando</div>
               <app-bar class="horizontal layout center end-justified" query="{{q}}"></app-bar>
