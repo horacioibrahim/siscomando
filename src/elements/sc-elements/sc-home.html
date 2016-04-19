@@ -652,8 +652,8 @@ Example:
             channels.push(elem.value._id)
           });
           
-          ws.channels = channels.join();
-          ws.on();
+          // ws.channels = channels.join();
+          // ws.on();
           ws.addEventListener('fooly-ws-updated', function(evt){
             // console.log(evt.detail.response.value._id);
           });
