@@ -183,7 +183,7 @@
           
           // set channel of socket. 
           var channel = siscomando.getParameterByName('q', qs);
-          this.pollingGet(channel);
+          // this.pollingGet(channel);
       },
       _title: function (string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
@@ -207,10 +207,11 @@
       **/
       pollingGet: function(channel) {
           var self = this;
+          var channel = "feeds";
           var docs;
           var feeds = this.$.feeds;
           var socket = io(siscomando.REMOTE_ADDR);
-          console.log("channel: " + channel);
+          console.log("channel: " + "feeds");
           socket.on(channel, function (data) {
               if (feeds.documents) {
                 docs = feeds.documents.slice(); 
