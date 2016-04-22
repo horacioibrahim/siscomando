@@ -169,6 +169,7 @@
         body['body'] = this.$.form.bindValue;
         body['_id'] = siscomando.getParameterByName('q', qs); 
         body['scope'] = siscomando.getParameterByName('scope', qs); 
+        body['serviceId'] = siscomando.getParameterByName('serviceId', qs);
         return body;
       },
       _querystringChanged: function() {

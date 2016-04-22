@@ -487,12 +487,16 @@ TODO:
        *
        */
       _selectItem: function(e){
+        var itemId;
+        var name_orig;
         this.$.itemsList.selectItem(e.model.message);
           // this.fire('feed-selected', {message: e.model.message});
-        if ('target_hashtag' in e.model.message.value) { // #CWB: closed with backend
-          // Nows we sure that back history
-          window.location.href = '#/feeds/' + e.model.message.value.target_hashtag;
-          
+        if ('ticketId' in e.model.message.value) { // #CWB: closed with backend
+          itemId = e.model.message.value.ticketId;
+          name_orig = e.model.message.value.ticketName;
+          serviceId = e.model.message.value.serviceId;
+          querystring = "?q=" + itemId + '&title=' + name_orig + "&scope=ticket" + "&serviceId=" + serviceId;
+          window.location.href = '#/feeds/' + querystring;
         }
       },
       _documentsChanged: function(){
