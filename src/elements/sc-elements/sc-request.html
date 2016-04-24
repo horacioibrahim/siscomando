@@ -42,8 +42,9 @@ TODO:
            on-response="_handleResponse"
            on-error="_handleError"
            debounce-duration="300"
-           withCredentials="true"></iron-ajax>  
-         <sc-cache expires-time="{{expiresTime}}" id="cache"></sc-cache>
+           withCredentials="true"></iron-ajax> 
+         <!-- cache -->
+         <sc-simple-cache id="cache"></sc-simple-cache>
     </template>
     <script>
         Polymer({
@@ -129,6 +130,7 @@ TODO:
                 }
             },
             ready: function() {
+                this.$.cache.hashable_url = this.hashable_url;
                 this._setHeaders();
             },
             /** `_changedConfig` to change sc-cache properties
@@ -136,6 +138,7 @@ TODO:
             _changedConfig: function() {
                 var ajax = this.$.ajax;
                 this.hashable_url = this._nameFromUrl(this.url);
+                this.$.cache.hashable_url = this.hashable_url;
                 ajax.url = this.url ? this.url : undefined;
                 ajax.body = this.body ? this.body : undefined;
                 ajax.method = this.method ? this.method : undefined;
@@ -174,37 +177,24 @@ TODO:
             /** `go` calls checkCache. 
             */
             go: function() {
-              this.checkCache();  
-            },
-            checkCache: function(){
                 var self = this;
+                var response;
+                
                 // if noCache is true run _callBackRequest and exit
                 if (this.noCache) {
                     self._callBackRequest();
                     return;
                 }
+                
                 var cache = this.$.cache;
-                // first listen
-                cache.addEventListener('sc-cache', function(evt){
-                    if (evt.detail.response) {
-                        // Main action
-                        var expires = evt.detail.response.expires;
-                        self.responseFromCache = evt.detail.response.response;
-                        self._responseAfterFlow(evt.detail.response.response);  
-                        // to canel any previous async.
-                        self.cancelAsync(self.handleAsync); 
-                        
-                        // check if response is expired so make update.
-                        if (self.checkExpired(expires)) {
-                            console.log("marked as expired.");
-                            self._callBackRequest();    
-                        }
-                    } else  {
-                        console.log("marked as not cached");
-                        self._callBackRequest();
-                    }
-                });
-                cache.getCache(self.hashable_url); 
+                response = cache.getCache(self.hashable_url);
+                console.log("veo do cache: ");
+                console.log(response);
+                if (!response) {
+                    this._callBackRequest();
+                } else {
+                    this._responseAfterFlow(response);
+                }
             },
             _callBackRequest: function() {
                 var self = this;
@@ -219,6 +209,7 @@ TODO:
             */
             _handleResponse: function(evt) {
                 var self = this;
+                var cache = this.$.cache;
                 // Error handle. not yet implemented
                 // cancel async
                 if (this._taskTimeout) {
@@ -227,18 +218,14 @@ TODO:
                     });                    
                 }
 
-                var cache = this.$.cache;
                 var hashable_url = this.hashable_url;
                 var response = evt.detail.response;
                 this.responseFromRequest = response;
 
                 // Main action
                 this._responseAfterFlow(response); // levanta o evento
-
+                // update cache
                 cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.
-                if (!this.responsesIsEquals()) {
-                    //cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.    
-                }
             },
             _responseAfterFlow: function(response) {
                 //console.log("res: ");

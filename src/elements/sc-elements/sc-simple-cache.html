@@ -1,0 +1,42 @@
+<!--
+@license
+Copyright (c) 2016 Horacio Ibrahim. All rights reserved.
+
+This element providing a solution for stores json returned by ajax.
+
+Example:
+
+    <sc-simple-cache></sc-simple-cache>
+
+
+-->
+<dom-module id="sc-simple-cache">
+<script>
+    Polymer({
+       is: "sc-simple-cache",
+       properties: {
+           hashable_url: String,
+           responseJson: String
+       },
+       ready: function(){
+
+       },
+       save: function(hashable_url, responseJson) {
+           this.hashable_url  = hashable_url;
+           this.responseJson = responseJson
+           //this.expires_at = new Date();
+           //this.expires_at.setSeconds(this.expires_at.getSeconds() + 10);
+           window.localStorage.setItem(hashable_url, JSON.stringify(responseJson));
+       },
+       getCache: function() {
+           var storage;
+           console.log("url");
+           storage = window.localStorage.getItem(this.hashable_url);           
+           return JSON.parse(storage);
+       },
+       putCache: function(hashable_url, response) {
+           this.save(hashable_url, response);
+       }
+    });  
+</script>
+</dom-module>
