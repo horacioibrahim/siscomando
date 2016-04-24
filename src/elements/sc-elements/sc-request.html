@@ -188,12 +188,11 @@ TODO:
                 
                 var cache = this.$.cache;
                 response = cache.getCache(self.hashable_url);
-                console.log("veo do cache: ");
-                console.log(response);
                 if (!response) {
                     this._callBackRequest();
                 } else {
                     this._responseAfterFlow(response);
+                    this._callBackRequest();
                 }
             },
             _callBackRequest: function() {
@@ -203,7 +202,6 @@ TODO:
                 this._taskTimeout.push(this.async(function(){
                     this._handleError(); // what error?
                 }, 30000));
-                console.log(this._taskTimeout);
             },
             /** `_handleResponse`
             */
