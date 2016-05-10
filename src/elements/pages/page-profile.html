@@ -54,7 +54,8 @@
           });
       },
       _historyBack: function() {
-        history.back();
+        window.location.href = "/#/home";
+        // history.back();
       },
       clearSession: function() {
           localStorage.setItem('currentUser', null);

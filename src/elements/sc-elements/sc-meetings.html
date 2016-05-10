@@ -1,0 +1,690 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+<!--
+An element providing a solution to no problem in particular.
+
+Example:
+
+    <sc-meetings></sc-meetings>
+
+Example:
+
+    <sc-meetings>
+    </sc-meetings>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-meetings">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+        color: rgba(0,0,0,.75);
+        font-family: Roboto;
+        font-weight: 300;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        height: 100%;
+      }
+      /* News */
+      .list-container {
+        /* ancestor of iron-list need explicit height 
+        * see more: https://github.com/PolymerElements/iron-list/issues/73
+        */
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
+        width: 100%;
+        /* overflow-y: scroll; vulcanized problems */
+        -webkit-transition-delay: 2s;
+        transition-delay: 2s;
+        -webkit-transition: 2s border linear,3s background-color linear;
+        transition: 2s border linear,3s background-color linear;
+      }
+      .service-item {
+        /* @apply(--layout-horizontal); */
+        border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+        cursor: pointer;
+        min-height: 80px;
+        text-overflow: ellipsis;
+        background-color: white;
+      }
+      .content {
+        /* @apply(--layout-vertical); */
+        @apply(--layout-flex);
+        background-color: white; 
+        padding: 6px;
+      }
+      .more {
+        width: 56dp;
+        width: 32px;
+        vertical-align: middle;
+        text-align: center;
+      }
+      .more iron-icon {
+        margin-top: 36px;
+        color: rgba(0,0,0, .30);
+      }     
+      /* hover for desktop */
+      .service-item.selected {
+        background-color: rgba(19,95,184,.75);
+        color: white !important;
+      }
+      .service-item-subheader {
+        margin-top: -4px;    
+        color: rgba(0,0,0,.54);
+      }
+      .service-item.selected .service-item-subheader span {
+        /* color: white;*/
+      }
+      .service-item.selected .service-item-body {
+        /* color: rgba(255, 255, 255, 0.34); */
+      }
+      .service-item.selected .new-message {
+        background-color: #7ED321;
+      }
+      .service-item-headers {
+        /* @apply(--layout-horizontal); */
+        margin-top: 4px;
+      }
+      .service-item-header {
+        position: relative;
+        @apply(--layout-horizontal);
+      }
+      .service-item-header div {
+            @apply(--layout-flex-10);
+       }
+       .service-item-header .service-counter {
+            @apply(--layout-flex-none);
+            position: absolute;
+            float: right;
+            top:0;
+            right: 0;
+       }
+      .service-item-header h3, h3.truncate {
+        margin-top: 0px;
+        margin-bottom: 4px;
+        font-size: 1.25em;
+        font-weight: 700;
+      }     
+      .service-item-subheader span, .service-item-subheader div {
+        display: block;
+        padding: 5px 10px 5px 0px;
+        color: #000;
+        opacity: 0.54;
+        font-size: 12px;
+        margin-top: 2px;
+      }
+      .service-item-subheader sc-timeago {
+        color: #000;
+        opacity: 0.54;
+        font-size: 12px; 
+      }
+      .service-item-subheader span {
+            display: inline;
+      }           
+      .service-counter {
+        /* position: absolute;
+        right: 0;
+        top:0; */
+        font-size: 13px;
+        width: 22px;
+        height: 18px;
+        text-align: center;
+        margin-top: 1px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        border-radius: 3px;
+        background: #CCC;
+        padding-top: 2px;
+        color: #FFF;
+        /* margin-right: 7px;*/
+      }
+      .service-counter.new-message{
+        background: #4A90E2;
+        color: #FFF;
+        border: 1px solid rgba(19, 95, 184 0.8);
+      }
+      .flexchild {
+        @apply(--layout-flex);
+      }
+      .service-item-body {
+        @apply(--layout-horizontal);
+        overflow: hidden;
+        font-size: 14px;
+        line-height: 17px;
+        /* padding-bottom: 5px;*/
+        color: rgba(0,0,0,0.54);
+      }
+      .avatarBox {
+        float:left;
+        width: 56px;
+        height: 56px;
+        -webkit-border-radius: 50%; /* Can also be 55px */
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        margin-right: 0px;
+        margin-top: 5px;
+        /* @apply(--layout-flex);
+        @apply(--layout-flex-1);*/
+       }
+        
+       .avatarBox.a, .avatarBox.t  {background-color: #F44336;}
+       .avatarBox.b, .avatarBox.u {background-color: #E91E63;}
+       .avatarBox.c, .avatarBox.w {background-color: #9C27B0;}
+       .avatarBox.d, .avatarBox.v {background-color: #673AB7;}
+       .avatarBox.f, .avatarBox.y {background-color: #3F51B5;}
+       .avatarBox.g, .avatarBox.k {background-color: #2196F3;}
+       .avatarBox.h, .avatarBox.x {background-color: #00BCD4;}
+       .avatarBox.i, .avatarBox.z {background-color: #009688;}
+       .avatarBox.j {background-color: #8BC34A;}
+       .avatarBox.l {background-color: #FFC107;}
+       .avatarBox.m {background-color: #FF9800;}    
+       .avatarBox.n {background-color: #795548;}
+       .avatarBox.e, .avatarBox.o {background-color: #9E9E9E;}
+       .avatarBox.p {background-color: #607D8B;}
+       .avatarBox.q {background-color: #5C4B77;}
+       .avatarBox.r {background-color: #FF5722;}
+       .avatarBox.s {background-color: #135FB8;}         
+    
+      .avatarBox .avatar-letter {
+        height: 100%;
+        width: 100%;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.86);
+        text-shadow: 2px 2px 3px rgba(0,0,0,0.12);
+        font-size: 1.25em;
+       }
+       .avatarBox .avatar-letter::before {
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+            content:"";
+        }        
+        .avatarBox .avatar-letter span {
+            vertical-align: middle;
+            text-transform: uppercase;
+            font-size: 1.5em;
+        }
+      .service-item-body-content {
+        @apply(--layout-flex);
+        @apply(--layout-flex-11);
+        padding-left: 14px;
+        margin-top: 5px;
+      }
+      .avatarBox img {
+        width: 33px;
+        height: 33px;
+        -webkit-border-radius: 50%; /* Can also be 50px */
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+        float: left;
+        right: 0;
+       }
+       #dialog {
+         width: 80%;
+         @apply(--layout-vertical);
+       }
+        #dialog paper-icon-item {
+            cursor: pointer;
+        }
+       /* hacking dialog */
+       paper-dialog.paper-dialog-0 {
+         background:#ffffff;
+         color:#212121;font-family:'Roboto', 'Noto', sans-serif;
+             -webkit-font-smoothing:antialiased;
+             font-size:14px;
+             font-weight:400;
+             line-height:20px;box-shadow:0 16px 24px 2px rgba(0, 0, 0, 0.14),
+                         0  6px 30px 5px rgba(0, 0, 0, 0.12),
+                         0  8px 10px -5px rgba(0, 0, 0, 0.4);
+       }
+       paper-dialog.paper-dialog-0  h2 {
+         font-family:'Roboto', 'Noto', sans-serif;
+             -webkit-font-smoothing:antialiased;
+             white-space:nowrap;
+             overflow:hidden;
+             text-overflow:ellipsis;
+             font-size:20px;
+             font-weight:500;
+             line-height:28px;
+       }
+       paper-dialog.paper-dialog-0  .buttons {
+         color:#3f51b5;display:-ms-flexbox;
+             display:-webkit-flex;
+             display:flex;
+
+             -ms-flex-direction:row;
+             -webkit-flex-direction:row;
+             flex-direction:row;-ms-flex-pack:end;
+             -webkit-justify-content:flex-end;
+             justify-content:flex-end;
+       }
+        .vert-bar {
+            background: #ccc;
+        }
+      paper-spinner-lite.blue {
+          position: absolute;
+          left: 50%;
+          top: 12px;
+          z-index: 100;
+          --paper-spinner-color: var(--paper-light-blue-600);
+      }            
+      #emptyState {
+        @apply(--layout-horizontal);
+        @apply(--layout-vertical);
+        @apply(--layout-fit);
+        text-align: center;
+      }
+      #emptyState * {
+        margin: 0 auto;
+        color: rgba(0,0,0,0.54);
+      }
+      #emptyState p {
+        font-size: 1.25em;
+        padding-right: 20px;
+        padding-left: 20px;
+        font-weight: 300;
+      }
+      #emptyState img {
+        margin-top: 25%;
+        width: 55%;
+
+      }  
+      /* swipe setup */        
+      paper-swipe {
+        position: absolute;            
+        width: 100%;
+        height: 100%;
+      }
+      paper-swipe {
+        --paper-swipe: {
+            /* height: 100px;*/
+            
+        };
+      }   
+      div[underlay] {
+        background-color: #f1f1f1 /*whitesmoke*/;
+      }
+        
+     .shadow-inset {
+        box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -webkit-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -moz-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+        -o-box-shadow: inset 1px 0px 5px 0px #ABABAB;
+     }  
+    .service-item-header div.organizer-title {
+        width: 100%;        
+    }
+    .truncate {
+        width: 70%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+     }  
+     .underlay-actions {
+        @apply(--layout-horizontal);       
+     } 
+     .underlay-actions paper-button {
+        @apply(--layout-flex);
+        color: rgba(0,0,0,.54);
+      }
+      .underlay-actions paper-button iron-icon {
+            padding-top: 14px;
+        }
+      paper-toast {
+            color: #eeff41;
+            font-weight: 500;
+      }
+      @media (min-width: 768px) and (orientation: portrait) {
+
+      }
+    </style>
+      <sc-request expires-time="0" id="request" no-cache="false"></sc-request>        
+    <!-- Start: html common -->
+    <div class="list-container">
+    <paper-spinner-lite id="spinnerMeetings" class="blue"></paper-spinner-lite>
+      <iron-list id="itemsList" items="[[documents]]" as="item" selected-item="{{selectedItem}}">
+        <template>  
+            <div aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]">
+              <!-- div header -->
+             <paper-swipe swipe-left on-tap-underlay="resetAction">
+                 <div content class="content" on-tap="selectItem">
+                    <div class="service-item-headers service-item-header">
+                        <!-- <div class="organizer-title"><h3 class="truncate">[[item.value.receiverName]]</h3></div>-->
+                        <!-- TODO: create method to add new-message class -->
+                        <div class="service-counter">3</div>
+                    </div>
+                    <!-- div subheader
+                    <div class="service-item-headers service-item-subheader">
+                      <sc-timeago datetime="[[item.value.updatedAt]]"></sc-timeago>
+                      <span>[[item.value.hashtag]]</span>
+                    </div>
+                    -->
+                    <div class="service-item-body">
+                      <div class$="[[_computedClassAvatar(item.value.receiverName)]]">
+                          <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
+                              <div class="avatar-letter">
+                                  <span>[[_demoLetter(item.value.receiverName)]]</span>
+                              </div>
+                          </template>
+                          <template is="dom-if" if="{{item.value.receiverAvatar}}">
+                              <img src="[[item.value.receiverAvatar]]">
+                          </template>
+                      </div>
+                      <div class="service-item-body-content">
+                        <h3 class="truncate">[[item.value.receiverName]]</h3>
+                        [[item.value.body]]
+                      </div>
+                    </div>
+                </div>
+                <div underlay class="underlay-actions">
+                     <paper-button><iron-icon icon="av:volume-off"></iron-icon></paper-button>
+                    <paper-button on-tap="unfollow" data-id="{{item.value._id}}"><iron-icon icon="close"></iron-icon></paper-button>
+                </div>
+              </paper-swipe>
+            </div>
+        </template>
+      </iron-list>
+    </div>
+     <div id="emptyState">
+        <img src="img/first_empty.svg">
+        <p>Nenhuma conversa criada até o momento. Convide seus amigos!</p>   
+     </div> 
+      <paper-toast id="slowProblemas" text="Conexão lenta? Tente novamente."></paper-toast>
+      <!-- no redenrized -->
+      <fooly-websocket id="foolyWS"></fooly-websocket>
+</template>
+
+  <script>
+    Polymer({
+      is: 'sc-meetings',
+      behaviors: [Polymer.NeonAnimatableBehavior],
+      properties: {
+        animationConfig: {
+          value: function() {
+            return {
+              'entry': {
+                name: 'slide-from-left-animation',
+                node: this
+              },
+              'exit': {
+                name: 'slide-left-animation',
+                node: this
+              }
+            }
+          }
+        },
+        selectedItem: {
+          type: Object
+        },
+        /**
+         * `document` array content the items for iron-list.
+         */
+        documents: {
+          type: Object,
+          observer: "_documentsChanged"
+        },
+
+        /**
+         * `fancy` indicates that the element should don a monocle and tophat,
+         * while checking its pocket watch.
+         */
+        fancy: Boolean,
+        /** `dialogItemSelected` is a container receives data from item (iron-list)
+        clicked before open dialog that will be change in next action.
+        */
+        dialogItemSelected: {
+          type: Object
+        },
+        callbackResponse: Object,
+        /** `itemKey` contains ordered string separated by comma. This
+        * string is converted in array for to find primary key field in the
+        * model. 
+        * e.g.:
+        * model = {users: {pk: 123, name: "john"}}
+        * itemKey should be `users.pk`
+        */
+        itemKey: {
+          type: String
+        },
+        /** `noCache` makes request on/off cached.
+        */
+        noCache: {
+            type: Boolean,
+            value: false
+        },
+        /** `wsUrl` string to connect websocket server.
+        */          
+        wsUrl: String,
+        /** `url` string to send follow/unfollow actions.
+        */           
+        url: String
+      },
+      // Element Lifecycle
+      attached: function(){
+        this.url = 'fim';// siscomando.url.meetings; // #HARDCODE #FTB
+      },
+      ready: function () {
+          this.loader();
+      },
+      // Selection Behavior
+      loader: function() {
+          var self = this;
+          var spinner = self.$.spinnerMeetings;
+          var request = self.$.request;
+          // setup callback
+          self.callbackResponse = self.callbackToResponse;
+          request.auto = false;
+          spinner.active = true;
+          
+          // Check if cache
+          if (!self.noCache) {
+              request.noCache = self.noCache;
+          }
+          
+          this.async(function(){
+              if (spinner.active) {
+                spinner.active = false;
+                self.$.slowProblemas.open();                  
+              }
+          }, 10000);
+          
+          // Listeners
+          request.addEventListener('sc-request-response', function(e){
+             res = self.callbackResponse(e.detail.response);
+             self.documents = res; //e.detail.response;
+             spinner.active = false;
+          });
+          request.addEventListener('error', function(spinner){
+            spinner.active = false;
+          });
+          request.addEventListener('sc-request-error', function(spinner){
+            spinner.active = false;
+          });          
+          
+          // Call request (auto). 
+          request.method = "GET";
+          request.url = siscomando.url.meetings; // #FTB #HARDCODE TODO: colocar em page-*  
+          request.go();
+      },
+      selectItem: function(e) {
+         this._selectItem(e);
+       },
+       /* `_selectItem` select or unselect item
+       *
+       */
+      _selectItem: function(e){
+        console.log("bateu!");
+          console.log(e.model.item);
+        var itemId = this._getItemKey(e.model.item);
+        console.log('id:');
+        console.log(itemId);
+        var querystring;
+        querystring = "?q=" + itemId + '&title=' + e.model.item.value.receiverName + "&scope=meetings" + "&receiverId=" + e.model.item.value.receiverId ;
+        if (itemId) { 
+            window.location.href = '#/feeds/' + querystring;
+        }
+      },
+      unselect: function() {
+        this._unselect();
+      },
+      _unselect: function(e) {
+        if (e) {
+            this.$.itemsList.deselectItem(e.model.item);
+        } else {
+            var item = this.$.itemsList.selectedItem;
+            this.$.itemsList.deselectItem(item);
+        }
+        // warning
+        this.fire('home-unselected');
+       },
+      _computedClass: function(isSelected) {
+        var classes = 'service-item';
+        if (isSelected) {
+          classes += ' selected';
+        }
+        return classes;
+      },
+      _getAriaLabel: function(item, selected) {
+        return selected ? 'Deselect ' + item.hashtag : 'Select ' + item.hashtag;
+      },
+      _convertTimestamp: function(unix_timestamp) {
+        // this code sample was copied from
+        // http://stackoverflow.com/questions/847185/convert-a-unix-timestamp-to-time-in-javascript
+        //
+        // Create a new JavaScript Date object based on the timestamp
+        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+        var date = new Date(unix_timestamp*1000);
+        var hours = "0" + date.getHours();
+        // Minutes part from the timestamp
+        var minutes = "0" + date.getMinutes();
+        // Seconds part from the timestamp
+        var seconds = "0" + date.getSeconds();
+        // Full year
+        var year = date.getFullYear();
+        var month = "0" + date.getMonth();
+        var day = "0" + date.getDay();
+        // YYYY-MM-DDT00:00:00
+
+        var formattedTime = year + '-' +  month.substr(-2) + '-' +  day.substr(-2) + 'T' + hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + '.000Z';
+        return formattedTime;
+      },
+      dialogToggle: function(e) {
+        var self = this;
+        this.dialogItemSelected = e.model.item;
+        // activing ...
+        // change and add class enabled for #
+        this.$.dialog.open();
+      },
+      callbackToResponse: function(response) {
+          // TODO: create your map-reduce.
+          return response;
+      },
+      _computedClassAvatar: function(username) {
+        var classes = "avatarBox";  
+        var firstLetter;
+        firstLetter = (typeof(username) == "string" && username.length > 0) ? username[0] : 'h'; // TODO: h
+        classes += " " + firstLetter;
+        return classes;
+      },
+      _demoLetter: function(username) {
+        return (typeof(username) == "string" && username.length > 0) ? username[0] : 'h';
+      },
+      /** `_getItemKey` returns string of the primary key if provieded.
+      */
+      _getItemKey: function(item){
+          // simple validation
+          if (!this.itemKey) {
+            console.warn('itemKey invalid or not exists.');
+            return ;  
+          }
+          var self = this;
+          var orderedField = this.itemKey.replace(' ', '').split('.');
+          var obj;
+          for (var i = 0; i < orderedField.length; i++) {
+              if (!obj) {
+                obj = item[orderedField[i]];  
+              } else {
+                obj = obj[orderedField[i]];
+              }
+          }
+          return obj;
+      },
+      _documentsChanged: function(){
+        var ws = this.$.foolyWS;
+        ws.url = siscomando.REMOTE_ADDR;
+        
+        if (this.documents.length > 0) {
+          this.$.emptyState.style.display = "none";
+          
+          // setup web for each document.
+          var docs = this.documents;
+          var channels = [];
+          
+          docs.forEach(function(elem, idx, arr) {
+            channels.push(elem.value._id)
+          });
+          
+          // ws.channels = channels.join();
+          // ws.on();
+          ws.addEventListener('fooly-ws-updated', function(evt){
+            // console.log(evt.detail.response.value._id);
+          });
+        } else {
+            this.$.emptyState.style.display = "inline-block";
+        }
+      },
+      /** `unfollow` disconnect issue/service of the current user. This
+      * case not require to follow.
+      **/
+      unfollow: function(e){
+          console.log('-----------');
+          console.log(e.model.item);
+          var request = this.$.request;
+          var self = this;
+          var documents = self.documents.slice();
+          body = {}
+          body['pk'] = e.model.item.value.followingKey; // #HARDCODE #FTB
+          body['activated'] = false;
+          body['serviceId'] = e.model.item.value._id; // TODO: can be not required.
+          
+          var index = documents.indexOf(e.model.item);
+          request.addEventListener('sc-request-noemit', function(e){
+              if (index > -1) {            
+                  documents.splice(index, 1);
+                  self.documents = documents;
+              }              
+          });
+          this._request(body);
+       },
+      _request: function(body) {
+          var request = this.$.request;       
+          // This is body of the request (or JSON payload)
+          request.auto = false;
+          request.noEmit = true;
+          request.contentType = 'application/json';
+          request.method = "POST";
+          request.noCache = true; // request without verify cache.
+          request.url = this.url;
+          request.body = body;
+          request.go();
+      },
+      resetAction: function(ev) {
+        var target = ev.target;
+        if (ev.type === 'tap-underlay') {
+          target = ev.detail.target.target;
+        }
+        while (target.localName !== 'paper-swipe') {
+          target = target.parentElement;
+        }
+        target.removeAttribute('disable-swipe');
+        target.resetPosition();
+      }        
+    });
+  </script>
+</dom-module>

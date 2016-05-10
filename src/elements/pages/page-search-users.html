@@ -1,0 +1,204 @@
+<!-- polymer project components 
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">-->
+<!-- for this components
+<link rel="import" href="../app-bar/app-bar.html">-->
+<!-- layout 
+<link rel="import" href="../layouts/drawer-panel-layout.html">-->
+
+<dom-module id="page-search-users">
+  <template>
+    <style>
+        paper-toolbar {
+          --paper-toolbar-background: #135FB8;
+          color: white;
+        }
+        #search {
+          position: fixed;
+          width: 100%; 
+          height: 56px;
+          line-height: 56;
+          /* margin-bottom: 12px;*/
+          position: relative;
+          z-index: 0;  
+          @apply(--layout-horizontal);     
+        }
+        #search iron-icon {
+          margin-left: 16px;
+          margin-right: 8px;
+          position: absolute;
+          top: 12px;
+          left: 2px;
+        }
+        #search paper-icon-button {
+            margin-left: 10px;
+            margin-right: 8px;
+            position: absolute;
+            top: 6px;
+            left: 0px;        
+        }
+        #search input {
+          height: 56px;
+          -webkit-appearance: none;
+          line-height: 56px;
+          border: 0;
+          margin: 0;
+          padding-left: 50px;
+          border-bottom: 1px solid #e5e5e5;
+          border-top: 1px solid #e5e5e5;
+          @apply(--paper-font-body1);
+        }
+        #search input:focus {
+          outline: 0;
+          background-color: #eceff1;
+          border-color: #cfd8dc;
+        }
+        #search input::-webkit-search-cancel-button{
+          position: relative;
+          right: 15px;
+        }
+        sc-search-users {
+          position: fixed;
+          width: 100%;  
+          height: 100%;          
+          margin: 56px 0 0 0;
+          overflow-y: scroll;
+        }
+
+      .blanks {
+        position: absolute;
+        width: 100%;
+        margin-top: 64px;
+        text-align: center;
+        @apply(--layout-vertical);
+        @apply(--layout-horizontal);
+        @apply(--layout-fit);
+      }
+      .blanks #searchBlank {
+        display: inline-block;
+        margin: calc(50% - 64px) auto; 
+        --iron-icon-height: 120px;
+        --iron-icon-width: 120px;  
+        --iron-icon-fill-color: rgba(0,0,0,0.12);      
+      }
+    </style>
+    <drawer-panel-layout>
+          <paper-header-panel class="main">        
+            <!-- toolbar/title 
+            <paper-toolbar>
+              <iron-icon icon="chevron-left" on-tap="_historyBack"></iron-icon>
+              <div class="title">Siscomando</div>
+              <app-bar class="horizontal layout center end-justified" no-search></app-bar>
+            </paper-toolbar>
+            -->       
+            <!-- search input -->
+            <div id="search" class="center verts" style="position: fixed;">
+                <!-- <iron-icon icon="search"></iron-icon> -->
+                <paper-icon-button icon="chevron-left" on-tap="_historyBack"></paper-icon-button>
+                <input id="query" type="search" autocomplete="off" value="{{q::keyup}}" placeholder="Pesquise por sistemas, pessoas, assuntos..." class="flex" on-search="onSearch">
+            </div>              
+            <!-- list of data -->
+            <!-- item-key is useful to found primary key. See sc-search's documentation -->
+            <div class="blanks">
+              <iron-icon id="searchBlank" icon="find-in-page"></iron-icon>
+            </div>
+            <sc-search-users id="scsearch" class="verts" item-key="value._id"></sc-search-users>              
+          </paper-header-panel>
+
+          <sc-request id="request" no-cache="true"></sc-request>
+      </drawer-panel-layout>
+
+  </template>
+  <script>
+    Polymer({
+      is: 'page-search-users',
+      properties: {
+          q: {type: String, notify: true, value: '', observer: '_qChanged'},
+          isFirst: {
+            type: Boolean,
+            value: true
+          }
+      },
+      ready: function(){
+        // TODO: o ideial seria definir a url aqui para seguir
+        // as boas praticas de personalização do page-*.html, mas
+        // nao rolou, por enquanto. Então como o sc-search está
+        // todo personalizado vamos deixar esse melhoria para o
+        // futuro disparando eventos entre esses elementos.
+        /*
+        this.async(function(){
+          this.$.scsearch.url = siscomando.url.followservices;  
+        }, 300); */
+        this.async(function() {
+          this.$.query.focus();}, 100);        
+        
+      },
+      _historyBack: function() {
+          history.back();
+      },
+      _qChanged: function(q) {
+        if (q) {
+          this.async(function() {
+            this.$.query.focus();
+
+            // make sure to force the cursor to the end of the
+            // input. Only an issue in Firefox.
+            this.$.query.setSelectionRange(q.length, q.length);
+          });
+          // console.log('checar');
+          if (this.isFirst){
+            this.onSearch();
+            this.isFirst = false;
+          }
+        }
+      },
+      onSearch: function(e) {
+        // when a user clicks on the (x) button we need to be sure to
+        // clear the query
+        var q = this.$.query.value;
+        if (q.length > 3) {
+          this.cancelAsync(this.handlerAsync);
+          this.handlerAsync = this.async(function(){
+            this.getServices(q);
+          }, 300);            
+        }        
+      },
+      /** `getServices` gets all services matched with q.
+      * @param q: ter
+      **/
+      getServices: function(q){
+          var self = this;
+          var request = this.$.request;
+          var scsearch = this.$.scsearch;
+          // // UI status for waiting event...
+          // var spinner = this.$.spinnerPageSearch;
+          var searchBlank = this.$.searchBlank;
+          
+          // UI status
+          searchBlank.style.display = "none";
+          //spinner.active = true;
+          scsearch.activeSpinner();
+
+          request.addEventListener('sc-request-response', function(evt){
+            self.$.scsearch.documents = evt.detail.response;
+            
+            if (evt.detail.response.length === 0){
+              // UI status
+              searchBlank.style.display = "inline-block";
+            }
+            // UI status
+            //spinner.active = false;
+            scsearch.deactiveSpinner();
+          });
+          request.addEventListener('error', function(){
+            // UI status
+            //spinner.active = false;
+            scsearch.deactiveSpinner();
+          });
+          // fires event
+          request.url = siscomando.url.searchusers + q;
+      }
+
+    });
+  </script>
+</dom-module>

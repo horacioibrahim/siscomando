@@ -1,0 +1,365 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+<!--
+An element providing a list of items of the Siscomando.
+
+Example:
+
+    <sc-search-users></sc-search-users>
+
+Example:
+
+    <sc-search-users data=[[results]]>
+
+    </sc-search-users>
+
+   //*************** ATTENTION ****************************************/
+   /*  `sc-search` is very fit built for siscomando-app and not follows
+   /* the our best practices of the deploy business logic into page-*.html.
+   /******************************************************************/
+
+-->
+<dom-module id="sc-search-users">
+    <template>
+        <style>
+            :host {
+             font-family: Roboto;
+              @apply(--layout-vertical);
+              @apply(--center-justified);
+              margin-left: auto;
+              margin-right: auto;
+              color: rgba(0,0,0, 0.86);
+            }
+            .container {
+                margin-top: 2px;
+                margin-bottom: 60px;
+            }
+            paper-item {
+              width: 100%;
+              cursor: pointer;
+            }
+            .card-content {
+                padding-bottom: 30px;
+            }
+            .fancy {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                min-height: 64px;
+            }
+            .fancy .title {
+              position: absolute;
+              top: 10px;
+              left: 65px;
+            }
+            .fancy img {
+              width: 100%;
+            }
+            .fancy .big {
+              font-size: 22px;
+              padding: 8px 0 16px;
+              color: var(--google-grey-500);
+            }
+            .fancy .medium {
+              font-size: 16px;
+              padding-bottom: 1px;
+              text-overflow: ellipsis;
+            }
+            small {
+                font-size: 12px;
+                color: rgba(0,0,0, 0.38);
+            }
+            .fancy .small {
+                font-weight: 300;
+                font-size: 14px;
+                color: rgba(0,0,0,0.54);
+            }
+            .pink {
+                --paper-card-header-color: var(--paper-pink-500);
+            }
+            paper-tooltip {
+              --paper-tooltip-background: rgba(0,0,0,0.12);
+              --paper-tooltip-text-color: rgba(0,0,0.54);
+            }
+            paper-spinner-lite.blue {
+              position: absolute;
+              left: 50%;
+              top: 12px;
+              z-index: 100;
+              --paper-spinner-color: var(--paper-light-blue-600);
+           }
+            
+          .avatarBox {
+            float:left;
+            width: 32px;
+            height: 32px;
+            -webkit-border-radius: 50%; /* Can also be 55px */
+            -moz-border-radius: 50%;
+            border-radius: 50%;
+            margin-right: 0px;
+           }
+
+           .avatarBox.a, .avatarBox.t  {background-color: #F44336;}
+           .avatarBox.b, .avatarBox.u {background-color: #E91E63;}
+           .avatarBox.c, .avatarBox.w {background-color: #9C27B0;}
+           .avatarBox.d, .avatarBox.v {background-color: #673AB7;}
+           .avatarBox.f, .avatarBox.y {background-color: #3F51B5;}
+           .avatarBox.g, .avatarBox.k {background-color: #2196F3;}
+           .avatarBox.h, .avatarBox.x {background-color: #00BCD4;}
+           .avatarBox.i, .avatarBox.z {background-color: #009688;}
+           .avatarBox.j {background-color: #8BC34A;}
+           .avatarBox.l {background-color: #FFC107;}
+           .avatarBox.m {background-color: #FF9800;}    
+           .avatarBox.n {background-color: #795548;}
+           .avatarBox.e, .avatarBox.o {background-color: #9E9E9E;}
+           .avatarBox.p {background-color: #607D8B;}
+           .avatarBox.q {background-color: #5C4B77;}
+           .avatarBox.r {background-color: #FF5722;}
+           .avatarBox.s {background-color: #135FB8;}         
+
+          .avatarBox .avatar-letter {
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.86);
+            text-shadow: 2px 2px 3px rgba(0,0,0,0.12);
+            font-size: 1.25em;
+           }
+           .avatarBox .avatar-letter::before {
+                display: inline-block;
+                height: 100%;
+                vertical-align: middle;
+                content:"";
+            }        
+            .avatarBox .avatar-letter span {
+                vertical-align: middle;
+                text-transform: uppercase;
+            }            
+            .email {
+                color: rgba(0,0,0,0.54);
+                font-size: 0.75em;
+                margin-top: -6px;
+            }
+        </style>
+        <sc-request id="request" no-cache="true"></sc-request>
+        <div class="container">
+            <paper-spinner-lite id="spinnerPageSearch" class="blue"></paper-spinner-lite> 
+            <iron-list id="list-results" items="[[documents]]" as="item" 
+              selection-enabled>
+                <template>
+                    <paper-item
+                      aria-label$="[[_getAriaLabel(item, selected)]]" class$="[[_computedClass(selected)]]"
+                      on-tap="mSelect">
+                        <div class$="[[_computedClassAvatar(item.value.username)]]">
+                              <template is="dom-if" if="{{!item.value.avatar}}">
+                                  <div class="avatar-letter">
+                                      <span>[[_demoLetter(item.value.username)]]</span>
+                                  </div>
+                              </template>
+                              <template is="dom-if" if="{{item.value.avatar}}">
+                                  <img src="[[item.value.avatar]]">
+                              </template>
+                        </div>                          
+                        <div class="title">
+                          <div id="title" class="medium">
+                              <template is="dom-if" if="{{item.value.firstname}}">
+                                  <div>[[item.value.firstname]]</div>
+                              </template>
+                              <template is="dom-if" if="{{!item.value.firstname}}">
+                                  <div>[[_firstForcedName(item.value.username)]]</div>
+                              </template>                              
+                              <div class="email">[[item.value.username]]</div>
+                              <small class="phone">&nbsp;[[item.value.commercial]]</small>
+                          </div>
+                          <div class="small">[[item.value.description]]</div>
+                        </div>
+                    </paper-item>
+                </template>
+            </iron-list>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'sc-search-users',
+            properties: {
+                items: {
+                    type: Array,
+                },
+                documents: {
+                    type: Array
+                },
+                selectedItems: {
+                  type: Object
+                },
+                url: String,
+                /** `itemKey` contains ordered string separated dot. This
+                * string is converted in array. 
+                */
+                itemKey: {
+                  type: String
+                },
+                /** `itemTouched` contains items indexed by id to persist when
+                * the model is changed.
+                */                
+                itemTouched: Object  
+            },
+            attached: function(){
+                // This is must be placed page-search.html. The `url` is 
+                // entrypoint for follow/unfollow services.
+                this.url = siscomando.url.followservices;
+                this.itemTouched = {};
+            },
+            _computedClass: function(isSelected) {
+              var classes = 'pink fancy';
+              if (isSelected) {
+                classes += ' selected';
+              }
+              return classes;
+            },
+            _getAriaLabel: function(item, selected) {
+              return selected ? 'Deselect ' + item.title : 'Select ' + item.title;
+            },
+            _getParent: function(el, byClass) {
+                var p = el.parentNode;
+                var classList = el.classList;
+                is_owner = classList.contains('fancy');
+                // Asssegura que o proprio elemento pai nao vai em busca
+                // de si mesmo.
+                if (is_owner) {
+                    return ;
+                }
+                while (p !== null) {
+                    var o = p;
+                    if (o.classList.contains(byClass)) {
+                        return o
+                    }
+                    p = o.parentNode;
+                }
+                return undefined; // returns an Array []
+            },
+            /** `_forceSelect` if the item have following marked as true
+            */
+            _forceSelect: function(item) {
+                var listResults = this.querySelector('#list-results');
+                listResults.selectItem(item);
+            },
+            _hasObject: function(arr, obj) {
+              var hasObject = (
+                  !Array.indexOf ? function (o)
+                  {
+                    var l = arr.length + 1;
+                    while (l -= 1)
+                    {
+                        if (arr[l - 1] === o)
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                  } : function (o)
+                  {
+                    return (arr.indexOf(o) !== -1);
+                  }
+                );
+            return hasObject(obj);              
+            },
+            /** `_getItemKey` returns string of the primary key if provieded.
+            */
+            _getItemKey: function(item){
+                var self = this;
+                var orderedField = this.itemKey.replace(' ', '').split('.');
+                var obj;
+                for (var i = 0; i < orderedField.length; i++) {
+                    if (!obj) {
+                      obj = item[orderedField[i]];  
+                    } else {
+                      obj = obj[orderedField[i]];
+                    }
+                }
+                return obj;
+            },
+            /** `_setItemKey` sets string of the primary key.
+            */
+            _setItemKey: function(item, value){
+                var self = this;
+                var orderedField = this.itemKey.replace(' ', '').split('.');
+                var obj;
+                for (var i = 0; i < orderedField.length; i++) {
+                    if (!obj) {
+                      obj = item[orderedField[i]];  
+                    } else {
+                      if (i === (orderedField.length - 1)) {
+                        obj[orderedField[i]] = value;  
+                      } else {
+                        obj = obj[orderedField[i]];
+                      }
+                    }
+                }
+                return obj[orderedField[i]];
+            },            
+            _request: function(body) {
+              var request = this.$.request;       
+               // This is body of the request (or JSON payload)
+               request.auto = false;
+               request.contentType = 'application/json';
+               request.method = "POST";
+               request.noCache = true; // request without verify cache.
+               request.url = siscomando.url.addmeetings;
+               request.body = body;
+               request.go();
+            },
+            activeSpinner: function() {
+                this.$.spinnerPageSearch.active = true;
+            },
+            deactiveSpinner: function() {
+                this.$.spinnerPageSearch.active = false;
+            },
+            _computedClassAvatar: function(username) {
+                var classes = "avatarBox";  
+                var firstLetter;
+                firstLetter = (typeof(username) == "string" && username.length > 0) ? username[0] : 'h'; // TODO: h
+                classes += " " + firstLetter;
+                return classes;
+            },
+            _demoLetter: function(username) {
+                return (typeof(username) == "string" && username.length > 0) ? username[0] : 'h';
+            },
+            _firstForcedName: function(username) {
+                return (typeof(username) == "string" && username.length > 0) ? username.split('@')[0].capitalizeFirstLetter() : 'Nome vazio';
+            },
+            /** `mSelect` open new room meeting with contact 
+                and return for this new room. 
+            */
+            mSelect: function(e) {
+                var self = this;
+                var listResults = this.querySelector('#list-results');
+                var pk = this._getItemKey(e.model.item);
+                var body = {};
+                
+                if (pk) {
+                    // assumes is exists
+                    body['receiverId'] = pk;
+                    // Fix (or update) model. Update item loaded in the UI.
+                    this.$.request.addEventListener("sc-request-response", function(evt){
+                        // this response must be ONE item changed.
+                        if (evt.detail.response) {
+                           //window.location.href = '';             
+                           // console.log(evt.detail.response);
+                           // go to page-feeds.
+                           var receiverId = evt.detail.response.receiverId;
+                           var receiverName = evt.detail.response.receiverName;
+                           window.location.href = "/#/feeds/?q=" + receiverId + "&title=" + receiverName + "&scope=meetings";
+                        }
+                    }); 
+                    this._request(body);
+                } else {
+                    console.warn("Without primary key!");
+                }
+                
+            }
+        });
+    </script>
+</dom-module>

@@ -292,7 +292,12 @@ TODO:
                <div class="item-content">
                  <div class="item-details">
                    <!-- change it to page-feeds as itemKey -->
-                   <div class="item-details-from">[[message.value.authorName]]</div>
+                   <template is="dom-if" if="[[message.value.authorName]]"> 
+                    <div class="item-details-from">[[message.value.authorName]]</div>
+                   </template>
+                   <template is="dom-if" if="[[message.value.senderName]]"> 
+                    <div class="item-details-from">[[message.value.senderName]]</div>
+                   </template>                     
                    <div class="item-details-timestamp">
                      <sc-timeago datetime="[[message.value.updatedAt]]"></sc-timeago>
                    </div>                     
