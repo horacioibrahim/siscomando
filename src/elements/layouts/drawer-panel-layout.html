@@ -61,10 +61,18 @@
     <script>
         Polymer({
             is: 'drawer-panel-layout',
+            properties: {
+                showTermobar: {
+                    type: Boolean,
+                    value: true,
+                    observer: "_showTermobarChanged"
+                }
+            },
             ready: function() {
                 var self = this;
                 var scFeeds = this.querySelector('sc-feeds');
                 var scHome = this.querySelector('sc-home');
+                
                 if (scFeeds) {
                     // we can add anything when sc-feeds is active
                     // Demonstration values:
@@ -83,6 +91,12 @@
                 } else {
                     this.$.drawer.disableSwipe = true;
                     //this.$.drawer.disableEdgeSwipe = true;
+                }
+            },
+            _showTermobarChanged: function() {
+                var termobar = this.$.termobar;
+                if (!this.showTermobar) {
+                    termobar.enabled = false;
                 }
             }
         });

@@ -16,9 +16,14 @@
           <app-route path="/walk" element="page-walkthrough"></app-route>
           <app-route path="/termobartest" element="page-termobar"></app-route>
           <app-route path="/profile" element="page-profile"></app-route>
-          <app-route path="/search" element="page-search"></app-route>
+          <app-route path="/search/:querystring" element="page-search"></app-route>
+          <!-- split search: services, users and... -->
+          <app-route path="/users/search/:querystring" element="page-search-users"></app-route>
+          <app-route path="/services/search/:querystring" element="page-search"></app-route>
           <app-route path="/addchannel" element="page-addchannel"></app-route>
           <app-route path="/dashboard" element="page-dashboard"></app-route>
+          <app-route path="/meetings" element="page-meetings"></app-route>
+          <app-route path="/meetings/to/:querystring" element="page-meetings-feeds"></app-route>
           <app-route path="*" element="page-not-found"></app-route>
         </app-router>
   </template>

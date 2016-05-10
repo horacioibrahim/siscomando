@@ -1,0 +1,59 @@
+<!--
+@license
+Copyright (c) 2015 Horacio Ibrahim. All rights reserved.
+-->
+
+
+<!--
+An element providing a animation on icons and images.
+
+Example:
+
+    <sc-icons-animated icon="born"></sc-icons-animated>
+
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="sc-icons-animated">
+<template>
+<style>
+    :host {
+        position: absolute;
+        left: 0;
+        top: 0;
+        font-family: Roboto;
+        width: 100%;
+        height: 100%;
+    }
+    .container {
+        margin: 0 auto;
+    }
+</style>
+    <div class="container">
+        <div id="crazy">ANIMA</div>
+    </div>
+</template>
+<script>
+    Polymer({
+       is: "sc-icons-animated",
+       behaviors: [
+        Polymer.NeonAnimationRunnerBehavior,
+       ],
+       properties: {
+            animationConfig: {
+              type: Object,
+              value: function() {
+                return {
+                  'entry': [{
+                    name: 'slide-down-animation',
+                    node: this.$.crazy
+                  }]
+                };
+              }
+            }
+       }
+       // public methods 
+    });
+</script>
+</dom-module>

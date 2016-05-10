@@ -84,7 +84,10 @@
       noSearch: {
         type: Boolean,
         value: false
-      }
+      },
+      /** `model` how to search as users, services
+      */
+      model: String
     },
     observers: [
       'updateSearchDisplay(showingSearch)'
@@ -123,7 +126,11 @@
     },
     performSearch: function(e) {
       e.preventDefault();
-      this.fire('nav', {url: '/search?q=' + this.query});
+      var model = this.model;
+      if (!model) {
+        model = 'services';  
+      }
+      this.fire('nav', {url: '/' + model + '/search/' + '?q=' + this.query});
     }
   });
 </script>

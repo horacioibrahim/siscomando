@@ -7,7 +7,7 @@
 <!-- layout
 <link rel="import" href="../layouts/drawer-panel-layout.html"> -->
 
-<dom-module id="page-home">
+<dom-module id="page-meetings">
   <template>
     <style>
         :host {
@@ -20,7 +20,7 @@
         paper-toolbar .title {
             margin-left: 30px;
         }
-        sc-home {
+        sc-meetings {
             padding-bottom: 62px;
         }
         .float-button {
@@ -51,23 +51,17 @@
         }
     </style>
     <drawer-panel-layout>
-          <!--
-          Tablet yet not supported!
-          <div class="drawer">
-              <sc-home class="shadow-2dp fit"></sc-home>              
-          </div>--
           <!-- who is header class -->
           <paper-header-panel class="main">
             <paper-toolbar>
-              <paper-badge for="menu" label="4"></paper-badge>
-              <paper-icon-button id="menu" on-tap="showProfile" icon="menu" noink></paper-icon-button>
+              <paper-icon-button icon="chevron-left" on-tap="_historyBack"></paper-icon-button>
               <!-- <iron-icon icon="menu" ></iron-icon>-->
-              <div class="title">Siscomando</div>
-              <app-bar class="horizontal layout center end-justified" query="{{q}}" model="services"></app-bar>
+              <div class="title" id="title">Conversas</div>
+              <app-bar class="horizontal layout center end-justified" query="{{q}}" model="users"></app-bar>
               <paper-icon-button on-tap="reload" icon="cached" class="transformed"></paper-icon-button>
             </paper-toolbar>
            <!-- who is content class -->
-          <sc-home id="home" class="shadow-2dp fit" item-key="value._id"></sc-home>    
+          <sc-meetings id="meetings" class="shadow-2dp fit" item-key="value._id"></sc-meetings>    
           <paper-fab icon="add" title="Seguir" class="float-button" noink="true" on-tap="toSearch"></paper-fab>          
           </paper-header-panel>
     </drawer-panel-layout>
@@ -76,7 +70,7 @@
   </template>
   <script>
     Polymer({
-      is: 'page-home',
+      is: 'page-meetings',
       listeners: {
           'nav': 'handleNav'
       },
@@ -86,16 +80,17 @@
       handleNav: function() {
           // todo
       },
-      showProfile: function() {
-        this.fire('nav', {url: '/profile'});
-      },
       toSearch: function(){
-        window.location.href = "#/search/?model=services"
+        window.location.href = "#/users/search/?q=";
       },
       reload: function() {
-        var scHome = this.$.home;
-        scHome.noCache = true;
-        scHome.loader();
+        var scMeetings = this.$.meetings;
+        scMeetings.noCache = true;
+        scMeetings.loader();
+      },
+      _historyBack: function() {
+        window.location.href = "#/profile";
+        // history.back();
       }
     });
   </script>
