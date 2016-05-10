@@ -12,7 +12,7 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'https://agile-lake-26676.herokuapp.com';
+siscomando.REMOTE_ADDR = 'http://localhost:5000' // 'https://agile-lake-26676.herokuapp.com';
 siscomando.SESSION_KEY = 'scdata'; // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
@@ -24,9 +24,13 @@ siscomando.url = {
     feeds: siscomando.REMOTE_ADDR + '/api/feeds',
     login: siscomando.REMOTE_ADDR + '/loginexp',
     logoff: siscomando.REMOTE_ADDR + '/logoff',
-    searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?q=',
+    searchservices: siscomando.REMOTE_ADDR + '/api/services/search/?model=services&q=',
+    searchusers: siscomando.REMOTE_ADDR + '/api/services/search/?model=users&q=',
     followservices: siscomando.REMOTE_ADDR + '/api/services/follow',
-    checkavailabilitydata: siscomando.REMOTE_ADDR + '/api/services/checkavailabilitydata'
+    checkavailabilitydata: siscomando.REMOTE_ADDR + '/api/services/checkavailabilitydata',
+    meetings: siscomando.REMOTE_ADDR + '/api/services/meetings',
+    addmeetings: siscomando.REMOTE_ADDR + '/api/services/meetings/add',
+    //meetings: siscomando.REMOTE_ADDR + '/api/services/meetings/?q='
 };
 
 /* Siscomando sounds */
@@ -44,6 +48,11 @@ siscomando.getParameterByName = function (name, url) {
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+// capitalize first letter
+String.prototype.capitalizeFirstLetter = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
 }
 
 // Cordova implementations
