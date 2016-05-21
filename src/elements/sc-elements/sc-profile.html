@@ -105,7 +105,7 @@ Example:
               <paper-item on-tap="goToPage" data-link="meetings">
                 <iron-icon id="messages" icon="question-answer" item-icon></iron-icon>
                 Conversas Diretas</paper-item>
-                <paper-badge for="messages" label="4"></paper-badge>
+                <paper-badge for="messages" label="{{messagesNews}}"></paper-badge>
               <paper-item on-tap="goToPage" data-link="addchannel" >
                 <iron-icon icon="add" item-icon></iron-icon>
                 Criar Canal </paper-item>                
@@ -156,12 +156,15 @@ Example:
           },
           observer: '_changeUser'
         },
-        firstChar: String
+        firstChar: String,
+        messagesNews: Number
       },
 
       // Element Lifecycle
       ready: function() {
-          
+          var counters = JSON.parse(window.sessionStorage.getItem('counters'));
+          var messagesNews = counters.meetings;
+          this.messagesNews = messagesNews;
       },
       attached: function() {
         var avatarPlace = this.querySelector('.avatar');

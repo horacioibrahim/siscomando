@@ -357,7 +357,7 @@ Example:
                     <div class="service-item-headers service-item-header">
                         <!-- <div class="organizer-title"><h3 class="truncate">[[item.value.receiverName]]</h3></div>-->
                         <!-- TODO: create method to add new-message class -->
-                        <div class="service-counter">3</div>
+                        <div class="service-counter">{{item.value.updates}}</div>
                     </div>
                     <!-- div subheader
                     <div class="service-item-headers service-item-subheader">
@@ -519,11 +519,7 @@ Example:
        *
        */
       _selectItem: function(e){
-        console.log("bateu!");
-          console.log(e.model.item);
         var itemId = this._getItemKey(e.model.item);
-        console.log('id:');
-        console.log(itemId);
         var querystring;
         querystring = "?q=" + itemId + '&title=' + e.model.item.value.receiverName + "&scope=meetings" + "&receiverId=" + e.model.item.value.receiverId ;
         if (itemId) { 
@@ -616,6 +612,18 @@ Example:
           return obj;
       },
       _documentsChanged: function(){
+        // updates news
+        var documents = this.documents;
+        var counters = JSON.parse(window.sessionStorage.getItem('counters'));
+        var 
+        var meetingsWithNewMessages = '';
+        for (var i = 0; i < documents.length; i++) {
+          // receiverId
+            if (documents[i].receiverId == ?? ) {
+                USAR SQLITE. LIDA/NAO LIDA ETC
+            }
+        }
+          
         var ws = this.$.foolyWS;
         ws.url = siscomando.REMOTE_ADDR;
         

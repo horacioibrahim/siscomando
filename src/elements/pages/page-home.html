@@ -46,8 +46,12 @@
             margin-left: 20px;
         }
         paper-badge {
+            display: none;
             --paper-badge-margin-bottom: -10px;
             --paper-badge-margin-left: -6px;
+        }
+        #counterUpdates {
+            
         }
     </style>
     <drawer-panel-layout>
@@ -59,7 +63,7 @@
           <!-- who is header class -->
           <paper-header-panel class="main">
             <paper-toolbar>
-              <paper-badge for="menu" label="4"></paper-badge>
+              <paper-badge id="counterUpdates" for="menu" label="{{counterUpdates}}"></paper-badge>
               <paper-icon-button id="menu" on-tap="showProfile" icon="menu" noink></paper-icon-button>
               <!-- <iron-icon icon="menu" ></iron-icon>-->
               <div class="title">Siscomando</div>
@@ -80,8 +84,21 @@
       listeners: {
           'nav': 'handleNav'
       },
+      properties: {
+        counterUpdates: {
+            type: Number,
+            value: 0,
+            observer: "_counterUpdatesChanged"
+        }  
+      },
       ready: function(){
-        
+          var self = this;
+          var savedData = JSON.parse(window.sessionStorage.getItem('counters'));
+          this.counterUpdates = savedData.meetings ? savedData.meetings : undefined;
+          // updates
+          document.addEventListener('sc-counters-meetings', function(evt){
+              self.counterUpdates = parseInt(evt.detail);
+          });
       },
       handleNav: function() {
           // todo
@@ -96,6 +113,11 @@
         var scHome = this.$.home;
         scHome.noCache = true;
         scHome.loader();
+      },
+      _counterUpdatesChanged: function(){
+        if (this.counterUpdates > 0) {
+           this.$.counterUpdates.style.display = 'block'; 
+        }    
       }
     });
   </script>

@@ -12,7 +12,7 @@
  */
 
 var siscomando = siscomando || {};
-siscomando.REMOTE_ADDR = 'http://localhost:5000' // 'https://agile-lake-26676.herokuapp.com';
+siscomando.REMOTE_ADDR = 'http://localhost:5000'; //'https://agile-lake-26676.herokuapp.com';
 siscomando.SESSION_KEY = 'scdata'; // hint: In the sc-login this is sessionKey property.
 siscomando.currentUser = null;
 
@@ -30,6 +30,7 @@ siscomando.url = {
     checkavailabilitydata: siscomando.REMOTE_ADDR + '/api/services/checkavailabilitydata',
     meetings: siscomando.REMOTE_ADDR + '/api/services/meetings',
     addmeetings: siscomando.REMOTE_ADDR + '/api/services/meetings/add',
+    updates: siscomando.REMOTE_ADDR + '/streaming'
     //meetings: siscomando.REMOTE_ADDR + '/api/services/meetings/?q='
 };
 
@@ -84,3 +85,73 @@ function playAudio(src) {
         console.log("no sound API to play: " + src);
     }
  };
+
+// listen updates
+/** Updates counters. This code bellow updates the counters
+useful for badges. How to works? Listening sse events to increment
+or listen html custom events to decrement. 
+
+Events:
+ `db-counters-messages`: decrement counter in counters.messages
+ `db-counters-meetings`: decrement counter in counters.meetings
+  ...
+  or
+  ...
+  `sc-counters-messages`: increment counter in counters.messages
+  `sc-counters-meetings`: increment counter in counters.meetings
+*/
+
+var es = new EventSource(siscomando.url.updates);
+es.onmessage = function(event){
+     var savedData = JSON.parse(window.sessionStorage.getItem('counters'));
+     savedData = savedData ? savedData : {};
+     var data = JSON.parse(event.data);
+     console.log(data);
+     // increment 
+     switch (data.scope) {
+         case 'messages':
+             if ('messages' in savedData) {
+                 savedData.service += 1;
+                 var eventCounter = new CustomEvent('sc-counters-messages', { 'detail': savedData.service});
+                 document.dispatchEvent(eventCounter);
+             } else {
+                 savedData.service = 0;
+             }
+             break;
+         case 'meetings':
+             if ('meetings' in savedData) {
+                 savedData.meetings += 1;
+                 var eventCounter = new CustomEvent('sc-counters-meetings', { 'detail': savedData.meetings});
+                 document.dispatchEvent(eventCounter);                 
+             } else {
+                 savedData.meetings = 0;
+             }             
+             break;
+         case 'dashboard':
+             if ('dashboard' in savedData) {
+                 savedData.dashboard += 1;
+                 var eventCounter = new CustomEvent('sc-counters-meetings', { 'detail': savedData.dashboard});
+                 document.dispatchEvent(eventCounter);                  
+             } else {
+                 savedData.dashboard = 0;
+             }               
+             break;
+         default:
+             console.log("scope outside");
+     }
+     // persist
+     window.sessionStorage.setItem('counters', JSON.stringify(savedData));
+};
+// decremennt
+var decrementCounters = function(scope) {
+    document.addEventListener('db-counters-' + scope, function(){
+         var savedData = JSON.parse(window.sessionStorage.getItem('counters'));
+         savedData = savedData ? savedData : {}; 
+         savedData[scope] = 0;
+         window.sessionStorage.setItem('counters', JSON.stringify(savedData));
+    });
+};
+// listeners
+decrementCounters('messages');
+decrementCounters('meetings');
+decrementCounters('dashboard');

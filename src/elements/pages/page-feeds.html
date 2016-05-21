@@ -156,7 +156,6 @@
               console.log("scope is: ");
               
               var panel = this.querySelector('drawer-panel-layout');
-              console.log(panel);
               panel.showTermobar = false;
           }
           
@@ -203,14 +202,14 @@
         return string.charAt(0).toUpperCase() + string.slice(1);
       },
       _historyBack: function() {
-        var qs = window.location.hash;
+        var qs = window.location.hash.replace('#/feeds/', '')
         var scope = siscomando.getParameterByName('scope', qs);
         if (scope == "meetings") {
-            window.location.href = "/#/meetings";
+            window.location.href = "#/meetings";
             return;
         }
         if (scope == "service" || scope == "ticket") {
-            window.location.href = "/#/home";
+            window.location.href = "#/home";
             return;
         }  
         history.back();
