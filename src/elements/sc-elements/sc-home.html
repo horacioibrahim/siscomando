@@ -550,7 +550,7 @@ Example:
         } else {
             this.$.itemsList.selectItem(e.model.item);
             // very fit with backend. #FWB
-            querystring = "?q=" + itemId + '&title=' + e.model.item.value.name + "&scope=service";
+            querystring = "?q=" + itemId + '&title=' + e.model.item.value.name + "&scope=service" + "&serviceId=" + e.model.item.value._id;
             if (itemId) { 
                 window.location.href = '#/feeds/' + querystring;
             }

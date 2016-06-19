@@ -223,7 +223,7 @@ TODO:
                 // Main action
                 this._responseAfterFlow(response); // levanta o evento
                 // update cache
-                cache.putCache(hashable_url, response); // atualiza o cache com novos informacoes.
+                cache.putCache(hashable_url, response); // atualiza o cache
             },
             _responseAfterFlow: function(response) {
                 //console.log("res: ");
@@ -243,15 +243,6 @@ TODO:
                 var now = new Date();
                 if (now > expires) {
                     return true;
-                }
-                return false;
-            },
-            responsesIsEquals: function() {
-                // Now is time to compare:
-                if (this.responseFromCache && this.responseFromRequest) {
-                    if (JSON.stringify(this.responseFromCache) === JSON.stringify(this.responseFromRequest)) {
-                        return true;       
-                    }        
                 }
                 return false;
             },

@@ -355,36 +355,29 @@ Example:
              <paper-swipe swipe-left on-tap-underlay="resetAction">
                  <div content class="content" on-tap="selectItem">
                     <div class="service-item-headers service-item-header">
-                        <!-- <div class="organizer-title"><h3 class="truncate">[[item.value.receiverName]]</h3></div>-->
                         <!-- TODO: create method to add new-message class -->
-                        <div class="service-counter">{{item.value.updates}}</div>
+                        <div class="service-counter">{{item.updates}}</div>
                     </div>
-                    <!-- div subheader
-                    <div class="service-item-headers service-item-subheader">
-                      <sc-timeago datetime="[[item.value.updatedAt]]"></sc-timeago>
-                      <span>[[item.value.hashtag]]</span>
-                    </div>
-                    -->
                     <div class="service-item-body">
-                      <div class$="[[_computedClassAvatar(item.value.receiverName)]]">
-                          <template is="dom-if" if="{{!item.value.lastMessage.user.avatar}}">
+                      <div class$="[[_computedClassAvatar(item.receiverName)]]">
+                          <template is="dom-if" if="{{!item.lastMessage.user.avatar}}">
                               <div class="avatar-letter">
-                                  <span>[[_demoLetter(item.value.receiverName)]]</span>
+                                  <span>[[_demoLetter(item.receiverName)]]</span>
                               </div>
                           </template>
-                          <template is="dom-if" if="{{item.value.receiverAvatar}}">
-                              <img src="[[item.value.receiverAvatar]]">
+                          <template is="dom-if" if="{{item.receiverAvatar}}">
+                              <img src="[[item.receiverAvatar]]">
                           </template>
                       </div>
                       <div class="service-item-body-content">
-                        <h3 class="truncate">[[item.value.receiverName]]</h3>
-                        [[item.value.body]]
+                        <h3 class="truncate">[[item.receiverName]]</h3>
+                        [[item.body]]
                       </div>
                     </div>
                 </div>
                 <div underlay class="underlay-actions">
                      <paper-button><iron-icon icon="av:volume-off"></iron-icon></paper-button>
-                    <paper-button on-tap="unfollow" data-id="{{item.value._id}}"><iron-icon icon="close"></iron-icon></paper-button>
+                    <paper-button on-tap="unfollow" data-id="{{item._id}}"><iron-icon icon="close"></iron-icon></paper-button>
                 </div>
               </paper-swipe>
             </div>
@@ -470,7 +463,16 @@ Example:
         this.url = 'fim';// siscomando.url.meetings; // #HARDCODE #FTB
       },
       ready: function () {
+          var self = this;
+          // listen emit from select Sqlite
+          document.addEventListener('sql-select', function(evt){
+              self.documents = evt.detail;
+          });
+          // select all. thids value is returned by event source `sql-select` 
           this.loader();
+          if (!navigator.onLine) {
+            app.selectTable('meetings');     
+          }
       },
       // Selection Behavior
       loader: function() {
@@ -479,16 +481,12 @@ Example:
           var request = self.$.request;
           // setup callback
           self.callbackResponse = self.callbackToResponse;
-          request.auto = false;
+          request.auto =
+              false;
           spinner.active = true;
           
-          // Check if cache
-          if (!self.noCache) {
-              request.noCache = self.noCache;
-          }
-          
           this.async(function(){
-              if (spinner.active) {
+              if ((spinner.active) || (self.documents === undefined) || (self.documents.length < 1)) {
                 spinner.active = false;
                 self.$.slowProblemas.open();                  
               }
@@ -497,9 +495,28 @@ Example:
           // Listeners
           request.addEventListener('sc-request-response', function(e){
              res = self.callbackResponse(e.detail.response);
-             self.documents = res; //e.detail.response;
+             // mensagens com senderId + receiverId precisa de contador e se forma lidas ou nao
+             // precisamos recuperar as mensagens antes de buscar remoto.
+             // cada mensagem precisa ce um check vista ou nao (nova ou nao)
+             if (Array.isArray(res)){
+                 for (var i = 0; i < res.length; i++){
+                     keydb = res[i].path.key;
+                     _id = res[i].value._id;
+                     body = res[i].value.body;
+                     createdAt = res[i].value.createdAt;
+                     receiverId = res[i].value.receiverId;
+                     receiverName = res[i].value.receiverName;
+                     senderId = res[i].value.senderId;
+                     senderName = res[i].value.senderName;
+                     updatedAt = res[i].value.updatedAt
+                     app.insertMeetings(keydb, _id, senderId, receiverId, body, createdAt, updatedAt, senderName, receiverName);
+                 }
+             }
              spinner.active = false;
+             // select all. thids value is returned by event source `sql-select`
+             app.selectTable('meetings');              
           });
+          // control spinner workaround
           request.addEventListener('error', function(spinner){
             spinner.active = false;
           });
@@ -520,8 +537,10 @@ Example:
        */
       _selectItem: function(e){
         var itemId = this._getItemKey(e.model.item);
+        console.log("####ITEM ####AQUI:");
+        console.log(e.model.item);
         var querystring;
-        querystring = "?q=" + itemId + '&title=' + e.model.item.value.receiverName + "&scope=meetings" + "&receiverId=" + e.model.item.value.receiverId ;
+        querystring = "?q=" + itemId + '&title=' + e.model.item.receiverName + "&scope=meetings" + "&receiverId=" + e.model.item.receiverId ;
         if (itemId) { 
             window.location.href = '#/feeds/' + querystring;
         }
@@ -614,35 +633,18 @@ Example:
       _documentsChanged: function(){
         // updates news
         var documents = this.documents;
-        var counters = JSON.parse(window.sessionStorage.getItem('counters'));
-        var 
-        var meetingsWithNewMessages = '';
-        for (var i = 0; i < documents.length; i++) {
-          // receiverId
-            if (documents[i].receiverId == ?? ) {
-                USAR SQLITE. LIDA/NAO LIDA ETC
-            }
-        }
-          
-        var ws = this.$.foolyWS;
-        ws.url = siscomando.REMOTE_ADDR;
-        
+        var counters = JSON.parse(window.sessionStorage.getItem('counters'));        
+                  
         if (this.documents.length > 0) {
           this.$.emptyState.style.display = "none";
           
           // setup web for each document.
-          var docs = this.documents;
-          var channels = [];
+          // var docs = this.documents;
+          //var channels = [];
+          // docs.forEach(function(elem, idx, arr) {
+            // channels.push(elem.value._id)
+          //});
           
-          docs.forEach(function(elem, idx, arr) {
-            channels.push(elem.value._id)
-          });
-          
-          // ws.channels = channels.join();
-          // ws.on();
-          ws.addEventListener('fooly-ws-updated', function(evt){
-            // console.log(evt.detail.response.value._id);
-          });
         } else {
             this.$.emptyState.style.display = "inline-block";
         }

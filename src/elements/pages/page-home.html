@@ -94,7 +94,7 @@
       ready: function(){
           var self = this;
           var savedData = JSON.parse(window.sessionStorage.getItem('counters'));
-          this.counterUpdates = savedData.meetings ? savedData.meetings : undefined;
+          this.counterUpdates = savedData ? savedData.meetings : undefined;
           // updates
           document.addEventListener('sc-counters-meetings', function(evt){
               self.counterUpdates = parseInt(evt.detail);
