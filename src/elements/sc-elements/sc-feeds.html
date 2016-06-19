@@ -43,8 +43,18 @@ TODO:
   .list-container {
     height: 100%;
     width: 100%;
+    @apply(--vertical-layout);
+    @apply(--layout-fit);
   }
-
+  iron-list {
+    @apply(--layout-flex);
+    overflow: hidden !important;
+  }
+  .fit {
+    position: absolute;
+    left:8px;
+    right:16px;
+   }
   .message-item {
     cursor: pointer;
     padding-top: 8px;
@@ -271,20 +281,20 @@ TODO:
     <sc-request expires-time="60" id="request"></sc-request>
     <!-- Start: html common -->
     <div class="list-container">
-      <iron-list id="itemsList" items="{{documents}}" as="message" selected-item="{{selectedItem}}">
+      <iron-list id="itemsList" class="fit" items="{{documents}}" as="message" selected-item="{{selectedItem}}">
         <template>
            <div on-tap="selectItem" class="message-item">
              <!-- class$="[[_computedClass(selected)]]" message.value.continued-->
              <div class$="[[_computedClass(false)]]">
                <div class="item-aside">
-                <div class$="[[_computedClassAvatar(message.value.authorName)]]">
-                    <template is="dom-if" if="{{!message.value.authorAvatar}}">
+                <div class$="[[_computedClassAvatar(message.authorName)]]">
+                    <template is="dom-if" if="{{!message.authorAvatar}}">
                         <div class="avatar-letter">
-                            <span>[[_demoLetter(message.value.authorName)]]</span>
+                            <span>[[_demoLetter(message.authorName)]]</span>
                         </div>
                     </template>
-                    <template is="dom-if" if="{{message.value.authorAvatar}}">
-                        <img src="[[message.value.authorAvatar]]">
+                    <template is="dom-if" if="{{message.authorAvatar}}">
+                        <img src="[[message.authorAvatar]]">
                     </template>     
                 </div>
                </div>
@@ -292,23 +302,23 @@ TODO:
                <div class="item-content">
                  <div class="item-details">
                    <!-- change it to page-feeds as itemKey -->
-                   <template is="dom-if" if="[[message.value.authorName]]"> 
-                    <div class="item-details-from">[[message.value.authorName]]</div>
+                   <template is="dom-if" if="[[message.authorName]]"> 
+                    <div class="item-details-from">[[message.authorName]]</div>
                    </template>
-                   <template is="dom-if" if="[[message.value.senderName]]"> 
-                    <div class="item-details-from">[[message.value.senderName]]</div>
+                   <template is="dom-if" if="[[message.senderName]]"> 
+                    <div class="item-details-from">[[message.senderName]]</div>
                    </template>                     
                    <div class="item-details-timestamp">
-                     <sc-timeago datetime="[[message.value.updatedAt]]"></sc-timeago>
+                     <sc-timeago datetime="[[message.updatedAt]]"></sc-timeago>
                    </div>                     
                  </div>
-                 <template is="dom-if" if="[[message.value.target]]">
+                 <template is="dom-if" if="[[message.target]]">
                     <div class="item-target">
-                         [[message.value.target]]
+                         [[message.target]]
                     </div>
                  </template>
                  <div class="item-text">
-                   <marked-element markdown="[[message.value.body]]">
+                   <marked-element markdown="[[message.body]]">
                      <div class="markdown-html"></div>
                    </marked-element>
                  </div>
@@ -400,12 +410,54 @@ TODO:
       // Element Lifecycle
       ready: function() {
           var self = this;
+          var qs = window.location.hash.replace('#/feeds', '');
+          var scope = siscomando.getParameterByName('scope', qs);
+          var receiver = siscomando.getParameterByName('receiverId', qs);
+          var serviceId = siscomando.getParameterByName('serviceId', qs);
+          var query;
+          var table;
+          
+          // listen emit from select Sqlite  
+          document.addEventListener('sql-select', function(evt){
+              self.documents = evt.detail;
+              // console.log("documentos:");
+              // console.log(evt.detail);
+              evt.target.removeEventListener(evt.type, arguments.callee);
+          });              
+
+          // select all. this value is returned by event source `sql-select`
+          // what scope? meetings or messages/services
+          if (scope == 'meetings') {
+            query = 'receiverId,' + receiver;
+            table = 'feeds_meetings';                   
+          }
+          if (scope == 'service') {
+              query = 'serviceId,' + serviceId;
+              table = 'messages';                   
+          }
+        
+          if (!navigator.onLine) {
+              // priorize local databse if offline
+              app.selectTable(table, query);
+          }
+          
           var request = this.$.request;
-          // this._setUrl('all');
           request.addEventListener('sc-request-response', function(evt){
-              self.documents = evt.detail.response;
+             res = evt.detail.response;
+             if (Array.isArray(res)){
+                if (scope == "meetings") {
+                    self._returnIsMeetings(res);
+                 }
+                if (scope == "service") {
+                   self._returnIsServices(res);
+                }
+             }
+              evt.target.removeEventListener(evt.type, arguments.callee);
+              // reload
+              app.selectTable(table, query);
               self.playAnimation();
           });
+          
       },
       /** mock function for development
       */
@@ -518,9 +570,46 @@ TODO:
       scrollDown: function() {
           var element;
           element = document.querySelector('page-feeds');
-          element = element.$.feeds.parentElement;
-          element.scrollTop = element.scrollHeight;        
-      },       
+          if (element) {
+            element = element.$.feeds.parentElement;    
+            element.scrollTop = element.scrollHeight;        
+          }          
+      }, 
+      _returnIsMeetings: function(res) {
+         for (var i = 0; i < res.length; i++){
+             keydb = res[i].path.key;
+             // feeds for scope meetings 
+             body = res[i].value.body;
+             createdAt = res[i].value.createdAt;
+             updatedAt = res[i].value.updatedAt;
+             // read forever initi with 0
+             _id = res[i].value._id;
+             senderId = res[i].value.senderId;
+             receiverId = res[i].value.receiverId;
+             senderName = res[i].value.senderName;
+             receiverName = res[i].value.receiverName; 
+             // to database
+             app.insertFeedsMeetings(keydb, body, createdAt, updatedAt, _id, senderId, receiverId, senderName, receiverName);
+         }              
+      },
+      _returnIsServices: function(res){
+          // return is service or messages
+             for (var i = 0; i < res.length; i++){
+                 keydb = res[i].path.key;
+                 // feeds for scope meetings 
+                 body = res[i].value.body;
+                 createdAt = res[i].value.createdAt;
+                 updatedAt = res[i].value.updatedAt;
+                 // read forever initi with 0
+                 source_type = res[i].value.source_type;
+                 userId = res[i].value.userId;
+                 serviceId = res[i].value.serviceId;
+                 ticketId = res[i].value.ticketId; 
+                 authorName = res[i].value.authorName; 
+                 // to database
+                 app.insertFeedsMessages(keydb, body, source_type, userId, serviceId, ticketId, createdAt, updatedAt, authorName);
+             }             
+      }
     });
   </script>
 </dom-module>
